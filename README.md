@@ -67,7 +67,15 @@ The default behavior creates a user called `user` with a  password logged as an 
 
 	2014-04-16T10:08:52.54-0600 [App/0]   OUT Using default password for application endpoints: 7c2969c1-d9c7-47e9-9c9e-2cd94a7b6cf1
 
-If you are deploying your service broker to cloud foundry as an app, please be aware the password is re-generated every time you push the application.  Therefore, you need to run `cf update-service-broker` with the new password.
+If you are deploying your service broker to cloud foundry as an app, please be aware the password is re-generated every time you push the application.  Therefore, you need to run `cf update-service-broker` with the new password. 
+
+Hint: tail the logs before pushing the service broker to CF:
+
+	cf logs <your-broker>
+
+### Deploying your broker
+
+Be sure to follow all the usual steps: [here](http://docs.cloudfoundry.org/services/).
 
 ### Model Notes
 
