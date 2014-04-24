@@ -15,7 +15,7 @@ apply plugin: 'spring-boot'
 apply plugin: 'maven-publish'
 
 version = "2.1"
-group = "com.pivotal.cf.broker"
+group = "org.cloudfoundry.community.servicebroker"
 description = "Spring boot start project for creating cloudfoundry service brokers"
 
 ext {
