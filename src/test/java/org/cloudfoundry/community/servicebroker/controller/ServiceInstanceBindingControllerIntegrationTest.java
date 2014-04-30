@@ -11,7 +11,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import org.cloudfoundry.community.servicebroker.controller.ServiceInstanceBindingController;
 import org.cloudfoundry.community.servicebroker.exception.ServiceInstanceBindingExistsException;
 import org.cloudfoundry.community.servicebroker.model.ServiceInstance;
 import org.cloudfoundry.community.servicebroker.model.ServiceInstanceBinding;
@@ -36,10 +35,10 @@ public class ServiceInstanceBindingControllerIntegrationTest {
 			+ "/service_bindings";
 	
 	MockMvc mockMvc;
-
+	
 	@InjectMocks
 	ServiceInstanceBindingController controller;
-
+	
 	@Mock
 	ServiceInstanceBindingService serviceInstanceBindingService;
 	
@@ -50,7 +49,7 @@ public class ServiceInstanceBindingControllerIntegrationTest {
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 
-	    this.mockMvc = MockMvcBuilders.standaloneSetup(controller)
+		this.mockMvc = MockMvcBuilders.standaloneSetup(controller)
 	            .setMessageConverters(new MappingJackson2HttpMessageConverter()).build();
 	}
 	
@@ -97,7 +96,7 @@ public class ServiceInstanceBindingControllerIntegrationTest {
 	    	)
 	    	.andDo(print())
 	    	.andExpect(status().isUnprocessableEntity())
-	    	.andExpect(jsonPath("$.message", containsString(binding.getServiceInstanceId())));
+	    	.andExpect(jsonPath("$.description", containsString(binding.getServiceInstanceId())));
  	}
 	
 	@Test
@@ -120,7 +119,7 @@ public class ServiceInstanceBindingControllerIntegrationTest {
 	    		.content(body)
 	    	)
 	    	.andExpect(status().isConflict())
-	    	.andExpect(jsonPath("$.message", containsString(binding.getId())));
+	    	.andExpect(jsonPath("$.description", containsString(binding.getId())));
  	}	
 	
 	@Test
@@ -136,7 +135,7 @@ public class ServiceInstanceBindingControllerIntegrationTest {
 	    		.content(body)
 	    	)
 	    	.andExpect(status().isUnprocessableEntity())
-	    	.andExpect(jsonPath("$.message", containsString("foo")));
+	    	.andExpect(jsonPath("$.description", containsString("foo")));
  	}	
 	
 	@Test
@@ -152,8 +151,8 @@ public class ServiceInstanceBindingControllerIntegrationTest {
 	    		.content(body)
 	    	)
 	    	.andExpect(status().isUnprocessableEntity())
-	    	.andExpect(jsonPath("$.message", containsString("serviceDefinitionId")))
-	    	.andExpect(jsonPath("$.message", containsString("planId")));
+	    	.andExpect(jsonPath("$.description", containsString("serviceDefinitionId")))
+	    	.andExpect(jsonPath("$.description", containsString("planId")));
  	}
 	
 	@Test

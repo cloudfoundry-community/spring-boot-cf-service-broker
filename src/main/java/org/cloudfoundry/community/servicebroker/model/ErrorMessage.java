@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class ErrorMessage {
 
-	@JsonProperty("message")
+	@JsonProperty("description")
 	private String message;
 
 	public ErrorMessage(String message) {
