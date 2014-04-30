@@ -4,7 +4,7 @@ buildscript {
         mavenLocal()
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.0.1.RELEASE")
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.0.2.RELEASE")
     }
 }
 
@@ -19,7 +19,7 @@ group = "org.cloudfoundry.community.servicebroker"
 description = "Spring boot start project for creating cloudfoundry service brokers"
 
 ext {
-    springBootVersion = '1.0.1.RELEASE'
+    springBootVersion = '1.0.2.RELEASE'
     hibernateValidatorVersion = '5.1.0.Final'
     jsonPathVersion = '0.9.1'
     baseName = "spring-boot-starter-cf-service-broker"
