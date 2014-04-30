@@ -2,6 +2,11 @@ package org.cloudfoundry.community.servicebroker.controller;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.cloudfoundry.community.servicebroker.exception.ServiceBrokerApiVersionException;
+import org.cloudfoundry.community.servicebroker.exception.ServiceDefinitionDoesNotExistException;
+import org.cloudfoundry.community.servicebroker.exception.ServiceInstanceBindingExistsException;
+import org.cloudfoundry.community.servicebroker.exception.ServiceInstanceDoesNotExistException;
+import org.cloudfoundry.community.servicebroker.exception.ServiceInstanceExistsException;
 import org.cloudfoundry.community.servicebroker.model.ErrorMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,9 +25,17 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @author sgreenberg@gopivotal.com
  *
  */
-public abstract class BaseController {
+public class BaseController {
 
 	private static final Logger logger = LoggerFactory.getLogger(BaseController.class);
+		
+	@ExceptionHandler(ServiceBrokerApiVersionException.class)
+	@ResponseBody
+	public ResponseEntity<ErrorMessage> handleException(
+			ServiceBrokerApiVersionException ex, 
+			HttpServletResponse response) {
+	    return getErrorResponse(ex.getMessage(), HttpStatus.PRECONDITION_FAILED);
+	}
 	
 	@ExceptionHandler(HttpMessageNotReadableException.class)
 	@ResponseBody

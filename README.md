@@ -55,6 +55,20 @@ The configuration is all done through standard Spring mechanisms.  Feel free to 
 
 * BrokerConfig.java: This is required to ensure the `spring-boot-starter-cf-service-broker` jar file is searched for auto wired dependencies.  You can also explicitly configure the controllers and services if you prefer.
 
+If you would like to disable service broker api version header verification, you can disable it by excluding the BrokerApiVersionConfig class in the @ComponentScan annotation:
+
+	@ComponentScan(
+		basePackages = "org.cloudfoundry.community.servicebroker", 
+		excludeFilters= { 
+			@ComponentScan.Filter(
+				type=FilterType.ASSIGNABLE_TYPE, 
+				value=BrokerApiVersionConfig.class
+			)
+		}
+	)
+
+You can also create your own filter if you would like behavior other than a simple version equality verification.
+
 * CatalogConfig.java: Configures a `BeanCatalogService`.  This is optional as you can implement `CatalogService` anyway you want.
 
 * WebXml.java: Required to generate your web.xml.
