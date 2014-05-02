@@ -65,6 +65,15 @@ publishing {
       artifact testsJar 
     }
   }
+  repositories {
+    maven {
+      credentials {
+        username "${artifactory_user}"
+        password "${artifactory_password}"
+      }
+      url "${artifactory_contextUrl}/libs-release-local"
+    }
+  }
 }
 
 task wrapper(type: Wrapper) {
