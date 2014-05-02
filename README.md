@@ -17,31 +17,14 @@ The goal is to provide a spring-boot-starter project (http://projects.spring.io/
 
 A sample project using this starter is available here: [Mongo Example](https://github.com/spgreenberg/spring-boot-cf-service-broker-mongo)
 
-Currently, the starter project is not published to a maven repository.  Once it is, you will be able to skip the first 4 steps.  To use the project, do the following:
-
-Clone the project
-
-	git clone https://github.com/spgreenberg/spring-boot-cf-service-broker-mongo/tree/master/src/main/java/com/pivotal/cf/broker/mongodb/config
-
-Checkout the branch corresponding to the Service Broker API version you need: example 
-
-	git checkout v2.1
-
-Build: 
-		
-	./gradlew build
-
-
-Publish to your local maven repo so that your broker project can include this as a dependency: 
-
-	./gradlew publishToMavenLocal
-
 Create a new project for your broker and include the following in your build.gradle dependencies (be sure to set the version properties):
 	
-	compile("com.pivotal.cf.broker:spring-boot-starter-cf-service-broker:${springBootStarterCfServiceBrokerVersion}")
+	compile("org.cloudfoundry:spring-boot-cf-service-broker:${springBootCfServiceBrokerVersion}")
 	providedRuntime("org.springframework.boot:spring-boot-starter-tomcat:${springBootVersion}")
-    testCompile("com.pivotal.cf.broker:spring-boot-starter-cf-service-broker-tests:${springBootStarterCfServiceBrokerVersion}")
+    testCompile("org.cloudfoundry:spring-boot-cf-service-broker-tests:${springBootCfServiceBrokerVersion}")
     testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
+
+springBootCfServiceBrokerVersion corresponds to the service broker api you want write to (example 2.1)
 
 ### Configuring your broker
 
@@ -72,6 +55,21 @@ You can also create your own filter if you would like behavior other than a simp
 * CatalogConfig.java: Configures a `BeanCatalogService`.  This is optional as you can implement `CatalogService` anyway you want.
 
 * WebXml.java: Required to generate your web.xml.
+
+#### Implementation
+
+Minimally, you need to implement:
+
+- org/cloudfoundry/community/servicebroker/service/ServiceInstanceBindingService.java
+- org/cloudfoundry/community/servicebroker/service/ServiceInstanceService.java
+
+And configure your catalog: 
+
+Option 1: Use the org/cloudfoundry/community/servicebroker/service/BeanCatalogService.java by providing a bean definition of org/cloudfoundry/community/servicebroker/model/Catalog.java.  Example: [here](https://github.com/spgreenberg/spring-boot-cf-service-broker-mongo/blob/master/src/main/java/org/cloudfoundry/community/servicebroker/mongodb/config/CatalogConfig.java)
+
+Option 2: Implement: org/cloudfoundry/community/servicebroker/service/CatalogService.java
+
+That is it.  Everything else is optional.
 
 #### Security
 
