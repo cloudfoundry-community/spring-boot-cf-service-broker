@@ -15,14 +15,14 @@ apply plugin: 'spring-boot'
 apply plugin: 'maven-publish'
 
 version = "2.1"
-group = "org.cloudfoundry.community.servicebroker"
-description = "Spring boot start project for creating cloudfoundry service brokers"
+group = "org.cloudfoundry"
+description = "Spring boot project for creating cloudfoundry service brokers"
 
 ext {
     springBootVersion = '1.0.2.RELEASE'
     hibernateValidatorVersion = '5.1.0.Final'
     jsonPathVersion = '0.9.1'
-    baseName = "spring-boot-starter-cf-service-broker"
+    baseName = "spring-boot-cf-service-broker"
     baseNameTests = baseName + "-tests"
 }
 
@@ -30,7 +30,6 @@ jar {
     baseName = baseName
     version =  version
 }
-
 
 task testsJar(type: Jar) {
   from sourceSets.test.output
@@ -69,5 +68,5 @@ publishing {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '1.11'
+    gradleVersion = '1.12'
 }

@@ -1,7 +1,7 @@
 spring-boot-starter-cf-service-broker
 ===========================
 
-Spring boot starter project for creating Cloud Foundry Service brokers.
+Spring boot project for creating Cloud Foundry Service brokers.
 
 # Overview
 
