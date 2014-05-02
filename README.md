@@ -1,11 +1,11 @@
-spring-boot-starter-cf-service-broker
+spring-boot-cf-service-broker
 ===========================
 
 Spring boot project for creating Cloud Foundry Service brokers.
 
 # Overview
 
-The goal is to provide a spring-boot-starter project (http://projects.spring.io/spring-boot/) to quickly implement new Service Brokers in CloudFoundry.  
+The goal is to provide a spring-boot project (http://projects.spring.io/spring-boot/) to quickly implement new Service Brokers in CloudFoundry.  
 
 ## Compatibility
 
@@ -15,7 +15,7 @@ The goal is to provide a spring-boot-starter project (http://projects.spring.io/
 
 ## Getting Started
 
-A sample project using this starter is available here: [Mongo Example](https://github.com/spgreenberg/spring-boot-cf-service-broker-mongo)
+A sample project is available here: [Mongo Example](https://github.com/spgreenberg/spring-boot-cf-service-broker-mongo)
 
 Create a new project for your broker and include the following in your build.gradle dependencies (be sure to set the version properties):
 	
@@ -36,7 +36,7 @@ The configuration is all done through standard Spring mechanisms.  Feel free to 
 
 * Application.java: The default configuration point.  This also allows you to run the app locally.
 
-* BrokerConfig.java: This is required to ensure the `spring-boot-starter-cf-service-broker` jar file is searched for auto wired dependencies.  You can also explicitly configure the controllers and services if you prefer.
+* BrokerConfig.java: This is required to ensure the `spring-boot-cf-service-broker` jar file is searched for auto wired dependencies.  You can also explicitly configure the controllers and services if you prefer.
 
 If you would like to disable service broker api version header verification, you can disable it by excluding the BrokerApiVersionConfig class in the @ComponentScan annotation:
 
@@ -73,7 +73,7 @@ That is it.  Everything else is optional.
 
 #### Security
 
-The starter project includes the [spring-boot-starter-security](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-starters/spring-boot-starter-security) project.  See the documentation here for configuration options: [Spring boot security](http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-security)
+The project includes the [spring-boot-starter-security](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-starters/spring-boot-starter-security) project.  See the documentation here for configuration options: [Spring boot security](http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-security)
 
 The default behavior creates a user called `user` with a  password logged as an INFO message during app startup.  Example:
 
