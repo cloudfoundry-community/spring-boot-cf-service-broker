@@ -57,6 +57,10 @@ public class ServiceDefinition {
 	@JsonProperty("requires")
 	private List<String> requires = new ArrayList<String>();
 	
+	@JsonSerialize
+	@JsonProperty("dashboard_client")
+	private DashboardClient dashboardClient;
+	
 	public ServiceDefinition(String id, String name, String description, boolean bindable, List<Plan> plans) {
 		this.id = id;
 		this.name = name;
@@ -66,11 +70,12 @@ public class ServiceDefinition {
 	}
 
 	public ServiceDefinition(String id, String name, String description, boolean bindable, List<Plan> plans,
-			List<String> tags, Map<String,Object> metadata, List<String> requires) {
+			List<String> tags, Map<String,Object> metadata, List<String> requires, DashboardClient dashboardClient) {
 		this(id, name, description, bindable, plans);
 		setTags(tags);
 		setMetadata(metadata);
 		setRequires(requires);
+		this.dashboardClient = dashboardClient;
 	}
 	
 	public String getId() {
@@ -136,6 +141,10 @@ public class ServiceDefinition {
 		} else {
 			this.metadata = metadata;
 		}
+	}
+	
+	public DashboardClient getDashboardClient() {
+		return dashboardClient;
 	}
 
 }

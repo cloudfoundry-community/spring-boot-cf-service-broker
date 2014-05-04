@@ -9,8 +9,8 @@ The goal is to provide a spring-boot project (http://projects.spring.io/spring-b
 
 ## Compatibility
 
-* service broker API: 2.2
-* cf-release: 164-168
+* service broker API: 2.3
+* cf-release: 169
 * Pivotal CF: N/A
 
 ## Getting Started
@@ -24,7 +24,7 @@ Create a new project for your broker and include the following in your build.gra
     testCompile("org.cloudfoundry:spring-boot-cf-service-broker-tests:${springBootCfServiceBrokerVersion}")
     testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
 
-springBootCfServiceBrokerVersion corresponds to the service broker api you want write to (example 2.2)
+springBootCfServiceBrokerVersion corresponds to the service broker api you want write to (example 2.3)
 
 ### Configuring your broker
 

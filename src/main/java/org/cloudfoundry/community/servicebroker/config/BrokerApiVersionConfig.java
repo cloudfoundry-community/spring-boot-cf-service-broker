@@ -16,7 +16,7 @@ public class BrokerApiVersionConfig extends WebMvcConfigurerAdapter {
 
 	@Bean
 	public BrokerApiVersion brokerApiVersion() {
-		return new BrokerApiVersion("X-Broker-Api-Version","2.2");
+		return new BrokerApiVersion("X-Broker-Api-Version","2.3");
 	}
 
 	@Override

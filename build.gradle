@@ -14,7 +14,7 @@ apply plugin: 'idea'
 apply plugin: 'spring-boot'
 apply plugin: 'maven-publish'
 
-version = "2.2"
+version = "2.3"
 group = "org.cloudfoundry"
 description = "Spring boot project for creating cloudfoundry service brokers"
 
