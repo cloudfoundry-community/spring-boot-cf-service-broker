@@ -36,6 +36,10 @@ public class Plan {
 	@JsonProperty("metadata")
 	private Map<String,Object> metadata = new HashMap<String,Object>();
 	
+	@JsonSerialize
+	@JsonProperty("free")
+	private boolean free;
+	
 	public Plan(String id, String name, String description) {
 		this.id = id;
 		this.name = name;
@@ -45,6 +49,11 @@ public class Plan {
 	public Plan(String id, String name, String description, Map<String,Object> metadata) {
 		this(id, name, description);
 		setMetadata(metadata);
+	}
+	
+	public Plan(String id, String name, String description, Map<String,Object> metadata, boolean free) {
+		this(id, name, description, metadata);
+		this.free = free;
 	}
 	
 	public String getId() {
@@ -69,6 +78,10 @@ public class Plan {
 		} else {
 			this.metadata = metadata;
 		}
+	}
+	
+	public boolean isFree() {
+		return free;
 	}
 	
 }
