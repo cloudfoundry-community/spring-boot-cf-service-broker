@@ -3,10 +3,6 @@ package org.cloudfoundry.community.servicebroker.controller;
 import javax.servlet.http.HttpServletResponse;
 
 import org.cloudfoundry.community.servicebroker.exception.ServiceBrokerApiVersionException;
-import org.cloudfoundry.community.servicebroker.exception.ServiceDefinitionDoesNotExistException;
-import org.cloudfoundry.community.servicebroker.exception.ServiceInstanceBindingExistsException;
-import org.cloudfoundry.community.servicebroker.exception.ServiceInstanceDoesNotExistException;
-import org.cloudfoundry.community.servicebroker.exception.ServiceInstanceExistsException;
 import org.cloudfoundry.community.servicebroker.model.ErrorMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
