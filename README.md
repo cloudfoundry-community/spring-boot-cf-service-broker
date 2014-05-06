@@ -20,7 +20,6 @@ A sample project is available here: [Mongo Example](https://github.com/spgreenbe
 Create a new project for your broker and include the following in your build.gradle dependencies (be sure to set the version properties):
 	
 	compile("org.cloudfoundry:spring-boot-cf-service-broker:${springBootCfServiceBrokerVersion}")
-	providedRuntime("org.springframework.boot:spring-boot-starter-tomcat:${springBootVersion}")
     testCompile("org.cloudfoundry:spring-boot-cf-service-broker-tests:${springBootCfServiceBrokerVersion}")
     testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
 
