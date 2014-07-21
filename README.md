@@ -10,8 +10,8 @@ The goal is to provide a spring-boot project (http://projects.spring.io/spring-b
 ## Compatibility
 
 * service broker API: 2.3
-* cf-release: 169 or greater
-* Pivotal CF: N/A
+* cf-release: 169 or later
+* Pivotal CF: 1.2 or later
 
 ## Getting Started
 
@@ -27,7 +27,7 @@ springBootCfServiceBrokerVersion corresponds to the service broker api you want 
 
 ### Latest 
 
-springBootCfServiceBrokerVersion : 2.3.01
+springBootCfServiceBrokerVersion: 2.3.1
 
 ### Configuring your broker
 
