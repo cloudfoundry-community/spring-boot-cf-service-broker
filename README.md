@@ -11,7 +11,7 @@ The goal is to provide a spring-boot project (http://projects.spring.io/spring-b
 
 * service broker API: 2.3
 * cf-release: 169 or later
-* Pivotal CF: N/A
+* Pivotal CF: 1.2 or later
 
 ## Getting Started
 
