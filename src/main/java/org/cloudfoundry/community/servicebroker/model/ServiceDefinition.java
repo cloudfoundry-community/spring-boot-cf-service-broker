@@ -35,7 +35,6 @@ public class ServiceDefinition {
 	@JsonProperty("description")
 	private String description;
 	
-	@NotEmpty
 	@JsonSerialize
 	@JsonProperty("bindable")
 	private boolean bindable;

@@ -8,3 +8,4 @@ bin
 .rest-shell.log
 spring-shell.log
 gradle.properties
+/target/
