@@ -14,7 +14,7 @@ apply plugin: 'idea'
 apply plugin: 'spring-boot'
 apply plugin: 'maven-publish'
 
-version = "2.3.01"
+version = "2.3.2"
 group = "org.cloudfoundry"
 description = "Spring boot project for creating cloudfoundry service brokers"
 
@@ -35,7 +35,7 @@ task testsJar(type: Jar) {
   from sourceSets.test.output
   baseName = baseNameTests
   version =  version
-} 
+}
 
 repositories {
     mavenCentral()
@@ -43,7 +43,7 @@ repositories {
 }
 
 dependencies {
-    compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}") 
+    compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
     compile("org.springframework.boot:spring-boot-starter-security:${springBootVersion}")
     compile("org.hibernate:hibernate-validator:${hibernateValidatorVersion}")
     testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
@@ -62,7 +62,7 @@ publishing {
       groupId group
       artifactId baseNameTests
       version version
-      artifact testsJar 
+      artifact testsJar
     }
   }
   repositories {
