@@ -180,7 +180,7 @@ public class ServiceInstanceBindingControllerIntegrationTest {
  	}
 	
 	@Test
-	public void unknownServiceInstanceBindingNotDeleted() throws Exception {
+	public void unknownServiceInstanceBindingNotDeletedAndA410IsReturned() throws Exception {
 	    ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
 	    ServiceInstanceBinding binding = ServiceInstanceBindingFixture.getServiceInstanceBinding();
 		
@@ -197,7 +197,7 @@ public class ServiceInstanceBindingControllerIntegrationTest {
 	    mockMvc.perform(delete(url)
 	    		.accept(MediaType.APPLICATION_JSON)
 	    	)
-	    	.andExpect(status().isNotFound())
+	    	.andExpect(status().isGone())
 	    	.andExpect(jsonPath("$", is("{}")));
  	}
 

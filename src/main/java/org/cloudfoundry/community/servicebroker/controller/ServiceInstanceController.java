@@ -92,7 +92,7 @@ public class ServiceInstanceController extends BaseController {
 				+ ", planId = " + planId);
 		ServiceInstance instance = service.deleteServiceInstance(instanceId);
 		if (instance == null) {
-			return new ResponseEntity<String>("{}", HttpStatus.NOT_FOUND);
+			return new ResponseEntity<String>("{}", HttpStatus.GONE);
 		}
 		logger.debug("ServiceInstance Deleted: " + instance.getId());
         return new ResponseEntity<String>("{}", HttpStatus.OK);

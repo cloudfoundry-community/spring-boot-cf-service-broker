@@ -208,7 +208,7 @@ public class ServiceInstanceControllerIntegrationTest {
  	}
 	
 	@Test
-	public void deleteUnknownServiceInstanceFails() throws Exception {
+	public void deleteUnknownServiceInstanceFailsWithA410() throws Exception {
 	    ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
 			    
 		when(serviceInstanceService.deleteServiceInstance(any(String.class)))
@@ -221,7 +221,7 @@ public class ServiceInstanceControllerIntegrationTest {
 	    mockMvc.perform(delete(url)
 	    		.accept(MediaType.APPLICATION_JSON)
 	    	)
-	    	.andExpect(status().isNotFound())
+	    	.andExpect(status().isGone())
 	    	.andExpect(jsonPath("$", is("{}")));
  	}
 	

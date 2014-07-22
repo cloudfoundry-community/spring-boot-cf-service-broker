@@ -89,7 +89,7 @@ public class ServiceInstanceBindingController extends BaseController {
 				+ ", planId = " + planId);
 		ServiceInstanceBinding binding = serviceInstanceBindingService.deleteServiceInstanceBinding(bindingId);
 		if (binding == null) {
-			return new ResponseEntity<String>("{}", HttpStatus.NOT_FOUND);
+			return new ResponseEntity<String>("{}", HttpStatus.GONE);
 		}
 		logger.debug("ServiceInstanceBinding Deleted: " + binding.getId());
         return new ResponseEntity<String>("{}", HttpStatus.OK);
