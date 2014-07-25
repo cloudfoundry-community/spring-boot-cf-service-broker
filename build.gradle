@@ -19,7 +19,7 @@ group = "org.cloudfoundry"
 description = "Spring boot project for creating cloudfoundry service brokers"
 
 ext {
-    springBootVersion = '1.0.2.RELEASE'
+    springBootVersion = '1.1.4.RELEASE'
     hibernateValidatorVersion = '5.1.0.Final'
     jsonPathVersion = '0.9.1'
     baseName = "spring-boot-cf-service-broker"
