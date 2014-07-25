@@ -191,7 +191,7 @@ public class ServiceInstanceControllerIntegrationTest {
 	public void serviceInstanceIsDeletedSuccessfully() throws Exception {
 	    ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
 			    
-		when(serviceInstanceService.deleteServiceInstance(any(String.class)))
+		when(serviceInstanceService.deleteServiceInstance(any(String.class),any(String.class),any(String.class)))
     		.thenReturn(instance);
 	    
 	    String url = ServiceInstanceController.BASE_PATH + "/" + instance.getId() 
@@ -211,7 +211,7 @@ public class ServiceInstanceControllerIntegrationTest {
 	public void deleteUnknownServiceInstanceFailsWithA410() throws Exception {
 	    ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
 			    
-		when(serviceInstanceService.deleteServiceInstance(any(String.class)))
+		when(serviceInstanceService.deleteServiceInstance(any(String.class),any(String.class),any(String.class)))
     		.thenReturn(null);
 	    
 	    String url = ServiceInstanceController.BASE_PATH + "/" + instance.getId() 

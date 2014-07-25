@@ -90,7 +90,7 @@ public class ServiceInstanceController extends BaseController {
 				+ ", deleteServiceInstanceBinding(), serviceInstanceId = " + instanceId 
 				+ ", serviceId = " + serviceId
 				+ ", planId = " + planId);
-		ServiceInstance instance = service.deleteServiceInstance(instanceId);
+		ServiceInstance instance = service.deleteServiceInstance(instanceId, serviceId, planId);
 		if (instance == null) {
 			return new ResponseEntity<String>("{}", HttpStatus.GONE);
 		}
