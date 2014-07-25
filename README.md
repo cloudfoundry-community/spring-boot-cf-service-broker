@@ -27,7 +27,7 @@ springBootCfServiceBrokerVersion corresponds to the service broker api you want 
 
 ### Latest 
 
-springBootCfServiceBrokerVersion: 2.3.2
+springBootCfServiceBrokerVersion: 2.3.3
 
 ### Configuring your broker
 
