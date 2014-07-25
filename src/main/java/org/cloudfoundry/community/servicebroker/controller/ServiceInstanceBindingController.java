@@ -81,13 +81,21 @@ public class ServiceInstanceBindingController extends BaseController {
 			@PathVariable("instanceId") String instanceId, 
 			@PathVariable("bindingId") String bindingId,
 			@RequestParam("service_id") String serviceId,
-			@RequestParam("plan_id") String planId) throws ServiceBrokerException {
+			@RequestParam("plan_id") String planId) throws ServiceBrokerException, ServiceInstanceDoesNotExistException {
 		logger.debug( "DELETE: " + BASE_PATH + "/{bindingId}"
 				+ ", deleteServiceInstanceBinding(),  serviceInstance.id = " + instanceId 
 				+ ", bindingId = " + bindingId 
 				+ ", serviceId = " + serviceId
 				+ ", planId = " + planId);
-		ServiceInstanceBinding binding = serviceInstanceBindingService.deleteServiceInstanceBinding(bindingId);
+        ServiceInstance instance = serviceInstanceService.getServiceInstance(instanceId);
+        if (instance == null) {
+            throw new ServiceInstanceDoesNotExistException(instanceId);
+        }
+		ServiceInstanceBinding binding = serviceInstanceBindingService.deleteServiceInstanceBinding(
+		        bindingId,
+		        instance,
+		        serviceId,
+		        planId);
 		if (binding == null) {
 			return new ResponseEntity<String>("{}", HttpStatus.GONE);
 		}
