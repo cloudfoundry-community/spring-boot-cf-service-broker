@@ -35,9 +35,13 @@ public interface ServiceInstanceBindingService {
 	/**
 	 * Delete the service instance binding.  If a binding doesn't exist, 
 	 * return null.
-	 * @param id 
+     * @param bindingId The id provided by the cloud controller
+     * @param serviceInstance The id of the service instance
+     * @param serviceId The id of the service
+     * @param planId The plan used for this binding
 	 * @return The deleted ServiceInstanceBinding or null if one does not exist.
 	 */
-	ServiceInstanceBinding deleteServiceInstanceBinding(String id) throws ServiceBrokerException;
+	ServiceInstanceBinding deleteServiceInstanceBinding(String bindingId, ServiceInstance instance, String serviceId, String planId) 
+	        throws ServiceBrokerException;
 	
 }

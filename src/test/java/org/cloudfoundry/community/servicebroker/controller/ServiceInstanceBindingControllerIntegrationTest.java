@@ -163,7 +163,7 @@ public class ServiceInstanceBindingControllerIntegrationTest {
 	    when(serviceInstanceService.getServiceInstance(any(String.class)))
 	    	.thenReturn(instance);
 	    
-		when(serviceInstanceBindingService.deleteServiceInstanceBinding(any(String.class)))
+		when(serviceInstanceBindingService.deleteServiceInstanceBinding(any(String.class), any(ServiceInstance.class), any(String.class), any(String.class)))
     		.thenReturn(binding);
 	    
 	    String url = BASE_PATH + "/" + binding.getId() 
@@ -178,17 +178,35 @@ public class ServiceInstanceBindingControllerIntegrationTest {
             .andExpect(jsonPath("$", is("{}"))
         );
  	}
+    
+    @Test
+    public void unknownServiceInstanceBindingNotDeletedAndA410IsReturned() throws Exception {
+        ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
+        ServiceInstanceBinding binding = ServiceInstanceBindingFixture.getServiceInstanceBinding();
+        
+        when(serviceInstanceService.getServiceInstance(any(String.class)))
+            .thenReturn(instance);
+        when(serviceInstanceBindingService.deleteServiceInstanceBinding(any(String.class), any(ServiceInstance.class), any(String.class), any(String.class)))
+            .thenReturn(null);
+        
+        String url = BASE_PATH + "/" + binding.getId() 
+                + "?service_id=" + instance.getServiceDefinitionId()
+                + "&plan_id=" + instance.getPlanId();
+        
+        mockMvc.perform(delete(url)
+                .accept(MediaType.APPLICATION_JSON)
+            )
+            .andExpect(status().isGone())
+            .andExpect(jsonPath("$", is("{}")));
+    }
 	
 	@Test
-	public void unknownServiceInstanceBindingNotDeletedAndA410IsReturned() throws Exception {
+	public void whenAnUnknownServiceInstanceIsProvidedOnABindingDeleteAnHttp422IsReturned() throws Exception {
 	    ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
 	    ServiceInstanceBinding binding = ServiceInstanceBindingFixture.getServiceInstanceBinding();
 		
 	    when(serviceInstanceService.getServiceInstance(any(String.class)))
-	    	.thenReturn(instance);
-	    
-		when(serviceInstanceBindingService.deleteServiceInstanceBinding(any(String.class)))
-    		.thenReturn(null);
+	    	.thenReturn(null);
 	    
 	    String url = BASE_PATH + "/" + binding.getId() 
 	    		+ "?service_id=" + instance.getServiceDefinitionId()
@@ -197,8 +215,7 @@ public class ServiceInstanceBindingControllerIntegrationTest {
 	    mockMvc.perform(delete(url)
 	    		.accept(MediaType.APPLICATION_JSON)
 	    	)
-	    	.andExpect(status().isGone())
-	    	.andExpect(jsonPath("$", is("{}")));
+	    	.andExpect(status().isUnprocessableEntity());
  	}
 
 }
