@@ -50,12 +50,6 @@ public class ServiceInstanceController extends BaseController {
  		this.catalogService = catalogService;
  	}
 	
-	@RequestMapping(value = BASE_PATH, method = RequestMethod.GET)
-	public @ResponseBody List<ServiceInstance> getServiceInstances() {
-		logger.debug("GET: " + BASE_PATH + ", getServiceInstances()");
-		return service.getAllServiceInstances();
-	}
-		
 	@RequestMapping(value = BASE_PATH + "/{instanceId}", method = RequestMethod.PUT)
 	public ResponseEntity<CreateServiceInstanceResponse> createServiceInstance(
 			@PathVariable("instanceId") String serviceInstanceId, 
