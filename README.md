@@ -35,7 +35,7 @@ You will need to customize your broker according to the following:
 
 #### Web & Default Configuration
 
-The configuration is all done through standard Spring mechanisms.  Feel free to configure however you see fit.  However, you need to address the following config elements. See examples: [Mongo Example](https://github.com/spgreenberg/spring-boot-cf-service-broker-mongo/tree/master/src/main/java/com/pivotal/cf/broker/mongodb/config)
+The configuration is all done through standard Spring mechanisms.  Feel free to configure however you see fit.  However, you need to address the following config elements. See examples: [Mongo Example](https://github.com/spgreenberg/spring-boot-cf-service-broker-mongo/tree/master/src/main/java/org/cloudfoundry/community/servicebroker/mongodb/config)
 
 * Application.java: The default configuration point.  This also allows you to run the app locally.
 
