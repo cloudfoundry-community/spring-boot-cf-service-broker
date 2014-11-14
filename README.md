@@ -41,17 +41,12 @@ The configuration is all done through standard Spring mechanisms.  Feel free to 
 
 * BrokerConfig.java: This is required to ensure the `spring-boot-cf-service-broker` jar file is searched for auto wired dependencies.  You can also explicitly configure the controllers and services if you prefer.
 
-If you would like to disable service broker api version header verification, you can disable it by excluding the BrokerApiVersionConfig class in the @ComponentScan annotation:
+If you would like to disable service broker API version header verification, you can disable it by configuring a `BrokerApiVersion` bean that accepts any API version:
 
-	@ComponentScan(
-		basePackages = "org.cloudfoundry.community.servicebroker", 
-		excludeFilters= { 
-			@ComponentScan.Filter(
-				type=FilterType.ASSIGNABLE_TYPE, 
-				value=BrokerApiVersionConfig.class
-			)
-		}
-	)
+	@Bean
+	public BrokerApiVersion brokerApiVersion() {
+		return new BrokerApiVersion();
+	}
 
 You can also create your own filter if you would like behavior other than a simple version equality verification.
 
