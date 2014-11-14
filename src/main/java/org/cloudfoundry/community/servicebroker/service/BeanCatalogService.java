@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
  * @author sgreenberg@gopivotal.com
  *
  */
-@Service
 public class BeanCatalogService implements CatalogService {
 
 	private Catalog catalog;
