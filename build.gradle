@@ -1,10 +1,10 @@
 buildscript {
     repositories {
-        maven { url "http://repo.spring.io/libs-snapshot" }
         mavenLocal()
+        mavenCentral()
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.0.2.RELEASE")
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.1.9.RELEASE")
     }
 }
 
@@ -16,66 +16,64 @@ apply plugin: 'maven-publish'
 
 version = "2.3.3"
 group = "org.cloudfoundry"
-description = "Spring boot project for creating cloudfoundry service brokers"
+description = "Spring Boot project for creating Cloud Foundry service brokers"
+
+archivesBaseName = "spring-boot-cf-service-broker" 
 
 ext {
-    springBootVersion = '1.1.4.RELEASE'
+    springBootVersion = '1.1.9.RELEASE'
     hibernateValidatorVersion = '5.1.0.Final'
     jsonPathVersion = '0.9.1'
-    baseName = "spring-boot-cf-service-broker"
-    baseNameTests = baseName + "-tests"
-}
 
-jar {
-    baseName = baseName
-    version =  version
+    baseNameTests = "${project.archivesBaseName}-tests"
 }
 
 task testsJar(type: Jar) {
-  from sourceSets.test.output
-  baseName = baseNameTests
-  version =  version
+    from sourceSets.test.output
+    baseName = baseNameTests
 }
 
 repositories {
     mavenCentral()
-    maven { url "http://repo.spring.io/libs-snapshot" }
 }
 
 dependencies {
     compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
     compile("org.springframework.boot:spring-boot-starter-security:${springBootVersion}")
     compile("org.hibernate:hibernate-validator:${hibernateValidatorVersion}")
+
     testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
     testCompile("com.jayway.jsonpath:json-path:${jsonPathVersion}")
 }
 
 publishing {
-  publications {
-    jar(MavenPublication) {
-      groupId group
-      artifactId baseName
-      version version
-      from components.java
+    publications {
+        jar(MavenPublication) {
+            groupId group
+            artifactId project.archivesBaseName
+            version version
+            from components.java
+        }
+        test(MavenPublication) {
+            groupId group
+            artifactId baseNameTests
+            version version
+            artifact testsJar
+        }
     }
-    test(MavenPublication) {
-      groupId group
-      artifactId baseNameTests
-      version version
-      artifact testsJar
+    if (project.hasProperty("artifactory_contextUrl")) {
+        repositories {
+            maven {
+                credentials {
+                    username "${artifactory_user}"
+                    password "${artifactory_password}"
+                }
+                url "${artifactory_contextUrl}/libs-release-local"
+            }
+        }
     }
-  }
-  repositories {
-    maven {
-      credentials {
-        username "${artifactory_user}"
-        password "${artifactory_password}"
-      }
-      url "${artifactory_contextUrl}/libs-release-local"
-    }
-  }
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '1.12'
+    gradleVersion = '2.0'
 }
