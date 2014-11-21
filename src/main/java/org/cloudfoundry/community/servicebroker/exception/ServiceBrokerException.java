@@ -8,16 +8,19 @@ package org.cloudfoundry.community.servicebroker.exception;
  *
  */
 public class ServiceBrokerException extends Exception {
-	
+
 	private static final long serialVersionUID = -5544859893499349135L;
-	private String message;
-	
+
 	public ServiceBrokerException(String message) {
-		this.message = message;
+		super(message);
 	}
-	
-	public String getMessage() {
-		return message;
+
+	public ServiceBrokerException(String message, Throwable cause) {
+		super(message, cause);
 	}
-	
+
+	public ServiceBrokerException(Throwable cause) {
+		super(cause);
+	}
+
 }
