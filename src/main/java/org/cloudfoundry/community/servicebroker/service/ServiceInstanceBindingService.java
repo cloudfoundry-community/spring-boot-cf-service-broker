@@ -25,12 +25,6 @@ public interface ServiceInstanceBindingService {
 	ServiceInstanceBinding createServiceInstanceBinding(
 			String bindingId, ServiceInstance serviceInstance, String serviceId, String planId, String appGuid)
 			throws ServiceInstanceBindingExistsException, ServiceBrokerException;
-	
-	/**
-	 * @param id
-	 * @return The ServiceInstanceBinding or null if one does not exist.
-	 */
-	ServiceInstanceBinding getServiceInstanceBinding(String id);
 
 	/**
 	 * Delete the service instance binding.  If a binding doesn't exist, 
