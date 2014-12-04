@@ -2,6 +2,7 @@ package org.cloudfoundry.community.servicebroker.model;
 
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -15,6 +16,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
  * @author sgreenberg@gopivotal.com
  */
 @JsonAutoDetect(getterVisibility = JsonAutoDetect.Visibility.NONE)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ServiceInstanceBindingResponse {
 
 	ServiceInstanceBinding binding;

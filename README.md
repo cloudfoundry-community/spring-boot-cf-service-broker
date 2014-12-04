@@ -1,103 +1,96 @@
 spring-boot-cf-service-broker
-===========================
+=============================
 
-Spring boot project for creating Cloud Foundry Service brokers.
+Spring Boot project for creating Cloud Foundry service brokers.
 
 # Overview
 
-The goal is to provide a spring-boot project (http://projects.spring.io/spring-boot/) to quickly implement new Service Brokers in CloudFoundry.  
+The goal is to provide a [Spring Boot](http://projects.spring.io/spring-boot/) project to quickly implement new [service brokers](http://docs.cloudfoundry.org/services/overview.html) in Cloud Foundry.
 
 ## Compatibility
 
-* service broker API: 2.3
-* cf-release: 169 or later
-* Pivotal CF: 1.2 or later
+* [service broker API](http://docs.cloudfoundry.org/services/api.html): 2.3
+* [cf-release](https://github.com/cloudfoundry/cf-release): 169 or later
+* [Pivotal CF](http://www.pivotal.io/platform-as-a-service/pivotal-cf): 1.2 or later
 
-## Getting Started
+# Getting Started
 
-A sample project is available here: [Mongo Example](https://github.com/spgreenberg/spring-boot-cf-service-broker-mongo)
+See the [Spring Boot documentation](http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#getting-started-first-application) for getting started building a Spring Boot application.
 
-Create a new project for your broker and include the following in your build.gradle dependencies (be sure to set the version properties):
-	
-	compile("org.cloudfoundry:spring-boot-cf-service-broker:${springBootCfServiceBrokerVersion}")
-    testCompile("org.cloudfoundry:spring-boot-cf-service-broker-tests:${springBootCfServiceBrokerVersion}")
-    testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
+A sample [Mongo service broker](https://github.com/spgreenberg/spring-boot-cf-service-broker-mongo) project is available.
 
-springBootCfServiceBrokerVersion corresponds to the service broker api you want write to (example 2.3)
+Create a new project for your broker and include the following in your `build.gradle` dependencies (be sure to set the version properties):
 
-### Latest 
+    dependencies {
+        ...
+        compile("org.cloudfoundry:spring-boot-cf-service-broker:${springBootCfServiceBrokerVersion}")
+        testCompile("org.cloudfoundry:spring-boot-cf-service-broker-tests:${springBootCfServiceBrokerVersion}")
+        testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
+        ...
+    }
 
-springBootCfServiceBrokerVersion: 2.3.3
+The value of `springBootCfServiceBrokerVersion` corresponds to the service broker API you want write to (example 2.3).
 
-### Configuring your broker
+## Latest
 
-You will need to customize your broker according to the following:
+springBootCfServiceBrokerVersion: 2.3.5
 
-#### Web & Default Configuration
+# Configuring the broker
 
-The configuration is all done through standard Spring mechanisms.  Feel free to configure however you see fit.  However, you need to address the following config elements. See examples: [Mongo Example](https://github.com/spgreenberg/spring-boot-cf-service-broker-mongo/tree/master/src/main/java/com/pivotal/cf/broker/mongodb/config)
+`spring-boot-cf-service-broker` provides default implementations of most of the components needed to implement a service broker. In Spring Boot fashion, you can override the default behavior by providing your own implementation of Spring beans, and `spring-boot-cf-service-broker` will back away from its defaults.
 
-* Application.java: The default configuration point.  This also allows you to run the app locally.
+To start, use the `@EnableAutoConfiguration` annotation on the broker's main application class:
 
-* BrokerConfig.java: This is required to ensure the `spring-boot-cf-service-broker` jar file is searched for auto wired dependencies.  You can also explicitly configure the controllers and services if you prefer.
+    @ComponentScan
+    @EnableAutoConfiguration
+    public class Application {
+        public static void main(String[] args) {
+            SpringApplication.run(Application.class, args);
+        }
+    }
 
-If you would like to disable service broker api version header verification, you can disable it by excluding the BrokerApiVersionConfig class in the @ComponentScan annotation:
+This will trigger the inclusion of `spring-boot-cf-service-broker` and its default configuration.
 
-	@ComponentScan(
-		basePackages = "org.cloudfoundry.community.servicebroker", 
-		excludeFilters= { 
-			@ComponentScan.Filter(
-				type=FilterType.ASSIGNABLE_TYPE, 
-				value=BrokerApiVersionConfig.class
-			)
-		}
-	)
+## Service beans
 
-You can also create your own filter if you would like behavior other than a simple version equality verification.
+The Cloud Foundry service broker API has three main endpoint groupings: catalog management, service instance provisioning/deprovisioning, and service instance binding/unbinding. The broker will need to provide one Spring bean to provide the necessary functionality for each endpoint grouping.
 
-* CatalogConfig.java: Configures a `BeanCatalogService`.  This is optional as you can implement `CatalogService` anyway you want.
+For catalog management, `spring-boot-cf-service-broker` provides a default implementation that requires the broker to just provide an implementation of a [`Catalog` bean](src/main/java/org/cloudfoundry/community/servicebroker/model/Catalog.java). There is an example of this approach in the [MongoDB sample broker](https://github.com/spgreenberg/spring-boot-cf-service-broker-mongo/blob/master/src/main/java/org/cloudfoundry/community/servicebroker/mongodb/config/CatalogConfig.java). To override this default, provide your own bean that implements the [`CatalogService`](src/main/java/org/cloudfoundry/community/servicebroker/service/CatalogService.java) interface.
 
-* WebXml.java: Required to generate your web.xml.
+For service instance provisioning/deprovisioning, provide a Spring bean that implements the [`ServiceInstanceService`](src/main/java/org/cloudfoundry/community/servicebroker/service/ServiceInstanceService.java) interface. There is no default implementation provided by `spring-boot-cf-service-broker`.
 
-#### Implementation
+For service instance binding/unbinding, provide a Spring bean that implements the [`ServiceInstanceBindingService`](src/main/java/org/cloudfoundry/community/servicebroker/service/ServiceInstanceBindingService.java) interface. There is no default implementation provided by `spring-boot-cf-service-broker`.
 
-Minimally, you need to implement:
+## Security
 
-- org/cloudfoundry/community/servicebroker/service/ServiceInstanceBindingService.java
-- org/cloudfoundry/community/servicebroker/service/ServiceInstanceService.java
+The project includes the [`spring-boot-starter-security`](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-starters/spring-boot-starter-security) project.  See the [Spring Boot Security documentation](http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-security) for configuration options.
 
-And configure your catalog: 
+The default behavior creates a user called `user` with a generated password that is logged as an `INFO` message during app startup.  For example:
 
-Option 1: Use the org/cloudfoundry/community/servicebroker/service/BeanCatalogService.java by providing a bean definition of org/cloudfoundry/community/servicebroker/model/Catalog.java.  Example: [here](https://github.com/spgreenberg/spring-boot-cf-service-broker-mongo/blob/master/src/main/java/org/cloudfoundry/community/servicebroker/mongodb/config/CatalogConfig.java)
+    2014-04-16T10:08:52.54-0600 [App/0]   OUT Using default password for application endpoints: 7c2969c1-d9c7-47e9-9c9e-2cd94a7b6cf1
 
-Option 2: Implement: org/cloudfoundry/community/servicebroker/service/CatalogService.java
+If you are deploying your service broker to Cloud Foundry as an app, be aware the password is re-generated every time you push the application.  Therefore, you need to run `cf update-service-broker` with the new password after each push.
 
-That is it.  Everything else is optional.
+To see the generated password in the application logs on Cloud Foundry, use one of the following commands:
 
-#### Security
+    $ cf logs <broker-app-name>
+    $ cf logs --recent <broker-app-name>
 
-The project includes the [spring-boot-starter-security](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-starters/spring-boot-starter-security) project.  See the documentation here for configuration options: [Spring boot security](http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-security)
+## API version verification
 
-The default behavior creates a user called `user` with a  password logged as an INFO message during app startup.  Example:
+By default, `spring-boot-cf-service-broker` will verify the version of the service broker API for each request it receives. To disable service broker API version header verification, provide a `BrokerApiVersion` bean that accepts any API version:
 
-	2014-04-16T10:08:52.54-0600 [App/0]   OUT Using default password for application endpoints: 7c2969c1-d9c7-47e9-9c9e-2cd94a7b6cf1
+    @Bean
+    public BrokerApiVersion brokerApiVersion() {
+        return new BrokerApiVersion();
+    }
 
-If you are deploying your service broker to cloud foundry as an app, please be aware the password is re-generated every time you push the application.  Therefore, you need to run `cf update-service-broker` with the new password. 
+# Deploying your broker
 
-Hint: tail the logs before pushing the service broker to CF:
+Follow the [documentation](http://docs.cloudfoundry.org/services/managing-service-brokers.html) to register the broker to Cloud Foundry.
 
-	cf logs <your-broker>
-
-### Deploying your broker
-
-Be sure to follow all the usual steps: [here](http://docs.cloudfoundry.org/services/).
-
-### Model Notes
+# Model Notes
 
 - The model is for the REST/Controller level.  It can be extended as needed.
 - All models explicitly define serialization field names.
-- Currently, ServiceInstance is used internally and not exposed by any controllers.
-
-
-
-
+- Currently, `ServiceInstance` is used internally and not exposed by any controllers.

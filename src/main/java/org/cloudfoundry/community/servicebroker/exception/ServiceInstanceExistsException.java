@@ -12,14 +12,10 @@ public class ServiceInstanceExistsException extends Exception {
 
 	private static final long serialVersionUID = -914571358227517785L;
 	
-	private ServiceInstance instance;
-	
 	public ServiceInstanceExistsException(ServiceInstance instance) {
-		this.instance = instance;
+		super("ServiceInstance with the given ID already exists: " +
+				"ServiceInstance.id = " + instance.getId() +
+				", Service.id = " + instance.getServiceDefinitionId());
 	}
-	
-	public String getMessage() {
-		return "ServiceInstance with the given id already exists: ServiceInstance.id = " + instance.getId() 
-				+ ", Service.id = " + instance.getServiceDefinitionId();
-	}
+
 }

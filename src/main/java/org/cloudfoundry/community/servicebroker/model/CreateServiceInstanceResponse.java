@@ -1,6 +1,7 @@
 package org.cloudfoundry.community.servicebroker.model;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
@@ -11,6 +12,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
  * @author sgreenberg@gopivotal.com
  */
 @JsonAutoDetect(getterVisibility = JsonAutoDetect.Visibility.NONE)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CreateServiceInstanceResponse {
 
 	private ServiceInstance instance;
