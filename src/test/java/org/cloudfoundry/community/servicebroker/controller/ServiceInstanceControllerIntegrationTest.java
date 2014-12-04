@@ -1,18 +1,5 @@
 package org.cloudfoundry.community.servicebroker.controller;
 
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import org.cloudfoundry.community.servicebroker.exception.ServiceInstanceExistsException;
 import org.cloudfoundry.community.servicebroker.model.ServiceDefinition;
 import org.cloudfoundry.community.servicebroker.model.ServiceInstance;
@@ -29,6 +16,16 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class ServiceInstanceControllerIntegrationTest {
 		
@@ -49,23 +46,6 @@ public class ServiceInstanceControllerIntegrationTest {
 
 	    this.mockMvc = MockMvcBuilders.standaloneSetup(controller)
 	            .setMessageConverters(new MappingJackson2HttpMessageConverter()).build();
-	}
-	
-	@Test
-	public void serviceInstancesAreRetrievedCorrectly() throws Exception {
-	    when(serviceInstanceService.getAllServiceInstances()).thenReturn(ServiceInstanceFixture.getAllServiceInstances());
-	
-	    this.mockMvc.perform(get(ServiceInstanceController.BASE_PATH)
-	        .accept(MediaType.APPLICATION_JSON))
-	        .andExpect(status().isOk())
-            .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$[*].", hasSize(2)))
-            .andExpect(jsonPath("$[*].service_instance_id", 
-            		containsInAnyOrder(
-            				ServiceInstanceFixture.getServiceInstance().getId(), 
-            				ServiceInstanceFixture.getServiceInstanceTwo().getId()
-            		)
-         ));
 	}
 	
 	@Test

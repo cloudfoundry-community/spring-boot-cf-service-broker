@@ -1,7 +1,5 @@
 package org.cloudfoundry.community.servicebroker.service;
 
-import java.util.List;
-
 import org.cloudfoundry.community.servicebroker.exception.ServiceBrokerException;
 import org.cloudfoundry.community.servicebroker.exception.ServiceInstanceExistsException;
 import org.cloudfoundry.community.servicebroker.model.ServiceDefinition;
@@ -14,11 +12,6 @@ import org.cloudfoundry.community.servicebroker.model.ServiceInstance;
  */
 public interface ServiceInstanceService {
 
-	/**
-	 * @return All known ServiceInstances
-	 */
-	List<ServiceInstance> getAllServiceInstances();
-	
 	/**
 	 * Create a new instance of a service
 	 * @param service The service definition of the instance to create
