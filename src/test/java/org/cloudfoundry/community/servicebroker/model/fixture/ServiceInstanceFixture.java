@@ -8,6 +8,7 @@ import org.cloudfoundry.community.servicebroker.model.CreateServiceInstanceReque
 import org.cloudfoundry.community.servicebroker.model.CreateServiceInstanceResponse;
 import org.cloudfoundry.community.servicebroker.model.ServiceDefinition;
 import org.cloudfoundry.community.servicebroker.model.ServiceInstance;
+import org.cloudfoundry.community.servicebroker.model.ServiceUpdateInstanceRequest;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -62,5 +63,16 @@ public class ServiceInstanceFixture {
 	public static CreateServiceInstanceResponse getCreateServiceInstanceResponse() {
 		return new CreateServiceInstanceResponse(getServiceInstance());
 	}
+
+	public static String getUpdateServiceInstanceRequestJson() throws JsonGenerationException,
+	JsonMappingException, IOException {
+		return DataFixture.toJson(getUpdateServiceInstanceRequest());
+	}
 	
+	public static ServiceUpdateInstanceRequest getUpdateServiceInstanceRequest() {
+		ServiceDefinition service = ServiceFixture.getService();
+		return new ServiceUpdateInstanceRequest(service.getPlans().get(0).getId());
+	}
+
+
 }

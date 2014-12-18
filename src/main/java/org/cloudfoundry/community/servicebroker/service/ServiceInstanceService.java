@@ -1,7 +1,9 @@
 package org.cloudfoundry.community.servicebroker.service;
 
 import org.cloudfoundry.community.servicebroker.exception.ServiceBrokerException;
+import org.cloudfoundry.community.servicebroker.exception.ServiceInstanceDoesNotExistException;
 import org.cloudfoundry.community.servicebroker.exception.ServiceInstanceExistsException;
+import org.cloudfoundry.community.servicebroker.exception.ServiceInstanceUpdateNotSupportedException;
 import org.cloudfoundry.community.servicebroker.model.ServiceDefinition;
 import org.cloudfoundry.community.servicebroker.model.ServiceInstance;
 
@@ -42,5 +44,21 @@ public interface ServiceInstanceService {
 	 * @throws ServiceBrokerException is something goes wrong internally
 	 */
 	ServiceInstance deleteServiceInstance(String id, String serviceId, String planId) throws ServiceBrokerException;
-	
+
+	/**
+	 * Update a service instance. Only modification of service plan is supported.
+	 * 
+	 * @param instanceId
+	 * @param planId
+	 * @return null if modification succeeded
+	 * @throws ServiceInstanceUpdateNotSupportedException if particular plan change is not supported
+	 *         or if the request can not currently be fulfilled due to the state of the instance.
+	 * @throws ServiceInstanceDoesNotExistException if the service instance does not exist
+	 * @throws ServiceBrokerException if something goes wrong internally
+	 * 
+	 */
+	ServiceInstance updateServiceInstance(String instanceId, String planId)
+			throws ServiceInstanceUpdateNotSupportedException, ServiceBrokerException,
+			ServiceInstanceDoesNotExistException;
+
 }

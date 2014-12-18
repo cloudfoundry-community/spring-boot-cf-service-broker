@@ -1,18 +1,19 @@
 package org.cloudfoundry.community.servicebroker.controller;
 
-import java.util.List;
-
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.cloudfoundry.community.servicebroker.exception.ServiceBrokerException;
 import org.cloudfoundry.community.servicebroker.exception.ServiceDefinitionDoesNotExistException;
+import org.cloudfoundry.community.servicebroker.exception.ServiceInstanceDoesNotExistException;
 import org.cloudfoundry.community.servicebroker.exception.ServiceInstanceExistsException;
+import org.cloudfoundry.community.servicebroker.exception.ServiceInstanceUpdateNotSupportedException;
 import org.cloudfoundry.community.servicebroker.model.CreateServiceInstanceRequest;
 import org.cloudfoundry.community.servicebroker.model.CreateServiceInstanceResponse;
 import org.cloudfoundry.community.servicebroker.model.ErrorMessage;
 import org.cloudfoundry.community.servicebroker.model.ServiceDefinition;
 import org.cloudfoundry.community.servicebroker.model.ServiceInstance;
+import org.cloudfoundry.community.servicebroker.model.ServiceUpdateInstanceRequest;
 import org.cloudfoundry.community.servicebroker.service.CatalogService;
 import org.cloudfoundry.community.servicebroker.service.ServiceInstanceService;
 import org.slf4j.Logger;
@@ -92,6 +93,24 @@ public class ServiceInstanceController extends BaseController {
         return new ResponseEntity<String>("{}", HttpStatus.OK);
 	}
 	
+	@RequestMapping(value = BASE_PATH + "/{instanceId}", method = RequestMethod.PATCH)
+	public ResponseEntity<String> updateServiceInstance(
+			@PathVariable("instanceId") String instanceId,
+			@Valid @RequestBody ServiceUpdateInstanceRequest request) throws 
+			ServiceInstanceUpdateNotSupportedException,
+			ServiceInstanceDoesNotExistException, 
+			ServiceBrokerException {
+		logger.debug("UPDATE: " + BASE_PATH + "/{instanceId}"
+				+ ", updateServiceInstanceBinding(), serviceInstanceId = "
+				+ instanceId + ", instanceId = " + instanceId + ", planId = "
+				+ request.getPlanId());
+		ServiceInstance instance = service.updateServiceInstance(instanceId,
+				request.getPlanId());
+		logger.debug("ServiceInstance updated: " + instance.getId());
+		return new ResponseEntity<String>("{}", HttpStatus.OK);
+	}
+
+	
 	@ExceptionHandler(ServiceDefinitionDoesNotExistException.class)
 	@ResponseBody
 	public ResponseEntity<ErrorMessage> handleException(
@@ -107,5 +126,14 @@ public class ServiceInstanceController extends BaseController {
 			HttpServletResponse response) {
 	    return getErrorResponse(ex.getMessage(), HttpStatus.CONFLICT);
 	}
-	
+
+	@ExceptionHandler(ServiceInstanceUpdateNotSupportedException.class)
+	@ResponseBody
+	public ResponseEntity<ErrorMessage> handleException(
+			ServiceInstanceUpdateNotSupportedException ex,
+			HttpServletResponse response) {
+		return getErrorResponse(ex.getMessage(),
+				HttpStatus.UNPROCESSABLE_ENTITY);
+	}
+
 }
