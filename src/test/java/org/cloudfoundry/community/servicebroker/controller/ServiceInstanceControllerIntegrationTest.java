@@ -1,6 +1,18 @@
 package org.cloudfoundry.community.servicebroker.controller;
 
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import org.cloudfoundry.community.servicebroker.exception.ServiceInstanceExistsException;
+import org.cloudfoundry.community.servicebroker.exception.ServiceInstanceUpdateNotSupportedException;
 import org.cloudfoundry.community.servicebroker.model.ServiceDefinition;
 import org.cloudfoundry.community.servicebroker.model.ServiceInstance;
 import org.cloudfoundry.community.servicebroker.model.fixture.ServiceFixture;
@@ -16,16 +28,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class ServiceInstanceControllerIntegrationTest {
 		
@@ -204,5 +206,43 @@ public class ServiceInstanceControllerIntegrationTest {
 	    	.andExpect(status().isGone())
 	    	.andExpect(jsonPath("$", is("{}")));
  	}
-	
+
+	@Test
+	public void serviceInstanceIsUpdatedSuccessfully() throws Exception {
+		ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
+
+		when(serviceInstanceService.updateServiceInstance(any(String.class), any(String.class)))
+		.thenReturn(instance);
+
+		String url = ServiceInstanceController.BASE_PATH + "/" + instance.getId();
+
+		String body = ServiceInstanceFixture.getUpdateServiceInstanceRequestJson();
+
+		mockMvc.perform(
+				patch(url).contentType(MediaType.APPLICATION_JSON).content(body)
+				.accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+				.andExpect(jsonPath("$", is("{}")));
+	}
+
+	@Test
+	public void updateUnsupportedPlanFailsWithA422() throws Exception {
+		ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
+
+		when(serviceInstanceService.updateServiceInstance(any(String.class), any(String.class)))
+		.thenThrow(new ServiceInstanceUpdateNotSupportedException("description"));
+
+		String url =
+				ServiceInstanceController.BASE_PATH + "/" + instance.getId() + "?service_id="
+						+ instance.getServiceDefinitionId() + "&plan_id=" + instance.getPlanId();
+		String body = ServiceInstanceFixture.getUpdateServiceInstanceRequestJson();
+
+		mockMvc.perform(
+				patch(url).contentType(MediaType.APPLICATION_JSON).content(body)
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isUnprocessableEntity())
+				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+				.andExpect(jsonPath("$.description", containsString("description")));
+	}
+
 }

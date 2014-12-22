@@ -5,10 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
@@ -40,7 +40,11 @@ public class ServiceDefinition {
 	@JsonSerialize
 	@JsonProperty("bindable")
 	private boolean bindable;
-	
+
+	@JsonSerialize
+	@JsonProperty("plan_updateable")
+	private boolean planUpdateable;
+
 	@NotEmpty
 	@JsonSerialize
 	@JsonProperty("plans")
@@ -73,12 +77,14 @@ public class ServiceDefinition {
 		this.setPlans(plans);
 	}
 
-	public ServiceDefinition(String id, String name, String description, boolean bindable, List<Plan> plans,
-			List<String> tags, Map<String,Object> metadata, List<String> requires, DashboardClient dashboardClient) {
+	public ServiceDefinition(String id, String name, String description, boolean bindable, boolean planUpdatable, 
+			List<Plan> plans, List<String> tags, Map<String,Object> metadata, List<String> requires, 
+			DashboardClient dashboardClient) {
 		this(id, name, description, bindable, plans);
 		setTags(tags);
 		setMetadata(metadata);
 		setRequires(requires);
+		setPlanUpdatable(planUpdatable);
 		this.dashboardClient = dashboardClient;
 	}
 	
@@ -96,6 +102,14 @@ public class ServiceDefinition {
 
 	public boolean isBindable() {
 		return bindable;
+	}
+
+	public boolean isPlanUpdatable() {
+		return planUpdateable;
+	}
+
+	public void setPlanUpdatable(boolean planUpdatable) {
+		this.planUpdateable = planUpdatable;
 	}
 
 	public List<Plan> getPlans() {
