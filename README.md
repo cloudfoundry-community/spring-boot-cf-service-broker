@@ -9,9 +9,9 @@ The goal is to provide a [Spring Boot](http://projects.spring.io/spring-boot/) p
 
 ## Compatibility
 
-* [service broker API](http://docs.cloudfoundry.org/services/api.html): 2.3
-* [cf-release](https://github.com/cloudfoundry/cf-release): 169 or later
-* [Pivotal CF](http://www.pivotal.io/platform-as-a-service/pivotal-cf): 1.2 or later
+* [service broker API](http://docs.cloudfoundry.org/services/api.html): 2.4
+* [cf-release](https://github.com/cloudfoundry/cf-release): 192 or later
+* [Pivotal CF](http://www.pivotal.io/platform-as-a-service/pivotal-cf): Expected 1.4
 
 # Getting Started
 
@@ -33,7 +33,7 @@ The value of `springBootCfServiceBrokerVersion` corresponds to the service broke
 
 ## Latest
 
-springBootCfServiceBrokerVersion: 2.3.5
+springBootCfServiceBrokerVersion: 2.4.0
 
 # Configuring the broker
 
