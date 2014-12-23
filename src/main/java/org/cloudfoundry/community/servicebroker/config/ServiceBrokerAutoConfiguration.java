@@ -21,7 +21,7 @@ public class ServiceBrokerAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(BrokerApiVersion.class)
 	public BrokerApiVersion brokerApiVersion() {
-		return new BrokerApiVersion("2.3");
+		return new BrokerApiVersion("2.4");
 	}
 
 	@Bean
