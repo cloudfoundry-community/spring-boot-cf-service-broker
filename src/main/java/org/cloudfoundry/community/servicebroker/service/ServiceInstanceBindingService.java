@@ -16,6 +16,7 @@ public interface ServiceInstanceBindingService {
 	 * @param createServiceInstanceBindingRequest containing parameters sent from Cloud Controller
 	 * @return The newly created ServiceInstanceBinding
 	 * @throws ServiceInstanceBindingExistsException if the same binding already exists
+	 * @throws ServiceBrokerException on internal failure
 	 */
 	ServiceInstanceBinding createServiceInstanceBinding(
 			CreateServiceInstanceBindingRequest createServiceInstanceBindingRequest)
@@ -26,6 +27,7 @@ public interface ServiceInstanceBindingService {
 	 * return null.
 	 * @param deleteServiceInstanceBindingRequest containing parameters sent from Cloud Controller
      * @return The deleted ServiceInstanceBinding or null if one does not exist
+     * @throws ServiceBrokerException on internal failure
 	 */
 	ServiceInstanceBinding deleteServiceInstanceBinding(
 			DeleteServiceInstanceBindingRequest deleteServiceInstanceBindingRequest) 

@@ -45,7 +45,7 @@ public class ServiceInstance {
 	 * Create a ServiceInstance from a create request. If fields 
 	 * are not present in the request they will remain null in the  
 	 * ServiceInstance.
-	 * @param request
+	 * @param request containing details of ServiceInstance
 	 */
 	public ServiceInstance(CreateServiceInstanceRequest request) {
 		this.serviceDefinitionId = request.getServiceDefinitionId();
@@ -59,7 +59,7 @@ public class ServiceInstance {
 	 * Create a ServiceInstance from a delete request. If fields 
 	 * are not present in the request they will remain null in the 
 	 * ServiceInstance.
-	 * @param request
+	 * @param request containing details of ServiceInstance
 	 */
 	public ServiceInstance(DeleteServiceInstanceRequest request) { 
 		this.serviceInstanceId = request.getServiceInstanceId();
@@ -71,7 +71,7 @@ public class ServiceInstance {
 	 * Create a service instance from a delete request. If fields 
 	 * are not present in the request they will remain null in the 
 	 * ServiceInstance.
-	 * @param request
+	 * @param request containing details of ServiceInstance
 	 */
 	public ServiceInstance(UpdateServiceInstanceRequest request) { 
 		request.getPlanId();
