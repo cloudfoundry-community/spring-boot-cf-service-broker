@@ -2,8 +2,7 @@ package org.cloudfoundry.community.servicebroker.model;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
@@ -14,7 +13,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
  *
  */
 @JsonAutoDetect(getterVisibility = JsonAutoDetect.Visibility.NONE)
-public class ServiceInstanceBindingRequest {
+public class CreateServiceInstanceBindingRequest {
 
 	@NotEmpty
 	@JsonSerialize
@@ -30,10 +29,16 @@ public class ServiceInstanceBindingRequest {
 	@JsonSerialize
 	@JsonProperty("app_guid")
 	private String appGuid;
+
+	@JsonIgnore
+	private String serviceInstanceId;
+
+	@JsonIgnore
+	private String bindingId;
 	
-	public ServiceInstanceBindingRequest() {}
+	public CreateServiceInstanceBindingRequest() {}
 	
-	public ServiceInstanceBindingRequest(String serviceDefinitionId, String planId, String appGuid) {
+	public CreateServiceInstanceBindingRequest(String serviceDefinitionId, String planId, String appGuid) {
 		this.serviceDefinitionId = serviceDefinitionId;
 		this.planId = planId;
 		this.appGuid = appGuid;
@@ -63,4 +68,25 @@ public class ServiceInstanceBindingRequest {
 		this.appGuid = appGuid;
 	}
 	
+	public String getBindingId() { 
+		return bindingId;
+	}
+	
+	public String getServiceInstanceId() { 
+		return serviceInstanceId;
+	}
+
+	public CreateServiceInstanceBindingRequest withServiceInstanceId(final String serviceInstanceId) {
+		this.serviceInstanceId = serviceInstanceId;
+		return this;
+	}
+
+	public CreateServiceInstanceBindingRequest withBindingId(final String bindingId) {
+		this.bindingId = bindingId;
+		return this;
+	}
+	
+	public CreateServiceInstanceBindingRequest and() {
+		return this;
+	}
 }

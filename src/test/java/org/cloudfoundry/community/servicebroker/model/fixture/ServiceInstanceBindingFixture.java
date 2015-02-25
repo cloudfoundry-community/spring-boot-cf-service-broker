@@ -4,9 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.cloudfoundry.community.servicebroker.model.ServiceInstance;
-import org.cloudfoundry.community.servicebroker.model.ServiceInstanceBinding;
-import org.cloudfoundry.community.servicebroker.model.ServiceInstanceBindingRequest;
+import org.cloudfoundry.community.servicebroker.model.*;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -18,7 +16,7 @@ public class ServiceInstanceBindingFixture {
 		ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
 		return new ServiceInstanceBinding(
 				getServiceInstanceBindingId(),
-				instance.getId(),
+				instance.getServiceInstanceId(),
 				getCredentials(),
 				getSysLogDrainUrl(),
 				getAppGuid()
@@ -45,8 +43,8 @@ public class ServiceInstanceBindingFixture {
 		return "app_guid";
 	}
 	
-	public static ServiceInstanceBindingRequest getServiceInstanceBindingRequest() {
-		return new ServiceInstanceBindingRequest(
+	public static CreateServiceInstanceBindingRequest getServiceInstanceBindingRequest() {
+		return new CreateServiceInstanceBindingRequest(
 				ServiceFixture.getService().getId(), 
 				PlanFixture.getPlanOne().getId(),
 				getAppGuid()

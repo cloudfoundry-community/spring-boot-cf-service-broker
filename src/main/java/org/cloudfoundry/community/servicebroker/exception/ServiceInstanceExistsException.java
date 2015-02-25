@@ -14,7 +14,7 @@ public class ServiceInstanceExistsException extends Exception {
 	
 	public ServiceInstanceExistsException(ServiceInstance instance) {
 		super("ServiceInstance with the given ID already exists: " +
-				"ServiceInstance.id = " + instance.getId() +
+				"ServiceInstance.id = " + instance.getServiceInstanceId() +
 				", Service.id = " + instance.getServiceDefinitionId());
 	}
 

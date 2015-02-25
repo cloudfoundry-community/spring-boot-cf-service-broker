@@ -16,7 +16,7 @@ public class ServiceInstance {
 
 	@JsonSerialize
 	@JsonProperty("service_instance_id")
-	private String id;
+	private String serviceInstanceId;
 	
 	@JsonSerialize
 	@JsonProperty("service_id")
@@ -41,61 +41,70 @@ public class ServiceInstance {
 	@SuppressWarnings("unused")
 	private ServiceInstance() {}
 	
-	public ServiceInstance( String id, String serviceDefinitionId, String planId, String organizationGuid, String spaceGuid, String dashboardUrl ) {
-		setId(id);
-		setServiceDefinitionId(serviceDefinitionId);
-		setPlanId(planId);
-		setOrganizationGuid(organizationGuid);
-		setSpaceGuid(spaceGuid);
-		setDashboardUrl(dashboardUrl);
+	/**
+	 * Create a ServiceInstance from a create request. If fields 
+	 * are not present in the request they will remain null in the  
+	 * ServiceInstance.
+	 * @param request
+	 */
+	public ServiceInstance(CreateServiceInstanceRequest request) {
+		this.serviceDefinitionId = request.getServiceDefinitionId();
+		this.planId = request.getPlanId();
+		this.organizationGuid = request.getOrganizationGuid();
+		this.spaceGuid = request.getSpaceGuid();
+		this.serviceInstanceId = request.getServiceInstanceId();
 	}
 	
-	public String getId() {
-		return id;
+	/**
+	 * Create a ServiceInstance from a delete request. If fields 
+	 * are not present in the request they will remain null in the 
+	 * ServiceInstance.
+	 * @param request
+	 */
+	public ServiceInstance(DeleteServiceInstanceRequest request) { 
+		this.serviceInstanceId = request.getServiceInstanceId();
+		this.planId = request.getPlanId();
+		this.serviceDefinitionId = request.getServiceId();
 	}
-
-	private void setId(String id) {
-		this.id = id;
+	
+	/**
+	 * Create a service instance from a delete request. If fields 
+	 * are not present in the request they will remain null in the 
+	 * ServiceInstance.
+	 * @param request
+	 */
+	public ServiceInstance(UpdateServiceInstanceRequest request) { 
+		request.getPlanId();
+		request.getServiceInstanceId();
+	}
+	
+	public ServiceInstance withDashboardUrl(String dashboardUrl) { 
+		this.dashboardUrl = dashboardUrl;
+		return this;
+	}
+	
+	public String getServiceInstanceId() {
+		return serviceInstanceId;
 	}
 
 	public String getServiceDefinitionId() {
 		return serviceDefinitionId;
 	}
 
-	private void setServiceDefinitionId(String serviceDefinitionId) {
-		this.serviceDefinitionId = serviceDefinitionId;
-	}
-
 	public String getPlanId() {
 		return planId;
-	}
-
-	private void setPlanId(String planId) {
-		this.planId = planId;
 	}
 
 	public String getOrganizationGuid() {
 		return organizationGuid;
 	}
 
-	private void setOrganizationGuid(String organizationGuid) {
-		this.organizationGuid = organizationGuid;
-	}
-
 	public String getSpaceGuid() {
 		return spaceGuid;
 	}
 
-	private void setSpaceGuid(String spaceGuid) {
-		this.spaceGuid = spaceGuid;
-	}
-
 	public String getDashboardUrl() {
 		return dashboardUrl;
-	}
-
-	private void setDashboardUrl(String dashboardUrl) {
-		this.dashboardUrl = dashboardUrl;
 	}
 	
 }

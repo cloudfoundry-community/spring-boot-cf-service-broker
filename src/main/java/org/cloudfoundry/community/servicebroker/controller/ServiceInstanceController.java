@@ -3,32 +3,14 @@ package org.cloudfoundry.community.servicebroker.controller;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
-import org.cloudfoundry.community.servicebroker.exception.ServiceBrokerException;
-import org.cloudfoundry.community.servicebroker.exception.ServiceDefinitionDoesNotExistException;
-import org.cloudfoundry.community.servicebroker.exception.ServiceInstanceDoesNotExistException;
-import org.cloudfoundry.community.servicebroker.exception.ServiceInstanceExistsException;
-import org.cloudfoundry.community.servicebroker.exception.ServiceInstanceUpdateNotSupportedException;
-import org.cloudfoundry.community.servicebroker.model.CreateServiceInstanceRequest;
-import org.cloudfoundry.community.servicebroker.model.CreateServiceInstanceResponse;
-import org.cloudfoundry.community.servicebroker.model.ErrorMessage;
-import org.cloudfoundry.community.servicebroker.model.ServiceDefinition;
-import org.cloudfoundry.community.servicebroker.model.ServiceInstance;
-import org.cloudfoundry.community.servicebroker.model.ServiceUpdateInstanceRequest;
-import org.cloudfoundry.community.servicebroker.service.CatalogService;
-import org.cloudfoundry.community.servicebroker.service.ServiceInstanceService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.cloudfoundry.community.servicebroker.exception.*;
+import org.cloudfoundry.community.servicebroker.model.*;
+import org.cloudfoundry.community.servicebroker.service.*;
+import org.slf4j.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * See: http://docs.cloudfoundry.com/docs/running/architecture/services/writing-service.html
@@ -65,12 +47,8 @@ public class ServiceInstanceController extends BaseController {
 			throw new ServiceDefinitionDoesNotExistException(request.getServiceDefinitionId());
 		}
 		ServiceInstance instance = service.createServiceInstance(
-				svc, 
-				serviceInstanceId, 
-				request.getPlanId(),
-				request.getOrganizationGuid(), 
-				request.getSpaceGuid());
-		logger.debug("ServiceInstance Created: " + instance.getId());
+				request.withServiceDefinition(svc).and().withServiceInstanceId(serviceInstanceId));
+		logger.debug("ServiceInstance Created: " + instance.getServiceInstanceId());
         return new ResponseEntity<CreateServiceInstanceResponse>(
         		new CreateServiceInstanceResponse(instance), 
         		HttpStatus.CREATED);
@@ -85,18 +63,19 @@ public class ServiceInstanceController extends BaseController {
 				+ ", deleteServiceInstanceBinding(), serviceInstanceId = " + instanceId 
 				+ ", serviceId = " + serviceId
 				+ ", planId = " + planId);
-		ServiceInstance instance = service.deleteServiceInstance(instanceId, serviceId, planId);
+		ServiceInstance instance = service.deleteServiceInstance(
+				new DeleteServiceInstanceRequest(instanceId, serviceId, planId));
 		if (instance == null) {
 			return new ResponseEntity<String>("{}", HttpStatus.GONE);
 		}
-		logger.debug("ServiceInstance Deleted: " + instance.getId());
+		logger.debug("ServiceInstance Deleted: " + instance.getServiceInstanceId());
         return new ResponseEntity<String>("{}", HttpStatus.OK);
 	}
 	
 	@RequestMapping(value = BASE_PATH + "/{instanceId}", method = RequestMethod.PATCH)
 	public ResponseEntity<String> updateServiceInstance(
 			@PathVariable("instanceId") String instanceId,
-			@Valid @RequestBody ServiceUpdateInstanceRequest request) throws 
+			@Valid @RequestBody UpdateServiceInstanceRequest request) throws 
 			ServiceInstanceUpdateNotSupportedException,
 			ServiceInstanceDoesNotExistException, 
 			ServiceBrokerException {
@@ -104,9 +83,8 @@ public class ServiceInstanceController extends BaseController {
 				+ ", updateServiceInstanceBinding(), serviceInstanceId = "
 				+ instanceId + ", instanceId = " + instanceId + ", planId = "
 				+ request.getPlanId());
-		ServiceInstance instance = service.updateServiceInstance(instanceId,
-				request.getPlanId());
-		logger.debug("ServiceInstance updated: " + instance.getId());
+		ServiceInstance instance = service.updateServiceInstance(request.withInstanceId(instanceId));
+		logger.debug("ServiceInstance updated: " + instance.getServiceInstanceId());
 		return new ResponseEntity<String>("{}", HttpStatus.OK);
 	}
 

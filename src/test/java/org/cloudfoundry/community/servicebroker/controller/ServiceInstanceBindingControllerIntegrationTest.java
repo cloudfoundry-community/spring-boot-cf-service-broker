@@ -1,28 +1,18 @@
 package org.cloudfoundry.community.servicebroker.controller;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import org.cloudfoundry.community.servicebroker.exception.ServiceInstanceBindingExistsException;
-import org.cloudfoundry.community.servicebroker.model.ServiceInstance;
-import org.cloudfoundry.community.servicebroker.model.ServiceInstanceBinding;
-import org.cloudfoundry.community.servicebroker.model.fixture.ServiceInstanceBindingFixture;
-import org.cloudfoundry.community.servicebroker.model.fixture.ServiceInstanceFixture;
-import org.cloudfoundry.community.servicebroker.service.ServiceInstanceBindingService;
-import org.cloudfoundry.community.servicebroker.service.ServiceInstanceService;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.cloudfoundry.community.servicebroker.model.*;
+import org.cloudfoundry.community.servicebroker.model.fixture.*;
+import org.cloudfoundry.community.servicebroker.service.*;
+import org.junit.*;
+import org.mockito.*;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.web.servlet.MockMvc;
@@ -31,7 +21,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 public class ServiceInstanceBindingControllerIntegrationTest {
 
 	private static final String BASE_PATH = "/v2/service_instances/" 
-			+ ServiceInstanceFixture.getServiceInstance().getId()
+			+ ServiceInstanceFixture.getServiceInstance().getServiceInstanceId()
 			+ "/service_bindings";
 	
 	MockMvc mockMvc;
@@ -61,7 +51,8 @@ public class ServiceInstanceBindingControllerIntegrationTest {
 		when(serviceInstanceService.getServiceInstance(any(String.class)))
 	    	.thenReturn(instance);
 	    
-		when(serviceInstanceBindingService.createServiceInstanceBinding(any(String.class), any(ServiceInstance.class), any(String.class), any(String.class), any(String.class)))
+		when(serviceInstanceBindingService.createServiceInstanceBinding(
+				any(CreateServiceInstanceBindingRequest.class)))
     		.thenReturn(binding);
 	    
 	    String url = BASE_PATH + "/{bindingId}";
@@ -107,7 +98,8 @@ public class ServiceInstanceBindingControllerIntegrationTest {
 		when(serviceInstanceService.getServiceInstance(any(String.class)))
 	    	.thenReturn(instance);
 	    
-		when(serviceInstanceBindingService.createServiceInstanceBinding(any(String.class), any(ServiceInstance.class), any(String.class), any(String.class), any(String.class)))
+		when(serviceInstanceBindingService.createServiceInstanceBinding(
+				any(CreateServiceInstanceBindingRequest.class)))
 			.thenThrow(new ServiceInstanceBindingExistsException(binding));
 		
 	    String url = BASE_PATH + "/{bindingId}";
@@ -163,7 +155,7 @@ public class ServiceInstanceBindingControllerIntegrationTest {
 	    when(serviceInstanceService.getServiceInstance(any(String.class)))
 	    	.thenReturn(instance);
 	    
-		when(serviceInstanceBindingService.deleteServiceInstanceBinding(any(String.class), any(ServiceInstance.class), any(String.class), any(String.class)))
+		when(serviceInstanceBindingService.deleteServiceInstanceBinding(any(DeleteServiceInstanceBindingRequest.class)))
     		.thenReturn(binding);
 	    
 	    String url = BASE_PATH + "/" + binding.getId() 
@@ -186,7 +178,8 @@ public class ServiceInstanceBindingControllerIntegrationTest {
         
         when(serviceInstanceService.getServiceInstance(any(String.class)))
             .thenReturn(instance);
-        when(serviceInstanceBindingService.deleteServiceInstanceBinding(any(String.class), any(ServiceInstance.class), any(String.class), any(String.class)))
+        when(serviceInstanceBindingService.deleteServiceInstanceBinding
+        		(any(DeleteServiceInstanceBindingRequest.class)))
             .thenReturn(null);
         
         String url = BASE_PATH + "/" + binding.getId() 
