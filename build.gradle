@@ -4,7 +4,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.1.9.RELEASE")
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.2.2.RELEASE")
     }
 }
 
@@ -15,14 +15,14 @@ apply plugin: 'spring-boot'
 apply plugin: 'maven-publish'
 apply plugin: 'maven'
 
-version = "2.4.0"
+version = "2.4.1"
 group = "org.cloudfoundry"
 description = "Spring Boot project for creating Cloud Foundry service brokers"
 
 archivesBaseName = "spring-boot-cf-service-broker" 
 
 ext {
-    springBootVersion = '1.1.9.RELEASE'
+    springBootVersion = '1.2.2.RELEASE'
     hibernateValidatorVersion = '5.1.0.Final'
     jsonPathVersion = '0.9.1'
 
