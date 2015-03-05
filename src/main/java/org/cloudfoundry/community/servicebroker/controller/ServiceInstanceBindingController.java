@@ -7,11 +7,7 @@ import javax.validation.Valid;
 import org.cloudfoundry.community.servicebroker.exception.ServiceBrokerException;
 import org.cloudfoundry.community.servicebroker.exception.ServiceInstanceBindingExistsException;
 import org.cloudfoundry.community.servicebroker.exception.ServiceInstanceDoesNotExistException;
-import org.cloudfoundry.community.servicebroker.model.ErrorMessage;
-import org.cloudfoundry.community.servicebroker.model.ServiceInstance;
-import org.cloudfoundry.community.servicebroker.model.ServiceInstanceBinding;
-import org.cloudfoundry.community.servicebroker.model.ServiceInstanceBindingRequest;
-import org.cloudfoundry.community.servicebroker.model.ServiceInstanceBindingResponse;
+import org.cloudfoundry.community.servicebroker.model.*;
 import org.cloudfoundry.community.servicebroker.service.ServiceInstanceBindingService;
 import org.cloudfoundry.community.servicebroker.service.ServiceInstanceService;
 import org.slf4j.Logger;
@@ -54,7 +50,7 @@ public class ServiceInstanceBindingController extends BaseController {
 	public ResponseEntity<ServiceInstanceBindingResponse> bindServiceInstance(
 			@PathVariable("instanceId") String instanceId, 
 			@PathVariable("bindingId") String bindingId,
-			@Valid @RequestBody ServiceInstanceBindingRequest request) throws
+			@Valid @RequestBody CreateServiceInstanceBindingRequest request) throws
 			ServiceInstanceDoesNotExistException, ServiceInstanceBindingExistsException, 
 			ServiceBrokerException {
 		logger.debug( "PUT: " + BASE_PATH + "/{bindingId}"
@@ -65,11 +61,7 @@ public class ServiceInstanceBindingController extends BaseController {
 			throw new ServiceInstanceDoesNotExistException(instanceId);
 		}
 		ServiceInstanceBinding binding = serviceInstanceBindingService.createServiceInstanceBinding(
-				bindingId,
-				instance, 
-				request.getServiceDefinitionId(),
-				request.getPlanId(),
-				request.getAppGuid());
+				request.withServiceInstanceId(instanceId).and().withBindingId(bindingId));
 		logger.debug("ServiceInstanceBinding Created: " + binding.getId());
         return new ResponseEntity<ServiceInstanceBindingResponse>(
         		new ServiceInstanceBindingResponse(binding), 
@@ -92,10 +84,7 @@ public class ServiceInstanceBindingController extends BaseController {
             throw new ServiceInstanceDoesNotExistException(instanceId);
         }
 		ServiceInstanceBinding binding = serviceInstanceBindingService.deleteServiceInstanceBinding(
-		        bindingId,
-		        instance,
-		        serviceId,
-		        planId);
+		        new DeleteServiceInstanceBindingRequest( bindingId, instance, serviceId, planId));
 		if (binding == null) {
 			return new ResponseEntity<String>("{}", HttpStatus.GONE);
 		}
