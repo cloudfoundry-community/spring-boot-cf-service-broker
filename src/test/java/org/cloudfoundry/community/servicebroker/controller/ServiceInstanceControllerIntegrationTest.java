@@ -1,29 +1,17 @@
 package org.cloudfoundry.community.servicebroker.controller;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import org.cloudfoundry.community.servicebroker.exception.ServiceInstanceExistsException;
-import org.cloudfoundry.community.servicebroker.exception.ServiceInstanceUpdateNotSupportedException;
-import org.cloudfoundry.community.servicebroker.model.ServiceDefinition;
-import org.cloudfoundry.community.servicebroker.model.ServiceInstance;
-import org.cloudfoundry.community.servicebroker.model.fixture.ServiceFixture;
-import org.cloudfoundry.community.servicebroker.model.fixture.ServiceInstanceFixture;
-import org.cloudfoundry.community.servicebroker.service.CatalogService;
-import org.cloudfoundry.community.servicebroker.service.ServiceInstanceService;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.cloudfoundry.community.servicebroker.exception.*;
+import org.cloudfoundry.community.servicebroker.model.*;
+import org.cloudfoundry.community.servicebroker.model.fixture.*;
+import org.cloudfoundry.community.servicebroker.service.*;
+import org.junit.*;
+import org.mockito.*;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.web.servlet.MockMvc;
@@ -54,7 +42,7 @@ public class ServiceInstanceControllerIntegrationTest {
 	public void serviceInstanceIsCreatedCorrectly() throws Exception {
 	    ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
 		
-		when(serviceInstanceService.createServiceInstance(any(ServiceDefinition.class), any(String.class), any(String.class), any(String.class), any(String.class)))
+		when(serviceInstanceService.createServiceInstance(any(CreateServiceInstanceRequest.class)))
 	    	.thenReturn(instance);
 	    
 		when(catalogService.getServiceDefinition(any(String.class)))
@@ -62,7 +50,7 @@ public class ServiceInstanceControllerIntegrationTest {
 		
 	    String dashboardUrl = ServiceInstanceFixture.getCreateServiceInstanceResponse().getDashboardUrl();
 	    
-	    String url = ServiceInstanceController.BASE_PATH + "/" + instance.getId();
+	    String url = ServiceInstanceController.BASE_PATH + "/" + instance.getServiceInstanceId();
 	    String body = ServiceInstanceFixture.getCreateServiceInstanceRequestJson();
 	    
 	    mockMvc.perform(
@@ -83,7 +71,7 @@ public class ServiceInstanceControllerIntegrationTest {
 		when(catalogService.getServiceDefinition(any(String.class)))
     	.thenReturn(null);
 	    
-	    String url = ServiceInstanceController.BASE_PATH + "/" + instance.getId();
+	    String url = ServiceInstanceController.BASE_PATH + "/" + instance.getServiceInstanceId();
 	    String body = ServiceInstanceFixture.getCreateServiceInstanceRequestJson();
 	    
 	    mockMvc.perform(
@@ -103,10 +91,10 @@ public class ServiceInstanceControllerIntegrationTest {
 	    when(catalogService.getServiceDefinition(any(String.class)))
     	.thenReturn(ServiceFixture.getService());
 	    
-		when(serviceInstanceService.createServiceInstance(any(ServiceDefinition.class), any(String.class), any(String.class), any(String.class), any(String.class)))
+		when(serviceInstanceService.createServiceInstance(any(CreateServiceInstanceRequest.class)))
 	    	.thenThrow(new ServiceInstanceExistsException(instance));
 	    
-	    String url = ServiceInstanceController.BASE_PATH + "/" + instance.getId();
+	    String url = ServiceInstanceController.BASE_PATH + "/" + instance.getServiceInstanceId();
 	    String body = ServiceInstanceFixture.getCreateServiceInstanceRequestJson();
 	    
 	    mockMvc.perform(
@@ -116,20 +104,20 @@ public class ServiceInstanceControllerIntegrationTest {
 	    		.accept(MediaType.APPLICATION_JSON)
 	    	)
 	    	.andExpect(status().isConflict())
-	    	.andExpect(jsonPath("$.description", containsString(instance.getId())));
+	    	.andExpect(jsonPath("$.description", containsString(instance.getServiceInstanceId())));
  	}
 	
 	@Test
 	public void badJsonServiceInstanceCreationFails() throws Exception {
 	    ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
 		
-		when(serviceInstanceService.createServiceInstance(any(ServiceDefinition.class), any(String.class), any(String.class), any(String.class), any(String.class)))
+		when(serviceInstanceService.createServiceInstance(any(CreateServiceInstanceRequest.class)))
 	    	.thenReturn(instance);
 	    
 		when(catalogService.getServiceDefinition(any(String.class)))
     	.thenReturn(ServiceFixture.getService());
 	    
-	    String url = ServiceInstanceController.BASE_PATH + "/" + instance.getId();
+	    String url = ServiceInstanceController.BASE_PATH + "/" + instance.getServiceInstanceId();
 	    String body = ServiceInstanceFixture.getCreateServiceInstanceRequestJson();
 	    body = body.replace("service_id", "foo");
 	    
@@ -147,13 +135,13 @@ public class ServiceInstanceControllerIntegrationTest {
 	public void badJsonServiceInstanceCreationFailsMissingFields() throws Exception {
 	    ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
 		
-		when(serviceInstanceService.createServiceInstance(any(ServiceDefinition.class), any(String.class), any(String.class), any(String.class), any(String.class)))
+		when(serviceInstanceService.createServiceInstance(any(CreateServiceInstanceRequest.class)))
 	    	.thenReturn(instance);
 	    
 		when(catalogService.getServiceDefinition(any(String.class)))
     	.thenReturn(ServiceFixture.getService());
 	    
-	    String url = ServiceInstanceController.BASE_PATH + "/" + instance.getId();
+	    String url = ServiceInstanceController.BASE_PATH + "/" + instance.getServiceInstanceId();
 	    String body = "{}";
 	    
 	    mockMvc.perform(
@@ -173,10 +161,10 @@ public class ServiceInstanceControllerIntegrationTest {
 	public void serviceInstanceIsDeletedSuccessfully() throws Exception {
 	    ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
 			    
-		when(serviceInstanceService.deleteServiceInstance(any(String.class),any(String.class),any(String.class)))
+		when(serviceInstanceService.deleteServiceInstance(any(DeleteServiceInstanceRequest.class)))
     		.thenReturn(instance);
 	    
-	    String url = ServiceInstanceController.BASE_PATH + "/" + instance.getId() 
+	    String url = ServiceInstanceController.BASE_PATH + "/" + instance.getServiceInstanceId() 
 	    		+ "?service_id=" + instance.getServiceDefinitionId()
 	    		+ "&plan_id=" + instance.getPlanId();
 	    
@@ -193,10 +181,10 @@ public class ServiceInstanceControllerIntegrationTest {
 	public void deleteUnknownServiceInstanceFailsWithA410() throws Exception {
 	    ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
 			    
-		when(serviceInstanceService.deleteServiceInstance(any(String.class),any(String.class),any(String.class)))
+		when(serviceInstanceService.deleteServiceInstance(any(DeleteServiceInstanceRequest.class)))
     		.thenReturn(null);
 	    
-	    String url = ServiceInstanceController.BASE_PATH + "/" + instance.getId() 
+	    String url = ServiceInstanceController.BASE_PATH + "/" + instance.getServiceInstanceId() 
 	    		+ "?service_id=" + instance.getServiceDefinitionId()
 	    		+ "&plan_id=" + instance.getPlanId();
 	    
@@ -211,10 +199,10 @@ public class ServiceInstanceControllerIntegrationTest {
 	public void serviceInstanceIsUpdatedSuccessfully() throws Exception {
 		ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
 
-		when(serviceInstanceService.updateServiceInstance(any(String.class), any(String.class)))
+		when(serviceInstanceService.updateServiceInstance(any(UpdateServiceInstanceRequest.class)))
 		.thenReturn(instance);
 
-		String url = ServiceInstanceController.BASE_PATH + "/" + instance.getId();
+		String url = ServiceInstanceController.BASE_PATH + "/" + instance.getServiceInstanceId();
 
 		String body = ServiceInstanceFixture.getUpdateServiceInstanceRequestJson();
 
@@ -229,11 +217,11 @@ public class ServiceInstanceControllerIntegrationTest {
 	public void updateUnsupportedPlanFailsWithA422() throws Exception {
 		ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
 
-		when(serviceInstanceService.updateServiceInstance(any(String.class), any(String.class)))
+		when(serviceInstanceService.updateServiceInstance(any(UpdateServiceInstanceRequest.class)))
 		.thenThrow(new ServiceInstanceUpdateNotSupportedException("description"));
 
 		String url =
-				ServiceInstanceController.BASE_PATH + "/" + instance.getId() + "?service_id="
+				ServiceInstanceController.BASE_PATH + "/" + instance.getServiceInstanceId() + "?service_id="
 						+ instance.getServiceDefinitionId() + "&plan_id=" + instance.getPlanId();
 		String body = ServiceInstanceFixture.getUpdateServiceInstanceRequestJson();
 

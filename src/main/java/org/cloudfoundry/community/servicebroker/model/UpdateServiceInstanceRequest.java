@@ -2,9 +2,7 @@ package org.cloudfoundry.community.servicebroker.model;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
@@ -13,25 +11,32 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
  */
 @JsonAutoDetect(getterVisibility = JsonAutoDetect.Visibility.NONE)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ServiceUpdateInstanceRequest {
+public class UpdateServiceInstanceRequest {
 
 	@NotEmpty
 	@JsonSerialize
 	@JsonProperty("plan_id")
 	private String planId;
+	
+	@JsonIgnore
+	private String serviceInstanceId;
 
-	public ServiceUpdateInstanceRequest() {}
-
-	public ServiceUpdateInstanceRequest(String planId) {
+	public UpdateServiceInstanceRequest() {} 
+	
+	public UpdateServiceInstanceRequest(String planId) {
 		this.planId = planId;
 	}
 
 	public String getPlanId() {
 		return planId;
 	}
-
-	public void setPlanId(String planId) {
-		this.planId = planId;
+	
+	public String getServiceInstanceId() { 
+		return serviceInstanceId;
 	}
 
+	public UpdateServiceInstanceRequest withInstanceId(String serviceInstanceId) {
+		this.serviceInstanceId = serviceInstanceId; 
+		return this;
+	}
 }
