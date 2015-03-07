@@ -4,9 +4,7 @@ package org.cloudfoundry.community.servicebroker.controller;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
-import org.cloudfoundry.community.servicebroker.exception.ServiceBrokerException;
-import org.cloudfoundry.community.servicebroker.exception.ServiceInstanceBindingExistsException;
-import org.cloudfoundry.community.servicebroker.exception.ServiceInstanceDoesNotExistException;
+import org.cloudfoundry.community.servicebroker.exception.*;
 import org.cloudfoundry.community.servicebroker.model.*;
 import org.cloudfoundry.community.servicebroker.service.ServiceInstanceBindingService;
 import org.cloudfoundry.community.servicebroker.service.ServiceInstanceService;
@@ -52,7 +50,7 @@ public class ServiceInstanceBindingController extends BaseController {
 			@PathVariable("bindingId") String bindingId,
 			@Valid @RequestBody CreateServiceInstanceBindingRequest request) throws
 			ServiceInstanceDoesNotExistException, ServiceInstanceBindingExistsException, 
-			ServiceBrokerException {
+			ServiceBrokerException, ServiceBrokerAsyncRequiredException {
 		logger.debug( "PUT: " + BASE_PATH + "/{bindingId}"
 				+ ", bindServiceInstance(), serviceInstance.id = " + instanceId 
 				+ ", bindingId = " + bindingId);
@@ -73,7 +71,7 @@ public class ServiceInstanceBindingController extends BaseController {
 			@PathVariable("instanceId") String instanceId, 
 			@PathVariable("bindingId") String bindingId,
 			@RequestParam("service_id") String serviceId,
-			@RequestParam("plan_id") String planId) throws ServiceBrokerException, ServiceInstanceDoesNotExistException {
+			@RequestParam("plan_id") String planId) throws ServiceBrokerException, ServiceInstanceDoesNotExistException, ServiceBrokerAsyncRequiredException {
 		logger.debug( "DELETE: " + BASE_PATH + "/{bindingId}"
 				+ ", deleteServiceInstanceBinding(),  serviceInstance.id = " + instanceId 
 				+ ", bindingId = " + bindingId 

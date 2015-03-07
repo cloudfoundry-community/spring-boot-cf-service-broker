@@ -2,18 +2,14 @@ package org.cloudfoundry.community.servicebroker.controller;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.cloudfoundry.community.servicebroker.exception.ServiceBrokerApiVersionException;
-import org.cloudfoundry.community.servicebroker.model.ErrorMessage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.cloudfoundry.community.servicebroker.exception.*;
+import org.cloudfoundry.community.servicebroker.model.*;
+import org.slf4j.*;
+import org.springframework.http.*;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
+import org.springframework.validation.*;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * Base controller.
@@ -61,6 +57,13 @@ public class BaseController {
 			HttpServletResponse response) {
 		logger.warn("Exception", ex);
 	    return getErrorResponse(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+	
+	@ExceptionHandler(ServiceBrokerAsyncRequiredException.class)
+	public ResponseEntity<AsyncRequiredErrorMessage> handleException() {
+		return new ResponseEntity<AsyncRequiredErrorMessage>(
+				new AsyncRequiredErrorMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
+		
 	}
 	
 	public ResponseEntity<ErrorMessage> getErrorResponse(String message, HttpStatus status) {

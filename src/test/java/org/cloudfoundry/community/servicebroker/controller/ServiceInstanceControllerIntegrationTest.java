@@ -232,5 +232,66 @@ public class ServiceInstanceControllerIntegrationTest {
 				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$.description", containsString("description")));
 	}
+	
+	@Test
+	public void createServiceAsyncRequredShoudlFailWith422() throws Exception {
+	    ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
+	    
+	    when(catalogService.getServiceDefinition(any(String.class)))
+    	.thenReturn(ServiceFixture.getService());
+	    
+		when(serviceInstanceService.createServiceInstance(any(CreateServiceInstanceRequest.class)))
+	    	.thenThrow(new ServiceBrokerAsyncRequiredException());
+	    
+	    String url = ServiceInstanceController.BASE_PATH + "/" + instance.getServiceInstanceId();
+	    String body = ServiceInstanceFixture.getCreateServiceInstanceRequestJson();
+	    
+	    mockMvc.perform(
+	    		put(url)
+	    		.contentType(MediaType.APPLICATION_JSON)
+	    		.content(body)
+	    		.accept(MediaType.APPLICATION_JSON)
+	    	)
+	    	.andExpect(status().isUnprocessableEntity())
+	    	.andExpect(jsonPath("$.error", is("AsyncRequired")));
+	}
+	
+	@Test
+	public void deleteServiceAsyncRequredShoudlFailWith422() throws Exception{ 
+
+	    ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
+	    
+		when(serviceInstanceService.deleteServiceInstance(any(DeleteServiceInstanceRequest.class)))
+    		.thenThrow(new ServiceBrokerAsyncRequiredException());
+	    
+	    String url = ServiceInstanceController.BASE_PATH + "/" + instance.getServiceInstanceId() 
+	    		+ "?service_id=" + instance.getServiceDefinitionId()
+	    		+ "&plan_id=" + instance.getPlanId();
+	    
+	    mockMvc.perform(delete(url)
+	    		.accept(MediaType.APPLICATION_JSON)
+	    	)
+	    	.andExpect(status().isUnprocessableEntity())
+	    	.andExpect(jsonPath("$.error", is("AsyncRequired")));
+	}
+	
+	@Test
+	public void updateServiceAsyncRequredShoudlFailWith422() throws Exception { 
+		ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
+		when(serviceInstanceService.updateServiceInstance(any(UpdateServiceInstanceRequest.class)))
+		.thenThrow(new ServiceBrokerAsyncRequiredException());
+
+		String url =
+				ServiceInstanceController.BASE_PATH + "/" + instance.getServiceInstanceId() + "?service_id="
+						+ instance.getServiceDefinitionId() + "&plan_id=" + instance.getPlanId();
+		String body = ServiceInstanceFixture.getUpdateServiceInstanceRequestJson();
+
+		mockMvc.perform(
+				patch(url).contentType(MediaType.APPLICATION_JSON).content(body)
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isUnprocessableEntity())
+				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+				.andExpect(jsonPath("$.error", is("AsyncRequired")));
+	}
 
 }
