@@ -35,7 +35,7 @@ The value of `springBootCfServiceBrokerVersion` corresponds to the service broke
 
 springBootCfServiceBrokerVersion: 2.5.0
 
-As of version 2.4.1 we've changed the API in anticipation of async brokers. All service instance and binding calls now take request objects. This will allow us to support async and future service broker api changes without having to change method signatures. It should also make broker implementations cleaner. 
+As of version 2.4.1 we've changed the API in anticipation of async brokers. All service instance and binding calls now take request objects. This will allow us to support async and future service broker api changes without having to change method signatures, making this codebase and broker implementations easier to maintain.
 
 # Configuring the broker
 
