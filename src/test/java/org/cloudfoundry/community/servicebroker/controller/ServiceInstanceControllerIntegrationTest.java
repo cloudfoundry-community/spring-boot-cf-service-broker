@@ -132,7 +132,7 @@ public class ServiceInstanceControllerIntegrationTest {
 			.andExpect(status().isUnprocessableEntity())
 			.andExpect(jsonPath("$.description", containsString("Missing required fields")));
 	}
-	
+
 	@Test
 	public void badJsonServiceInstanceCreationFailsMissingFields() throws Exception {
 		ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();

@@ -122,45 +122,45 @@ public class ServiceInstanceBindingControllerIntegrationTest {
 		ServiceInstanceBinding binding = ServiceInstanceBindingFixture.getServiceInstanceBinding();
 		
 		when(serviceInstanceService.getServiceInstance(any(String.class)))
-	    	.thenReturn(instance);
-	    
+			.thenReturn(instance);
+
 		when(serviceInstanceBindingService.createServiceInstanceBinding(
 				any(CreateServiceInstanceBindingRequest.class)))
 			.thenThrow(new ServiceBrokerAsyncRequiredException());
-		
-	    String url = BASE_PATH + "/{bindingId}";
-	    String body = ServiceInstanceBindingFixture.getServiceInstanceBindingRequestJson();
-	    
-	    mockMvc.perform(
-	    		put(url, binding.getId())
-	    		.contentType(MediaType.APPLICATION_JSON)
-	    		.content(body)
-	    	)
-	    	.andExpect(status().isUnprocessableEntity())
-	    	.andExpect(jsonPath("$.error", is("AsyncRequired")));
+
+		String url = BASE_PATH + "/{bindingId}";
+		String body = ServiceInstanceBindingFixture.getServiceInstanceBindingRequestJson();
+
+		mockMvc.perform(
+				put(url, binding.getId())
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(body)
+			)
+			.andExpect(status().isUnprocessableEntity())
+			.andExpect(jsonPath("$.error", is("AsyncRequired")));
 	}
 	
 	@Test
 	public void deleteBindingIs422WhenAsyncIsRequred() throws Exception {
-	    ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
-	    ServiceInstanceBinding binding = ServiceInstanceBindingFixture.getServiceInstanceBinding();
+		ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
+		ServiceInstanceBinding binding = ServiceInstanceBindingFixture.getServiceInstanceBinding();
 		
-	    when(serviceInstanceService.getServiceInstance(any(String.class)))
-	    	.thenReturn(instance);
-	    
+		when(serviceInstanceService.getServiceInstance(any(String.class)))
+			.thenReturn(instance);
+
 		when(serviceInstanceBindingService.deleteServiceInstanceBinding(any(DeleteServiceInstanceBindingRequest.class)))
-    		.thenThrow(new ServiceBrokerAsyncRequiredException());
-	    
-	    String url = BASE_PATH + "/" + binding.getId() 
-	    		+ "?service_id=" + instance.getServiceDefinitionId()
-	    		+ "&plan_id=" + instance.getPlanId();
-	    
-	    mockMvc.perform(delete(url)
-	    		.accept(MediaType.APPLICATION_JSON)
-	    	)
-	    	.andExpect(status().isUnprocessableEntity())
-	    	.andExpect(jsonPath("$.error", is("AsyncRequired")));
- 	}
+			.thenThrow(new ServiceBrokerAsyncRequiredException());
+
+		String url = BASE_PATH + "/" + binding.getId()
+				+ "?service_id=" + instance.getServiceDefinitionId()
+				+ "&plan_id=" + instance.getPlanId();
+
+		mockMvc.perform(delete(url)
+				.accept(MediaType.APPLICATION_JSON)
+			)
+			.andExpect(status().isUnprocessableEntity())
+			.andExpect(jsonPath("$.error", is("AsyncRequired")));
+	}
 
 	@Test
 	public void invalidBindingRequestJson() throws Exception {
