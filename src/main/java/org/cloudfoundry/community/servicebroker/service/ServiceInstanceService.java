@@ -1,9 +1,6 @@
 package org.cloudfoundry.community.servicebroker.service;
 
-import org.cloudfoundry.community.servicebroker.exception.ServiceBrokerException;
-import org.cloudfoundry.community.servicebroker.exception.ServiceInstanceDoesNotExistException;
-import org.cloudfoundry.community.servicebroker.exception.ServiceInstanceExistsException;
-import org.cloudfoundry.community.servicebroker.exception.ServiceInstanceUpdateNotSupportedException;
+import org.cloudfoundry.community.servicebroker.exception.*;
 import org.cloudfoundry.community.servicebroker.model.*;
 
 /**
@@ -19,9 +16,10 @@ public interface ServiceInstanceService {
 	 * @return The newly created ServiceInstance
 	 * @throws ServiceInstanceExistsException if the service instance already exists.
 	 * @throws ServiceBrokerException if something goes wrong internally
+	 * @throws ServiceBrokerAsyncRequiredException if we must use an async comparable cloud controller
 	 */
 	ServiceInstance createServiceInstance(CreateServiceInstanceRequest createServiceInstanceRequest) 
-			throws ServiceInstanceExistsException, ServiceBrokerException;
+			throws ServiceInstanceExistsException, ServiceBrokerException, ServiceBrokerAsyncRequiredException;
 	
 	/**
 	 * @param serviceInstanceId The id of the serviceInstance
@@ -34,9 +32,11 @@ public interface ServiceInstanceService {
 	 * @param deleteServiceInstanceRequest containing pertinent information for deleting the service.
 	 * @return The deleted ServiceInstance or null if one did not exist.
 	 * @throws ServiceBrokerException is something goes wrong internally
+	 * @throws ServiceBrokerAsyncRequiredException if we must use an async comparable cloud controller
+	 * 
 	 */
 	ServiceInstance deleteServiceInstance(DeleteServiceInstanceRequest deleteServiceInstanceRequest) 
-			throws ServiceBrokerException;
+			throws ServiceBrokerException, ServiceBrokerAsyncRequiredException;
 
 	/**
 	 * Update a service instance. Only modification of service plan is supported.
@@ -47,10 +47,11 @@ public interface ServiceInstanceService {
 	 *         or if the request can not currently be fulfilled due to the state of the instance.
 	 * @throws ServiceInstanceDoesNotExistException if the service instance does not exist
 	 * @throws ServiceBrokerException if something goes wrong internally
+	 * @throws ServiceBrokerAsyncRequiredException if we must use an async comparable cloud controller
 	 * 
 	 */
 	ServiceInstance updateServiceInstance(UpdateServiceInstanceRequest updateServiceInstanceRequest)
 			throws ServiceInstanceUpdateNotSupportedException, ServiceBrokerException,
-			ServiceInstanceDoesNotExistException;
+			ServiceInstanceDoesNotExistException, ServiceBrokerAsyncRequiredException;
 
 }
