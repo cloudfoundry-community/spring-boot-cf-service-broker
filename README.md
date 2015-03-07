@@ -37,6 +37,9 @@ springBootCfServiceBrokerVersion: 2.5.0
 
 As of version 2.4.1 we've changed the API in anticipation of async brokers. All service instance and binding calls now take request objects. This will allow us to support async and future service broker api changes without having to change method signatures, making this codebase and broker implementations easier to maintain.
 
+As of version 2.4.1 we've changed the API in anticipation of async brokers. All service instance and binding calls now take request objects. This will allow us to support async and future service broker api changes without having to change method signatures, making this
+codebase and broker implementations easier to maintain.
+
 # Configuring the broker
 
 `spring-boot-cf-service-broker` provides default implementations of most of the components needed to implement a service broker. In Spring Boot fashion, you can override the default behavior by providing your own implementation of Spring beans, and `spring-boot-cf-service-broker` will back away from its defaults.
