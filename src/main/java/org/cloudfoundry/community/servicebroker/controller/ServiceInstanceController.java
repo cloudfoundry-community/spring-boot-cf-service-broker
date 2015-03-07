@@ -39,7 +39,7 @@ public class ServiceInstanceController extends BaseController {
 			@Valid @RequestBody CreateServiceInstanceRequest request) throws
 			ServiceDefinitionDoesNotExistException,
 			ServiceInstanceExistsException,
-			ServiceBrokerException {
+			ServiceBrokerException, ServiceBrokerAsyncRequiredException {
 		logger.debug("PUT: " + BASE_PATH + "/{instanceId}" 
 				+ ", createServiceInstance(), serviceInstanceId = " + serviceInstanceId);
 		ServiceDefinition svc = catalogService.getServiceDefinition(request.getServiceDefinitionId());
@@ -58,7 +58,7 @@ public class ServiceInstanceController extends BaseController {
 	public ResponseEntity<String> deleteServiceInstance(
 			@PathVariable("instanceId") String instanceId, 
 			@RequestParam("service_id") String serviceId,
-			@RequestParam("plan_id") String planId) throws ServiceBrokerException {
+			@RequestParam("plan_id") String planId) throws ServiceBrokerException, ServiceBrokerAsyncRequiredException {
 		logger.debug( "DELETE: " + BASE_PATH + "/{instanceId}" 
 				+ ", deleteServiceInstanceBinding(), serviceInstanceId = " + instanceId 
 				+ ", serviceId = " + serviceId
@@ -78,7 +78,7 @@ public class ServiceInstanceController extends BaseController {
 			@Valid @RequestBody UpdateServiceInstanceRequest request) throws 
 			ServiceInstanceUpdateNotSupportedException,
 			ServiceInstanceDoesNotExistException, 
-			ServiceBrokerException {
+			ServiceBrokerException, ServiceBrokerAsyncRequiredException {
 		logger.debug("UPDATE: " + BASE_PATH + "/{instanceId}"
 				+ ", updateServiceInstanceBinding(), serviceInstanceId = "
 				+ instanceId + ", instanceId = " + instanceId + ", planId = "
