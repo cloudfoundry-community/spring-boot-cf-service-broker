@@ -103,7 +103,7 @@ public class CreateServiceInstanceRequest {
 		return this;
 	}
 	
-	public CreateServiceInstanceRequest withAcceptsIncomplete(boolean b) {
+	public CreateServiceInstanceRequest withAsyncClient(boolean b) {
 		this.acceptsIncomplete = b;
 		return this;
 	}
@@ -112,7 +112,7 @@ public class CreateServiceInstanceRequest {
 		return this;
 	}
 	
-	public boolean acceptsIncomplete() { 
+	public boolean asyncClient() { 
 		return acceptsIncomplete;
 	}
 
