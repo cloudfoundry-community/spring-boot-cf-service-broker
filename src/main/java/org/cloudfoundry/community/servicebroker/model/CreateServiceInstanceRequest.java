@@ -41,6 +41,9 @@ public class CreateServiceInstanceRequest {
 	//Cloud Controller dosen't send instanceId in the body
 	@JsonIgnore
 	private String serviceInstanceId;
+
+	@JsonIgnore
+	private boolean acceptsIncomplete;
 	
 	public CreateServiceInstanceRequest() {}
 	
@@ -50,6 +53,7 @@ public class CreateServiceInstanceRequest {
 		this.planId = planId;
 		this.organizationGuid = organizationGuid;
 		this.spaceGuid = spaceGuid;
+		this.acceptsIncomplete = false;
 	}
 	
 	public String getServiceDefinitionId() {
@@ -98,8 +102,20 @@ public class CreateServiceInstanceRequest {
 		this.serviceInstanceId = serviceInstanceId;
 		return this;
 	}
+	
+	public CreateServiceInstanceRequest withAcceptsIncomplete(boolean b) {
+		this.acceptsIncomplete = b;
+		return this;
+	}
+	
 	public CreateServiceInstanceRequest and() {
 		return this;
 	}
+	
+	public boolean acceptsIncomplete() { 
+		return acceptsIncomplete;
+	}
+
+
 	
 }

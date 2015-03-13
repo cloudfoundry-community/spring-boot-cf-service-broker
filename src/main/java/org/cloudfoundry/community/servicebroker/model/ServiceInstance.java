@@ -1,7 +1,6 @@
 package org.cloudfoundry.community.servicebroker.model;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 
@@ -38,6 +37,9 @@ public class ServiceInstance {
 	@JsonProperty("dashboard_url")
 	private String dashboardUrl;
 
+	@JsonIgnore
+	private boolean async; 
+	
 	@SuppressWarnings("unused")
 	private ServiceInstance() {}
 	
@@ -83,6 +85,11 @@ public class ServiceInstance {
 		return this;
 	}
 	
+	public ServiceInstance isAsync(boolean b) { 
+		this.async = b; 
+		return this;
+	}
+	
 	public String getServiceInstanceId() {
 		return serviceInstanceId;
 	}
@@ -105,6 +112,14 @@ public class ServiceInstance {
 
 	public String getDashboardUrl() {
 		return dashboardUrl;
+	}
+
+	public boolean isAsync() {
+		return async;
+	}
+
+	public ServiceInstance and() {
+		return this;
 	}
 	
 }
