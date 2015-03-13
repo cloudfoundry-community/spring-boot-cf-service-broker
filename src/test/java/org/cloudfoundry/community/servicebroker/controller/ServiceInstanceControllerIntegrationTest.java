@@ -2,6 +2,7 @@ package org.cloudfoundry.community.servicebroker.controller;
 
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -294,4 +295,62 @@ public class ServiceInstanceControllerIntegrationTest {
 				.andExpect(jsonPath("$.error", is("AsyncRequired")));
 	}
 
+	@Test
+	public void itShouldPassAnAsyncCreateServiceRequestAndReturn202() throws Exception {
+	    ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
+	    
+	    when(catalogService.getServiceDefinition(any(String.class)))
+    		.thenReturn(ServiceFixture.getService());
+	    
+	    when(serviceInstanceService.createServiceInstance(any(CreateServiceInstanceRequest.class)))
+    		.thenReturn(asyncServiceInstanceFactory());
+	    
+	    String url = ServiceInstanceController.BASE_PATH + "/" + instance.getServiceInstanceId();
+	    String body = ServiceInstanceFixture.getCreateServiceInstanceRequestJson();
+	    
+	    mockMvc.perform(
+	    		put(url)
+	    		.param("accepts_incomplete", "true")
+	    		.contentType(MediaType.APPLICATION_JSON)
+	    		.content(body)
+	    		.accept(MediaType.APPLICATION_JSON)
+	    	).andExpect(status().isAccepted());
+	}
+	
+	@Test
+	public void itShouldNotBeAsyncWhenAcceptsIncompleteParamIsNotPresent() throws Exception { 
+	    ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
+		
+		when(serviceInstanceService.createServiceInstance(argThat(
+		        new ArgumentMatcher<CreateServiceInstanceRequest>() {
+		            @Override
+		            public boolean matches(Object argument) {
+		                return false == ((CreateServiceInstanceRequest) argument)
+		                    .acceptsIncomplete();
+		            }
+
+		        })
+			)).thenReturn(instance);
+	    
+		when(catalogService.getServiceDefinition(any(String.class))).thenReturn(ServiceFixture.getService());
+			    
+	    String url = ServiceInstanceController.BASE_PATH + "/" + instance.getServiceInstanceId();
+	    String body = ServiceInstanceFixture.getCreateServiceInstanceRequestJson();
+	    
+	    mockMvc.perform(
+	    		put(url)
+	    		.contentType(MediaType.APPLICATION_JSON)
+	    		.content(body)
+	    		.accept(MediaType.APPLICATION_JSON)
+	    	).andExpect(status().isCreated());
+	}
+
+	private ServiceInstance asyncServiceInstanceFactory() {
+		return new ServiceInstance(
+				new CreateServiceInstanceRequest(null, null, null, null)
+					.withAcceptsIncomplete(true))
+				.withDashboardUrl(null)
+				.and()
+				.isAsync(true);
+	}
 }

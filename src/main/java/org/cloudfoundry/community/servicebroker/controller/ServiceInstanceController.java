@@ -36,6 +36,7 @@ public class ServiceInstanceController extends BaseController {
 	@RequestMapping(value = BASE_PATH + "/{instanceId}", method = RequestMethod.PUT)
 	public ResponseEntity<CreateServiceInstanceResponse> createServiceInstance(
 			@PathVariable("instanceId") String serviceInstanceId, 
+			@RequestParam(value="accepts_incomplete", required=false) boolean acceptsIncomplete,
 			@Valid @RequestBody CreateServiceInstanceRequest request) throws
 			ServiceDefinitionDoesNotExistException,
 			ServiceInstanceExistsException,
@@ -47,11 +48,18 @@ public class ServiceInstanceController extends BaseController {
 			throw new ServiceDefinitionDoesNotExistException(request.getServiceDefinitionId());
 		}
 		ServiceInstance instance = service.createServiceInstance(
-				request.withServiceDefinition(svc).and().withServiceInstanceId(serviceInstanceId));
+				request.withServiceDefinition(svc).and().withServiceInstanceId(serviceInstanceId)
+					.and().withAcceptsIncomplete(acceptsIncomplete));
 		logger.debug("ServiceInstance Created: " + instance.getServiceInstanceId());
-        return new ResponseEntity<CreateServiceInstanceResponse>(
-        		new CreateServiceInstanceResponse(instance), 
-        		HttpStatus.CREATED);
+		if(instance.isAsync()) { 
+			 return new ResponseEntity<CreateServiceInstanceResponse>(
+		        		new CreateServiceInstanceResponse(instance), 
+		        		HttpStatus.ACCEPTED);
+		} else {
+	        return new ResponseEntity<CreateServiceInstanceResponse>(
+	        		new CreateServiceInstanceResponse(instance), 
+	        		HttpStatus.CREATED);
+		}
 	}
 	
 	@RequestMapping(value = BASE_PATH + "/{instanceId}", method = RequestMethod.DELETE)
