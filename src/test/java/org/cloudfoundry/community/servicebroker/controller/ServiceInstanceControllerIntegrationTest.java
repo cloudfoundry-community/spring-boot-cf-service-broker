@@ -326,7 +326,7 @@ public class ServiceInstanceControllerIntegrationTest {
 		            @Override
 		            public boolean matches(Object argument) {
 		                return false == ((CreateServiceInstanceRequest) argument)
-		                    .acceptsIncomplete();
+		                    .asyncClient();
 		            }
 
 		        })
@@ -344,13 +344,19 @@ public class ServiceInstanceControllerIntegrationTest {
 	    		.accept(MediaType.APPLICATION_JSON)
 	    	).andExpect(status().isCreated());
 	}
+	
+	@Test
+	public void itShouldReturnAnInProgressServiceInstance() { 
+		
+	}
 
 	private ServiceInstance asyncServiceInstanceFactory() {
 		return new ServiceInstance(
 				new CreateServiceInstanceRequest(null, null, null, null)
-					.withAcceptsIncomplete(true))
+					.withAsyncClient(true))
 				.withDashboardUrl(null)
 				.and()
 				.isAsync(true);
 	}
+	
 }

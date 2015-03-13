@@ -49,7 +49,7 @@ public class ServiceInstanceController extends BaseController {
 		}
 		ServiceInstance instance = service.createServiceInstance(
 				request.withServiceDefinition(svc).and().withServiceInstanceId(serviceInstanceId)
-					.and().withAcceptsIncomplete(acceptsIncomplete));
+					.and().withAsyncClient(acceptsIncomplete));
 		logger.debug("ServiceInstance Created: " + instance.getServiceInstanceId());
 		if(instance.isAsync()) { 
 			 return new ResponseEntity<CreateServiceInstanceResponse>(
@@ -60,6 +60,11 @@ public class ServiceInstanceController extends BaseController {
 	        		new CreateServiceInstanceResponse(instance), 
 	        		HttpStatus.CREATED);
 		}
+	}
+	
+	@RequestMapping(value = BASE_PATH + "/{instanceId}/", method = RequestMethod.GET)
+	public ResponseEntity<ServiceInstanceState> getServiceInstanceState() {
+		return null;
 	}
 	
 	@RequestMapping(value = BASE_PATH + "/{instanceId}", method = RequestMethod.DELETE)
