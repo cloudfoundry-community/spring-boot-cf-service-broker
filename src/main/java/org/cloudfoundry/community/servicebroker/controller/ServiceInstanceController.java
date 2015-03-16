@@ -80,22 +80,42 @@ public class ServiceInstanceController extends BaseController {
 		return new ResponseEntity<ServiceInstance>(instance, headers, HttpStatus.OK);
 	}
 	
+	/**
+	 * This method will call into the ServiceInstanceService implementation in order to delete 
+	 * the service broker. If async is required it is expected that the returned service async 
+	 * will respond <code>true</code> to the <code>isAsnyc()</code> call. If the broker is not
+	 * capable of processing async requests and the <code>DeleteServiceRequest</code> object 
+	 * does not respond with <code>true</code> to <code>isAsyncClient</code> then the service
+	 * must throw ServiceBrokerAsyncRequiredException.
+	 * @param instanceId
+	 * @param serviceId
+	 * @param planId
+	 * @param acceptsIncomplete
+	 * @return json representation of the broker, or nothing.
+	 * @throws ServiceBrokerException
+	 * @throws ServiceBrokerAsyncRequiredException
+	 */
 	@RequestMapping(value = BASE_PATH + "/{instanceId}", method = RequestMethod.DELETE)
-	public ResponseEntity<String> deleteServiceInstance(
+	public ResponseEntity<?> deleteServiceInstance(
 			@PathVariable("instanceId") String instanceId, 
 			@RequestParam("service_id") String serviceId,
-			@RequestParam("plan_id") String planId) throws ServiceBrokerException, ServiceBrokerAsyncRequiredException {
+			@RequestParam("plan_id") String planId,
+			@RequestParam(value="accepts_incomplete", required=false) boolean acceptsIncomplete) 
+					throws ServiceBrokerException, ServiceBrokerAsyncRequiredException {
 		logger.debug( "DELETE: " + BASE_PATH + "/{instanceId}" 
 				+ ", deleteServiceInstanceBinding(), serviceInstanceId = " + instanceId 
 				+ ", serviceId = " + serviceId
 				+ ", planId = " + planId);
 		ServiceInstance instance = service.deleteServiceInstance(
-				new DeleteServiceInstanceRequest(instanceId, serviceId, planId));
+				new DeleteServiceInstanceRequest(instanceId, serviceId, planId, acceptsIncomplete));
+		
 		if (instance == null) {
 			return new ResponseEntity<String>("{}", HttpStatus.GONE);
 		}
+		
 		logger.debug("ServiceInstance Deleted: " + instance.getServiceInstanceId());
-        return new ResponseEntity<String>("{}", HttpStatus.OK);
+        return new ResponseEntity<ServiceInstance>(instance, 
+        		instance.isAsync() ? HttpStatus.ACCEPTED : HttpStatus.OK );
 	}
 	
 	@RequestMapping(value = BASE_PATH + "/{instanceId}", method = RequestMethod.PATCH)

@@ -173,9 +173,10 @@ public class ServiceInstanceControllerIntegrationTest {
 	    		.accept(MediaType.APPLICATION_JSON)
 	    	)
 	    	.andExpect(status().isOk())
-            .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$", is("{}"))
-        );
+	    	//We return the service broker now, as the CC should be ignoring it.
+            //.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+            //.andExpect(jsonPath("$", is("{}"))
+        ;
  	}
 	
 	@Test
@@ -439,6 +440,37 @@ public class ServiceInstanceControllerIntegrationTest {
 				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$.error", is("AsyncRequired")))
 				.andExpect(jsonPath("$.description", is("msg")));	
+	}
+	
+	@Test
+	public void itShouldReturn202ForAsyncDelete() throws Exception { 
+	    ServiceInstance instance = ServiceInstanceFixture.getAsyncServiceInstance()
+	    	.withLastOperation(new ServiceInstanceLastOperation("doin stuff", OperationState.IN_PROGRESS));
+	    
+	    
+	    when(serviceInstanceService.deleteServiceInstance(argThat(
+		        new ArgumentMatcher<DeleteServiceInstanceRequest>() {
+		            @Override
+		            public boolean matches(Object argument) {
+		                return true == ((DeleteServiceInstanceRequest) argument)
+		                    .hasAsyncClient();
+		            }
+
+		        })
+			)).thenReturn(instance);
+	    
+	    String url = ServiceInstanceController.BASE_PATH + "/" + instance.getServiceInstanceId() 
+	    		+ "?service_id=" + instance.getServiceDefinitionId()
+	    		+ "&plan_id=" + instance.getPlanId()
+	    		+ "&accepts_incomplete=true";
+	    
+	    mockMvc.perform(delete(url)
+	    		.accept(MediaType.APPLICATION_JSON)
+	    	)
+	    	.andExpect(status().isAccepted())
+            .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$.last_operation.state", is("in progress"))
+        );
 	}
 	
 }
