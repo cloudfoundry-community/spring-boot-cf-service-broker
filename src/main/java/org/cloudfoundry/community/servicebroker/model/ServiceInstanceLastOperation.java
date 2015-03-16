@@ -32,22 +32,16 @@ public class ServiceInstanceLastOperation {
 	
 	@JsonSerialize
 	public String getState() {
-		String s = null;
 		switch (state) { 
 		case IN_PROGRESS: 
-			s = "in progress";
-			break;
+			return "in progress";
 		case SUCCEEDED:
-			s = "succeeded"; 
-			break;
-		case FAILED: 
-			s = "failed"; 
-			break; 
-		default: 
-			assert(false);
-			break;
+			return "succeeded";
+		case FAILED:
+			return "failed"; 
 		};
-		return s;
+		assert(false);
+		return "internal error";
 	}
 
 	private void setState(OperationState state) {
