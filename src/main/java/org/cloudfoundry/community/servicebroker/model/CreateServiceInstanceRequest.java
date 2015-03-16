@@ -143,6 +143,11 @@ public class CreateServiceInstanceRequest {
 		return this;
 	}
 
+	public CreateServiceInstanceRequest withAsyncClient(boolean async) {
+		this.acceptsIncomplete = async;
+		return this;
+	}
+
 	public boolean acceptsIncomplete() {
 		return acceptsIncomplete;
 	}
@@ -163,4 +168,5 @@ public class CreateServiceInstanceRequest {
 	public int hashCode() {
 		return Objects.hash(serviceDefinitionId, planId, organizationGuid, spaceGuid, parameters);
 	}
+
 }

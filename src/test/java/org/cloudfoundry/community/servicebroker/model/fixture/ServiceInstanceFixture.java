@@ -71,5 +71,14 @@ public class ServiceInstanceFixture {
 		return new UpdateServiceInstanceRequest(service.getPlans().get(0).getId());
 	}
 
+	public static ServiceInstance getAsyncServiceInstance() {
+		return new ServiceInstance(
+				new CreateServiceInstanceRequest(null, null, null, null)
+					.withAsyncClient(true))
+				.withDashboardUrl(null)
+				.and()
+				.isAsync(true);
+	}
+
 
 }
