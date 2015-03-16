@@ -38,7 +38,7 @@ public class ServiceInstanceLastOperation {
 			s = "in progress";
 			break;
 		case SUCCEDED: 
-			s = "succeded"; 
+			s = "succeeded"; 
 			break; 
 		case FAILED: 
 			s = "failed"; 
