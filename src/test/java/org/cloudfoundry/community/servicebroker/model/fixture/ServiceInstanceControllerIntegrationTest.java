@@ -1,4 +1,4 @@
-package org.cloudfoundry.community.servicebroker.controller;
+package org.cloudfoundry.community.servicebroker.model.fixture;
 
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Matchers.any;
@@ -6,11 +6,10 @@ import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.junit.Assert.fail; 
 
+import org.cloudfoundry.community.servicebroker.controller.ServiceInstanceController;
 import org.cloudfoundry.community.servicebroker.exception.*;
 import org.cloudfoundry.community.servicebroker.model.*;
-import org.cloudfoundry.community.servicebroker.model.fixture.*;
 import org.cloudfoundry.community.servicebroker.service.*;
 import org.junit.*;
 import org.mockito.*;
@@ -304,7 +303,7 @@ public class ServiceInstanceControllerIntegrationTest {
     		.thenReturn(ServiceFixture.getService());
 	    
 	    when(serviceInstanceService.createServiceInstance(any(CreateServiceInstanceRequest.class)))
-    		.thenReturn(asyncServiceInstanceFactory());
+    		.thenReturn(ServiceInstanceFixture.getAsyncServiceInstance());
 	    
 	    String url = ServiceInstanceController.BASE_PATH + "/" + instance.getServiceInstanceId();
 	    String body = ServiceInstanceFixture.getCreateServiceInstanceRequestJson();
@@ -352,7 +351,7 @@ public class ServiceInstanceControllerIntegrationTest {
 	    String url = ServiceInstanceController.BASE_PATH + "/" + instance.getServiceInstanceId();
 	    
 	    when(serviceInstanceService.getServiceInstance(any(String.class))).thenReturn(
-	    		asyncServiceInstanceFactory().withLastOperation(
+	    		ServiceInstanceFixture.getAsyncServiceInstance().withLastOperation(
 	    				new ServiceInstanceLastOperation("In Progress", OperationState.IN_PROGRESS)));
 		mockMvc.perform(
 				get(url))
@@ -367,7 +366,7 @@ public class ServiceInstanceControllerIntegrationTest {
 	    String url = ServiceInstanceController.BASE_PATH + "/" + instance.getServiceInstanceId();
 	    
 	    when(serviceInstanceService.getServiceInstance(any(String.class))).thenReturn(
-	    		asyncServiceInstanceFactory().withLastOperation(
+	    		ServiceInstanceFixture.getAsyncServiceInstance().withLastOperation(
 	    				new ServiceInstanceLastOperation("no working", OperationState.FAILED)));
 		mockMvc.perform(
 				get(url))
@@ -382,7 +381,7 @@ public class ServiceInstanceControllerIntegrationTest {
 	    String url = ServiceInstanceController.BASE_PATH + "/" + instance.getServiceInstanceId();
 	    
 	    when(serviceInstanceService.getServiceInstance(any(String.class))).thenReturn(
-	    		asyncServiceInstanceFactory().withLastOperation(
+	    		ServiceInstanceFixture.getAsyncServiceInstance().withLastOperation(
 	    				new ServiceInstanceLastOperation("mucho working", OperationState.SUCCEDED)));
 		mockMvc.perform(
 				get(url))
@@ -405,13 +404,22 @@ public class ServiceInstanceControllerIntegrationTest {
 				.andExpect(jsonPath("$", is("{}")));
 	}
 	
-	private ServiceInstance asyncServiceInstanceFactory() {
-		return new ServiceInstance(
-				new CreateServiceInstanceRequest(null, null, null, null)
-					.withAsyncClient(true))
-				.withDashboardUrl(null)
-				.and()
-				.isAsync(true);
+	@Test
+	public void itShouldReturn202ForUpdatedInstanceWithAsync() throws Exception { 
+		ServiceInstance instance = ServiceInstanceFixture.getAsyncServiceInstance();
+
+		when(serviceInstanceService.updateServiceInstance(any(UpdateServiceInstanceRequest.class)))
+			.thenReturn(instance);
+
+		String url = ServiceInstanceController.BASE_PATH + "/" + instance.getServiceInstanceId();
+
+		String body = ServiceInstanceFixture.getUpdateServiceInstanceRequestJson();
+
+		mockMvc.perform(
+				patch(url).contentType(MediaType.APPLICATION_JSON).content(body)
+				.accept(MediaType.APPLICATION_JSON)).andExpect(status().isAccepted())
+				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+				.andExpect(jsonPath("$", is("{}")));
 	}
 	
 }

@@ -101,6 +101,7 @@ public class ServiceInstanceController extends BaseController {
 	@RequestMapping(value = BASE_PATH + "/{instanceId}", method = RequestMethod.PATCH)
 	public ResponseEntity<String> updateServiceInstance(
 			@PathVariable("instanceId") String instanceId,
+			@RequestParam(value="accepts_incomplete", required=false) boolean acceptsIncomplete,
 			@Valid @RequestBody UpdateServiceInstanceRequest request) throws 
 			ServiceInstanceUpdateNotSupportedException,
 			ServiceInstanceDoesNotExistException, 
@@ -111,7 +112,8 @@ public class ServiceInstanceController extends BaseController {
 				+ request.getPlanId());
 		ServiceInstance instance = service.updateServiceInstance(request.withInstanceId(instanceId));
 		logger.debug("ServiceInstance updated: " + instance.getServiceInstanceId());
-		return new ResponseEntity<String>("{}", HttpStatus.OK);
+		HttpStatus status = instance.isAsync() ? HttpStatus.ACCEPTED : HttpStatus.OK; 
+		return new ResponseEntity<String>("{}", status);
 	}
 
 	
