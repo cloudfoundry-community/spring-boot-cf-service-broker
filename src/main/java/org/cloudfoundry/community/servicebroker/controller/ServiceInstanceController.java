@@ -62,6 +62,24 @@ public class ServiceInstanceController extends BaseController {
 		}
 	}
 	
+	@RequestMapping(value = BASE_PATH + "/{instanceId}", method = RequestMethod.GET)
+	public ResponseEntity<?> getServiceInstance(
+			@PathVariable("instanceId") String instanceId) {
+		
+		logger.debug("GET: " + BASE_PATH + "/{instanceId}" 
+				+ ", getServiceInstance(), serviceInstanceId = " + instanceId);
+		
+		ServiceInstance instance = service.getServiceInstance(instanceId);
+		
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		if (null == instance) { 
+			return new ResponseEntity<String>("{}", headers, HttpStatus.GONE);
+		} 
+		logger.debug("ServiceInstance: " + instance.getServiceInstanceId());
+		return new ResponseEntity<ServiceInstance>(instance, headers, HttpStatus.OK);
+	}
+	
 	@RequestMapping(value = BASE_PATH + "/{instanceId}", method = RequestMethod.DELETE)
 	public ResponseEntity<String> deleteServiceInstance(
 			@PathVariable("instanceId") String instanceId, 

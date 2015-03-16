@@ -37,8 +37,12 @@ public class ServiceInstance {
 	@JsonProperty("dashboard_url")
 	private String dashboardUrl;
 
+	@JsonSerialize
+	@JsonProperty("last_operation")
+	private ServiceInstanceLastOperation lastOperation; 
+	
 	@JsonIgnore
-	private boolean async; 
+	private boolean async;
 	
 	@SuppressWarnings("unused")
 	private ServiceInstance() {}
@@ -120,6 +124,15 @@ public class ServiceInstance {
 
 	public ServiceInstance and() {
 		return this;
+	}
+
+	public ServiceInstance withLastOperation(ServiceInstanceLastOperation lastOperation) {
+		this.lastOperation = lastOperation;
+		return this;
+	}
+
+	public ServiceInstanceLastOperation getServiceInstanceLastOperation() {
+		return lastOperation;
 	}
 	
 }

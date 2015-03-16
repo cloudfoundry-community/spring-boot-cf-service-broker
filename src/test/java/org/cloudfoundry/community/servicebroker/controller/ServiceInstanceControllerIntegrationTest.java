@@ -346,7 +346,66 @@ public class ServiceInstanceControllerIntegrationTest {
 				.accept(MediaType.APPLICATION_JSON)
 			).andExpect(status().isCreated());
 	}
+	
+	@Test
+	public void itShouldReturnAnInProgressServiceInstance() throws Exception {
+		ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
+		String url = ServiceInstanceController.BASE_PATH + "/" + instance.getServiceInstanceId();
 
+		when(serviceInstanceService.getServiceInstance(any(String.class))).thenReturn(
+				asyncServiceInstanceFactory().withLastOperation(
+						new ServiceInstanceLastOperation("In Progress", OperationState.IN_PROGRESS)));
+		mockMvc.perform(
+				get(url))
+				.andExpect(status().isOk())
+				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+				.andExpect(jsonPath("$.last_operation.state", is("in progress")));
+	}
+	
+	@Test
+	public void itShouldReturnAFailedServiceInstance() throws Exception {
+		ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
+		String url = ServiceInstanceController.BASE_PATH + "/" + instance.getServiceInstanceId();
+
+		when(serviceInstanceService.getServiceInstance(any(String.class))).thenReturn(
+				asyncServiceInstanceFactory().withLastOperation(
+						new ServiceInstanceLastOperation("no working", OperationState.FAILED)));
+		mockMvc.perform(
+				get(url))
+				.andExpect(status().isOk())
+				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+				.andExpect(jsonPath("$.last_operation.state", is("failed")));
+	}
+	
+	@Test
+	public void itShouldReturnASucceededServiceInstance() throws Exception {
+		ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
+		String url = ServiceInstanceController.BASE_PATH + "/" + instance.getServiceInstanceId();
+
+		when(serviceInstanceService.getServiceInstance(any(String.class))).thenReturn(
+				asyncServiceInstanceFactory().withLastOperation(
+						new ServiceInstanceLastOperation("mucho working", OperationState.SUCCEEDED)));
+		mockMvc.perform(
+				get(url))
+				.andExpect(status().isOk())
+				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+				.andExpect(jsonPath("$.last_operation.state", is("succeeded")));
+	}
+	
+
+	@Test
+	public void itShouldReturnGoneIfTheServiceInstanceDoesNotExist() throws Exception { 
+		ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
+		String url = ServiceInstanceController.BASE_PATH + "/" + instance.getServiceInstanceId();
+
+		when(serviceInstanceService.getServiceInstance(any(String.class))).thenReturn(null);
+		mockMvc.perform(
+				get(url))
+				.andExpect(status().isGone())
+				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+				.andExpect(jsonPath("$", is("{}")));
+	}
+	
 	private ServiceInstance asyncServiceInstanceFactory() {
 		return new ServiceInstance(
 				new CreateServiceInstanceRequest(null, null, null, null)
