@@ -10,12 +10,14 @@ public class DeleteServiceInstanceRequest {
 	private final String serviceInstanceId;
 	private final String serviceId;
 	private final String planId;
+	private boolean asyncClient;
 
 	public DeleteServiceInstanceRequest(String instanceId, String serviceId,
-			String planId) {
+			String planId, boolean acceptsIncomplete) {
 		this.serviceInstanceId = instanceId; 
 		this.serviceId = serviceId;
 		this.planId = planId;
+		this.asyncClient = acceptsIncomplete;
 	}
 
 	public String getServiceInstanceId() {
@@ -30,4 +32,7 @@ public class DeleteServiceInstanceRequest {
 		return planId;
 	}
 
+	public boolean hasAsyncClient() {
+		return asyncClient;
+	}
 }
