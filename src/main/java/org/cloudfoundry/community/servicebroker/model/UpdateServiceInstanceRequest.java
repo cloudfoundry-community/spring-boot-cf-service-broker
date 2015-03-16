@@ -21,6 +21,9 @@ public class UpdateServiceInstanceRequest {
 	@JsonIgnore
 	private String serviceInstanceId;
 
+	@JsonIgnore
+	private boolean async;
+
 	public UpdateServiceInstanceRequest() {} 
 	
 	public UpdateServiceInstanceRequest(String planId) {
@@ -38,5 +41,14 @@ public class UpdateServiceInstanceRequest {
 	public UpdateServiceInstanceRequest withInstanceId(String serviceInstanceId) {
 		this.serviceInstanceId = serviceInstanceId; 
 		return this;
+	}
+
+	public UpdateServiceInstanceRequest withAsyncClient(boolean acceptsIncomplete) {
+		this.async = acceptsIncomplete;
+		return this;
+	}
+	
+	public boolean asyncClient() { 
+		return async; 
 	}
 }

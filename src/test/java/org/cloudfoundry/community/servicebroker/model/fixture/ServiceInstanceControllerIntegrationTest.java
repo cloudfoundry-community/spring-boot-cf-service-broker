@@ -242,7 +242,7 @@ public class ServiceInstanceControllerIntegrationTest {
     	.thenReturn(ServiceFixture.getService());
 	    
 		when(serviceInstanceService.createServiceInstance(any(CreateServiceInstanceRequest.class)))
-	    	.thenThrow(new ServiceBrokerAsyncRequiredException());
+	    	.thenThrow(new ServiceBrokerAsyncRequiredException("msg"));
 	    
 	    String url = ServiceInstanceController.BASE_PATH + "/" + instance.getServiceInstanceId();
 	    String body = ServiceInstanceFixture.getCreateServiceInstanceRequestJson();
@@ -263,7 +263,7 @@ public class ServiceInstanceControllerIntegrationTest {
 	    ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
 	    
 		when(serviceInstanceService.deleteServiceInstance(any(DeleteServiceInstanceRequest.class)))
-    		.thenThrow(new ServiceBrokerAsyncRequiredException());
+    		.thenThrow(new ServiceBrokerAsyncRequiredException("Msg"));
 	    
 	    String url = ServiceInstanceController.BASE_PATH + "/" + instance.getServiceInstanceId() 
 	    		+ "?service_id=" + instance.getServiceDefinitionId()
@@ -280,7 +280,7 @@ public class ServiceInstanceControllerIntegrationTest {
 	public void updateServiceAsyncRequredShoudlFailWith422() throws Exception { 
 		ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
 		when(serviceInstanceService.updateServiceInstance(any(UpdateServiceInstanceRequest.class)))
-		.thenThrow(new ServiceBrokerAsyncRequiredException());
+		.thenThrow(new ServiceBrokerAsyncRequiredException("msg"));
 
 		String url =
 				ServiceInstanceController.BASE_PATH + "/" + instance.getServiceInstanceId() + "?service_id="
@@ -420,6 +420,25 @@ public class ServiceInstanceControllerIntegrationTest {
 				.accept(MediaType.APPLICATION_JSON)).andExpect(status().isAccepted())
 				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$", is("{}")));
+	}
+	
+	@Test
+	public void itShouldReturn422ForAsyncRequired() throws Exception { 
+		ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
+		String url = ServiceInstanceController.BASE_PATH + "/" + instance.getServiceInstanceId();
+
+		String body = ServiceInstanceFixture.getUpdateServiceInstanceRequestJson();
+
+		when(serviceInstanceService.updateServiceInstance(any(UpdateServiceInstanceRequest.class)))
+			.thenThrow(new ServiceBrokerAsyncRequiredException("msg"));
+		
+		
+		mockMvc.perform(
+				patch(url).contentType(MediaType.APPLICATION_JSON).content(body)
+				.accept(MediaType.APPLICATION_JSON)).andExpect(status().isUnprocessableEntity())
+				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+				.andExpect(jsonPath("$.error", is("AsyncRequired")))
+				.andExpect(jsonPath("$.description", is("msg")));	
 	}
 	
 }

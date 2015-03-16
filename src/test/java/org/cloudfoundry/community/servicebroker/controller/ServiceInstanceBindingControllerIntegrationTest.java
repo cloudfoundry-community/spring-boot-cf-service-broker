@@ -124,7 +124,7 @@ public class ServiceInstanceBindingControllerIntegrationTest {
 	    
 		when(serviceInstanceBindingService.createServiceInstanceBinding(
 				any(CreateServiceInstanceBindingRequest.class)))
-			.thenThrow(new ServiceBrokerAsyncRequiredException());
+			.thenThrow(new ServiceBrokerAsyncRequiredException("msg"));
 		
 	    String url = BASE_PATH + "/{bindingId}";
 	    String body = ServiceInstanceBindingFixture.getServiceInstanceBindingRequestJson();
@@ -135,7 +135,8 @@ public class ServiceInstanceBindingControllerIntegrationTest {
 	    		.content(body)
 	    	)
 	    	.andExpect(status().isUnprocessableEntity())
-	    	.andExpect(jsonPath("$.error", is("AsyncRequired")));
+	    	.andExpect(jsonPath("$.error", is("AsyncRequired")))
+	    	.andExpect(jsonPath("$.description", is("msg")));
 	}
 	
 	@Test
@@ -147,7 +148,7 @@ public class ServiceInstanceBindingControllerIntegrationTest {
 	    	.thenReturn(instance);
 	    
 		when(serviceInstanceBindingService.deleteServiceInstanceBinding(any(DeleteServiceInstanceBindingRequest.class)))
-    		.thenThrow(new ServiceBrokerAsyncRequiredException());
+    		.thenThrow(new ServiceBrokerAsyncRequiredException("msg"));
 	    
 	    String url = BASE_PATH + "/" + binding.getId() 
 	    		+ "?service_id=" + instance.getServiceDefinitionId()
