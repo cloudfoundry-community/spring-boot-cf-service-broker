@@ -6,6 +6,7 @@ import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.junit.Assert.fail; 
 
 import org.cloudfoundry.community.servicebroker.exception.*;
 import org.cloudfoundry.community.servicebroker.model.*;
@@ -346,10 +347,64 @@ public class ServiceInstanceControllerIntegrationTest {
 	}
 	
 	@Test
-	public void itShouldReturnAnInProgressServiceInstance() { 
-		
+	public void itShouldReturnAnInProgressServiceInstance() throws Exception {
+	    ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
+	    String url = ServiceInstanceController.BASE_PATH + "/" + instance.getServiceInstanceId();
+	    
+	    when(serviceInstanceService.getServiceInstance(any(String.class))).thenReturn(
+	    		asyncServiceInstanceFactory().withLastOperation(
+	    				new ServiceInstanceLastOperation("In Progress", OperationState.IN_PROGRESS)));
+		mockMvc.perform(
+				get(url))
+				.andExpect(status().isOk())
+				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+				.andExpect(jsonPath("$.last_operation.state", is("in progress")));
 	}
+	
+	@Test
+	public void itShouldReturnAFailedServiceInstance() throws Exception {
+	    ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
+	    String url = ServiceInstanceController.BASE_PATH + "/" + instance.getServiceInstanceId();
+	    
+	    when(serviceInstanceService.getServiceInstance(any(String.class))).thenReturn(
+	    		asyncServiceInstanceFactory().withLastOperation(
+	    				new ServiceInstanceLastOperation("no working", OperationState.FAILED)));
+		mockMvc.perform(
+				get(url))
+				.andExpect(status().isOk())
+				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+				.andExpect(jsonPath("$.last_operation.state", is("failed")));
+	}
+	
+	@Test
+	public void itShouldReturnASucceededServiceInstance() throws Exception {
+	    ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
+	    String url = ServiceInstanceController.BASE_PATH + "/" + instance.getServiceInstanceId();
+	    
+	    when(serviceInstanceService.getServiceInstance(any(String.class))).thenReturn(
+	    		asyncServiceInstanceFactory().withLastOperation(
+	    				new ServiceInstanceLastOperation("mucho working", OperationState.SUCCEDED)));
+		mockMvc.perform(
+				get(url))
+				.andExpect(status().isOk())
+				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+				.andExpect(jsonPath("$.last_operation.state", is("succeeded")));
+	}
+	
 
+	@Test
+	public void itShouldReturnGoneIfTheServiceInstanceDoesNotExist() throws Exception { 
+	    ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
+	    String url = ServiceInstanceController.BASE_PATH + "/" + instance.getServiceInstanceId();
+	    
+	    when(serviceInstanceService.getServiceInstance(any(String.class))).thenReturn(null);
+		mockMvc.perform(
+				get(url))
+				.andExpect(status().isGone())
+				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+				.andExpect(jsonPath("$", is("{}")));
+	}
+	
 	private ServiceInstance asyncServiceInstanceFactory() {
 		return new ServiceInstance(
 				new CreateServiceInstanceRequest(null, null, null, null)
