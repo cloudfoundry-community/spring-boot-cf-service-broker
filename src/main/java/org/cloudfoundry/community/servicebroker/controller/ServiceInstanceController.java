@@ -110,7 +110,8 @@ public class ServiceInstanceController extends BaseController {
 				+ ", updateServiceInstanceBinding(), serviceInstanceId = "
 				+ instanceId + ", instanceId = " + instanceId + ", planId = "
 				+ request.getPlanId());
-		ServiceInstance instance = service.updateServiceInstance(request.withInstanceId(instanceId));
+		ServiceInstance instance = service.updateServiceInstance(
+				request.withInstanceId(instanceId).withAsyncClient(acceptsIncomplete));
 		logger.debug("ServiceInstance updated: " + instance.getServiceInstanceId());
 		HttpStatus status = instance.isAsync() ? HttpStatus.ACCEPTED : HttpStatus.OK; 
 		return new ResponseEntity<String>("{}", status);

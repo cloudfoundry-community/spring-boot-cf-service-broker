@@ -60,9 +60,11 @@ public class BaseController {
 	}
 	
 	@ExceptionHandler(ServiceBrokerAsyncRequiredException.class)
-	public ResponseEntity<AsyncRequiredErrorMessage> handleException() {
+	public ResponseEntity<AsyncRequiredErrorMessage> handleException(
+			ServiceBrokerAsyncRequiredException ex, 
+			HttpServletResponse response) {
 		return new ResponseEntity<AsyncRequiredErrorMessage>(
-				new AsyncRequiredErrorMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
+				new AsyncRequiredErrorMessage(ex.getDescription()), HttpStatus.UNPROCESSABLE_ENTITY);
 		
 	}
 	
