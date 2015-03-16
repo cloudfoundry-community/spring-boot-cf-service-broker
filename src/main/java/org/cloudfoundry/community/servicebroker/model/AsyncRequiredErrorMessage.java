@@ -7,11 +7,16 @@ package org.cloudfoundry.community.servicebroker.model;
 public class AsyncRequiredErrorMessage extends ErrorMessage {
 
 	private static String error = "AsyncRequired";
-	
-	public AsyncRequiredErrorMessage() {
-		super("This service plan requires client support for asynchronous service operations.");
+		
+	/**
+	 * This broker requires asynchronous processing. 
+	 *
+	 * @param description user facing error message.
+	 */
+	public AsyncRequiredErrorMessage(String description) {
+		super(description);
 	}
-
+	
 	public String getError() { 
 		return error;
 	}

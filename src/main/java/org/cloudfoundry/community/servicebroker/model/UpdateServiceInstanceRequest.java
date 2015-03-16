@@ -29,9 +29,12 @@ public class UpdateServiceInstanceRequest {
 	@JsonIgnore
 	private String serviceInstanceId;
 
+	@JsonIgnore
+	private boolean async;
+
 	public UpdateServiceInstanceRequest() {
 	}
-	
+
 	public UpdateServiceInstanceRequest(String planId) {
 		this.planId = planId;
 	}
@@ -72,6 +75,15 @@ public class UpdateServiceInstanceRequest {
 		return this;
 	}
 
+	public UpdateServiceInstanceRequest withAsyncClient(boolean acceptsIncomplete) {
+		this.async = acceptsIncomplete;
+		return this;
+	}
+
+	public boolean asyncClient() {
+		return async;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
@@ -85,4 +97,5 @@ public class UpdateServiceInstanceRequest {
 	public int hashCode() {
 		return Objects.hash(planId, parameters);
 	}
+
 }
