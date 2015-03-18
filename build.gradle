@@ -44,6 +44,10 @@ task javadocJar(type: Jar, dependsOn:javadoc) {
     from javadoc.destinationDir
 }
 
+bootRepackage { 
+	mainClass =  'org.cloudfoundry.community.servicebroker.config.DefaultApplication'
+}
+
 repositories {
     mavenCentral()
 }
