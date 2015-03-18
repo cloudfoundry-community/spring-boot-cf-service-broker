@@ -1,6 +1,7 @@
 package org.cloudfoundry.community.servicebroker.config;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 
 /** 
@@ -8,6 +9,7 @@ import org.springframework.boot.SpringApplication;
  * @author sgreenberg
  *
  */
+@SpringBootApplication
 public class DefaultApplication {
 
     public static void main(String[] args) {
