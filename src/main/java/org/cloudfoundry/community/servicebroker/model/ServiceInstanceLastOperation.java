@@ -15,6 +15,8 @@ public class ServiceInstanceLastOperation {
 	
 	private OperationState state; 
 	
+	public ServiceInstanceLastOperation() {}
+	
 	public ServiceInstanceLastOperation(
 			final String description, 
 			final OperationState operationState)  { 
