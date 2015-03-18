@@ -383,7 +383,7 @@ public class ServiceInstanceControllerIntegrationTest {
 	    
 	    when(serviceInstanceService.getServiceInstance(any(String.class))).thenReturn(
 	    		ServiceInstanceFixture.getAsyncServiceInstance().withLastOperation(
-	    				new ServiceInstanceLastOperation("mucho working", OperationState.SUCCEDED)));
+	    				new ServiceInstanceLastOperation("mucho working", OperationState.SUCCEEDED)));
 		mockMvc.perform(
 				get(url))
 				.andExpect(status().isOk())
