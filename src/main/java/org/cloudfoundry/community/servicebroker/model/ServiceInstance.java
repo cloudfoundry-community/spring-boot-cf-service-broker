@@ -59,6 +59,7 @@ public class ServiceInstance {
 		this.organizationGuid = request.getOrganizationGuid();
 		this.spaceGuid = request.getSpaceGuid();
 		this.serviceInstanceId = request.getServiceInstanceId();
+		this.lastOperation = new ServiceInstanceLastOperation("Provisioning", OperationState.IN_PROGRESS);
 	}
 	
 	/**
@@ -71,6 +72,8 @@ public class ServiceInstance {
 		this.serviceInstanceId = request.getServiceInstanceId();
 		this.planId = request.getPlanId();
 		this.serviceDefinitionId = request.getServiceId();
+		this.lastOperation = new ServiceInstanceLastOperation("Deprovisioning", OperationState.IN_PROGRESS);
+
 	}
 	
 	/**
@@ -82,6 +85,7 @@ public class ServiceInstance {
 	public ServiceInstance(UpdateServiceInstanceRequest request) { 
 		request.getPlanId();
 		request.getServiceInstanceId();
+		this.lastOperation = new ServiceInstanceLastOperation("Updating", OperationState.IN_PROGRESS);
 	}
 	
 	public ServiceInstance withDashboardUrl(String dashboardUrl) { 
