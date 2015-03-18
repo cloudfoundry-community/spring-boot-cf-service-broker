@@ -21,7 +21,7 @@ public class ServiceInstanceLastOperation {
 			final String description, 
 			final OperationState operationState)  { 
 		setDescription(description); 
-		setState(operationState);
+		this.state = operationState;
 	}
 	
 	public String getDescription() {
@@ -38,15 +38,29 @@ public class ServiceInstanceLastOperation {
 		case IN_PROGRESS: 
 			return "in progress";
 		case SUCCEEDED:
-			return "succeeded";
-		case FAILED:
-			return "failed"; 
+			return "succeeded"; 
+		case FAILED: 
+			return "failed";
 		};
 		assert(false);
 		return "internal error";
 	}
-
-	private void setState(OperationState state) {
-		this.state = state;
-	} 	
+	
+	@JsonSerialize
+	private void setState(String state) { 
+		switch(state) { 
+		case "in progress": 
+			this.state = OperationState.IN_PROGRESS;
+			break;
+		case "succeeded": 
+			this.state = OperationState.SUCCEEDED; 
+			break; 
+		case "failed":
+			this.state = OperationState.FAILED;
+			break; 
+		default:
+			assert(false);
+			break;
+		}
+	}
 }
