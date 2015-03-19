@@ -112,7 +112,7 @@ public class CreateServiceInstanceRequest {
 		return this;
 	}
 	
-	public boolean asyncClient() { 
+	public boolean hasAsyncClient() { 
 		return acceptsIncomplete;
 	}
 
