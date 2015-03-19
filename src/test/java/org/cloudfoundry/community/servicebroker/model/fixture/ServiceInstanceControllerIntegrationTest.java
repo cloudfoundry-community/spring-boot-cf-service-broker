@@ -6,6 +6,8 @@ import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.cloudfoundry.community.servicebroker.model.fixture.SyncArgumentMatcher.isSyncRequest;
+import static org.cloudfoundry.community.servicebroker.model.fixture.AsyncArgumentMatcher.isAsyncRequest;
 
 import org.cloudfoundry.community.servicebroker.controller.ServiceInstanceController;
 import org.cloudfoundry.community.servicebroker.exception.*;
@@ -322,16 +324,8 @@ public class ServiceInstanceControllerIntegrationTest {
 	public void itShouldNotBeAsyncWhenAcceptsIncompleteParamIsNotPresent() throws Exception { 
 	    ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
 		
-		when(serviceInstanceService.createServiceInstance(argThat(
-		        new ArgumentMatcher<CreateServiceInstanceRequest>() {
-		            @Override
-		            public boolean matches(Object argument) {
-		                return false == ((CreateServiceInstanceRequest) argument)
-		                    .hasAsyncClient();
-		            }
-
-		        })
-			)).thenReturn(instance);
+	    when(serviceInstanceService.createServiceInstance(
+	    		(CreateServiceInstanceRequest) argThat(isSyncRequest()))).thenReturn(instance);
 	    
 		when(catalogService.getServiceDefinition(any(String.class))).thenReturn(ServiceFixture.getService());
 			    
@@ -447,17 +441,8 @@ public class ServiceInstanceControllerIntegrationTest {
 	    ServiceInstance instance = ServiceInstanceFixture.getAsyncServiceInstance()
 	    	.withLastOperation(new ServiceInstanceLastOperation("doin stuff", OperationState.IN_PROGRESS));
 	    
-	    
-	    when(serviceInstanceService.deleteServiceInstance(argThat(
-		        new ArgumentMatcher<DeleteServiceInstanceRequest>() {
-		            @Override
-		            public boolean matches(Object argument) {
-		                return true == ((DeleteServiceInstanceRequest) argument)
-		                    .hasAsyncClient();
-		            }
-
-		        })
-			)).thenReturn(instance);
+	    when(serviceInstanceService.deleteServiceInstance(
+	    		(DeleteServiceInstanceRequest) argThat(isAsyncRequest()))).thenReturn(instance);
 	    
 	    String url = ServiceInstanceController.BASE_PATH + "/" + instance.getServiceInstanceId() 
 	    		+ "?service_id=" + instance.getServiceDefinitionId()
@@ -472,5 +457,7 @@ public class ServiceInstanceControllerIntegrationTest {
             .andExpect(jsonPath("$.last_operation.state", is("in progress"))
         );
 	}
+	
+
 	
 }
