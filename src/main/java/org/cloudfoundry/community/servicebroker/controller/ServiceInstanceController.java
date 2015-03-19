@@ -41,7 +41,7 @@ public class ServiceInstanceController extends BaseController {
 			ServiceDefinitionDoesNotExistException,
 			ServiceInstanceExistsException,
 			ServiceBrokerException, ServiceBrokerAsyncRequiredException {
-		logger.debug("PUT: " + BASE_PATH + "/{instanceId}" 
+		logger.debug("PUT: " + BASE_PATH + "/{instanceId}?accepts_incomplete=" + acceptsIncomplete 
 				+ ", createServiceInstance(), serviceInstanceId = " + serviceInstanceId);
 		ServiceDefinition svc = catalogService.getServiceDefinition(request.getServiceDefinitionId());
 		if (svc == null) {
@@ -83,7 +83,7 @@ public class ServiceInstanceController extends BaseController {
 			@RequestParam("plan_id") String planId,
 			@RequestParam(value="accepts_incomplete", required=false) boolean acceptsIncomplete) 
 					throws ServiceBrokerException, ServiceBrokerAsyncRequiredException {
-		logger.debug( "DELETE: " + BASE_PATH + "/{instanceId}" 
+		logger.debug( "DELETE: " + BASE_PATH + "/{instanceId}?accepts_incomplete=" + acceptsIncomplete 
 				+ ", deleteServiceInstanceBinding(), serviceInstanceId = " + instanceId 
 				+ ", serviceId = " + serviceId
 				+ ", planId = " + planId);
@@ -107,7 +107,7 @@ public class ServiceInstanceController extends BaseController {
 			ServiceInstanceUpdateNotSupportedException,
 			ServiceInstanceDoesNotExistException, 
 			ServiceBrokerException, ServiceBrokerAsyncRequiredException {
-		logger.debug("UPDATE: " + BASE_PATH + "/{instanceId}"
+		logger.debug("UPDATE: " + BASE_PATH + "/{instanceId}?accepts_incomplete=" + acceptsIncomplete
 				+ ", updateServiceInstanceBinding(), serviceInstanceId = "
 				+ instanceId + ", instanceId = " + instanceId + ", planId = "
 				+ request.getPlanId());
