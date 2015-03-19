@@ -33,9 +33,11 @@ The value of `springBootCfServiceBrokerVersion` corresponds to the service broke
 
 ## Latest
 
-springBootCfServiceBrokerVersion: 2.4.1
+springBootCfServiceBrokerVersion: 2.4.2
 
 As of version 2.4.1 we've changed the API in anticipation of async brokers. All service instance and binding calls now take request objects. This will allow us to support async and future service broker api changes without having to change method signatures, making this codebase and broker implementations easier to maintain.
+
+Version 2.4.2 supports the experimental async service broker API. See the javadoc for [ServiceInstanceService.java](src/main/java/org/cloudfoundry/community/servicebroker/service/ServiceInstanceService.java) for information on how to interact with the new API.
 
 # Configuring the broker
 
