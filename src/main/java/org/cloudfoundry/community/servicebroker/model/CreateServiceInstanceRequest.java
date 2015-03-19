@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
  * @author sgreenberg@gopivotal.com
  */
 @JsonAutoDetect(getterVisibility = JsonAutoDetect.Visibility.NONE)
-public class CreateServiceInstanceRequest {
+public class CreateServiceInstanceRequest extends ServiceInstanceRequest {
 
 	@NotEmpty
 	@JsonSerialize
@@ -41,19 +41,18 @@ public class CreateServiceInstanceRequest {
 	//Cloud Controller dosen't send instanceId in the body
 	@JsonIgnore
 	private String serviceInstanceId;
-
-	@JsonIgnore
-	private boolean acceptsIncomplete;
 	
-	public CreateServiceInstanceRequest() {}
+	public CreateServiceInstanceRequest() {
+		super(false);
+	}
 	
 
-	public CreateServiceInstanceRequest(String serviceDefinitionId, String planId, String organizationGuid, String spaceGuid) {
+	public CreateServiceInstanceRequest(String serviceDefinitionId, String planId, String organizationGuid, String spaceGuid, boolean async) {
+		super(async);
 		this.serviceDefinitionId = serviceDefinitionId;
 		this.planId = planId;
 		this.organizationGuid = organizationGuid;
 		this.spaceGuid = spaceGuid;
-		this.acceptsIncomplete = false;
 	}
 	
 	public String getServiceDefinitionId() {
@@ -103,19 +102,13 @@ public class CreateServiceInstanceRequest {
 		return this;
 	}
 	
-	public CreateServiceInstanceRequest withAsyncClient(boolean b) {
-		this.acceptsIncomplete = b;
-		return this;
-	}
-	
 	public CreateServiceInstanceRequest and() {
 		return this;
 	}
 	
-	public boolean hasAsyncClient() { 
-		return acceptsIncomplete;
+	public CreateServiceInstanceRequest withAsyncClient(boolean async) { 
+		this.acceptsIncomplete = async;
+		return this;
 	}
-
-
 	
 }
