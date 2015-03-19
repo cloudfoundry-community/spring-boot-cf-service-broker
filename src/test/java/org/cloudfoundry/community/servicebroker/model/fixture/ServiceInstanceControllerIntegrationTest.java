@@ -329,7 +329,8 @@ public class ServiceInstanceControllerIntegrationTest {
 				new ArgumentMatcher<CreateServiceInstanceRequest>() {
 					@Override
 					public boolean matches(Object argument) {
-						return !((CreateServiceInstanceRequest) argument).acceptsIncomplete();
+						CreateServiceInstanceRequest request = (CreateServiceInstanceRequest) argument;
+						return !request.hasAsyncClient();
 					}
 
 				})
@@ -471,6 +472,6 @@ public class ServiceInstanceControllerIntegrationTest {
 			.andExpect(status().isAccepted())
 			.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
 			.andExpect(jsonPath("$.last_operation.state", is("in progress"))
-		);
+			);
 	}
 }

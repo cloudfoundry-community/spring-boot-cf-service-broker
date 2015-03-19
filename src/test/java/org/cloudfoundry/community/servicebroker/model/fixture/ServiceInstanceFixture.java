@@ -74,7 +74,7 @@ public class ServiceInstanceFixture {
 	public static ServiceInstance getAsyncServiceInstance() {
 		return new ServiceInstance(
 				new CreateServiceInstanceRequest(null, null, null, null)
-					.withAsyncClient(true))
+					.withAcceptsIncomplete(true))
 				.withDashboardUrl(null)
 				.and()
 				.isAsync(true);

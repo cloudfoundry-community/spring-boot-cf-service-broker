@@ -123,6 +123,10 @@ public class CreateServiceInstanceRequest {
 		this.parameters = parameters;
 	}
 
+	public boolean hasAsyncClient() {
+		return acceptsIncomplete;
+	}
+
 	public CreateServiceInstanceRequest withServiceDefinition(ServiceDefinition svc) {
 		this.serviceDefinition = svc;
 		return this;
@@ -133,23 +137,14 @@ public class CreateServiceInstanceRequest {
 		this.serviceInstanceId = serviceInstanceId;
 		return this;
 	}
-	
+
 	public CreateServiceInstanceRequest withAcceptsIncomplete(boolean b) {
 		this.acceptsIncomplete = b;
 		return this;
 	}
-	
+
 	public CreateServiceInstanceRequest and() {
 		return this;
-	}
-
-	public CreateServiceInstanceRequest withAsyncClient(boolean async) {
-		this.acceptsIncomplete = async;
-		return this;
-	}
-
-	public boolean acceptsIncomplete() {
-		return acceptsIncomplete;
 	}
 
 	@Override
@@ -168,5 +163,4 @@ public class CreateServiceInstanceRequest {
 	public int hashCode() {
 		return Objects.hash(serviceDefinitionId, planId, organizationGuid, spaceGuid, parameters);
 	}
-
 }
