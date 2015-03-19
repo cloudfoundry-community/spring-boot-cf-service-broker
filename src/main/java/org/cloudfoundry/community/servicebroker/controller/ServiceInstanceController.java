@@ -95,8 +95,8 @@ public class ServiceInstanceController extends BaseController {
 		}
 		
 		logger.debug("ServiceInstance Deleted: " + instance.getServiceInstanceId());
-        return new ResponseEntity<ServiceInstance>(instance, 
-        		instance.isAsync() ? HttpStatus.ACCEPTED : HttpStatus.OK );
+		return new ResponseEntity<ServiceInstance>(instance,
+				instance.isAsync() ? HttpStatus.ACCEPTED : HttpStatus.OK );
 	}
 	
 	@RequestMapping(value = BASE_PATH + "/{instanceId}", method = RequestMethod.PATCH)
@@ -112,7 +112,7 @@ public class ServiceInstanceController extends BaseController {
 				+ instanceId + ", instanceId = " + instanceId + ", planId = "
 				+ request.getPlanId());
 		ServiceInstance instance = service.updateServiceInstance(
-				request.withInstanceId(instanceId).withAsyncClient(acceptsIncomplete));
+				request.withInstanceId(instanceId).withAcceptsIncomplete(acceptsIncomplete));
 		logger.debug("ServiceInstance updated: " + instance.getServiceInstanceId());
 		HttpStatus status = instance.isAsync() ? HttpStatus.ACCEPTED : HttpStatus.OK; 
 		return new ResponseEntity<String>("{}", status);

@@ -5,19 +5,18 @@ package org.cloudfoundry.community.servicebroker.model;
  * @author krujos
  *
  */
-public class DeleteServiceInstanceRequest {
+public class DeleteServiceInstanceRequest extends ServiceInstanceRequest {
 
 	private final String serviceInstanceId;
 	private final String serviceId;
 	private final String planId;
-	private boolean asyncClient;
 
 	public DeleteServiceInstanceRequest(String instanceId, String serviceId,
-			String planId, boolean acceptsIncomplete) {
+			String planId, boolean async) {
+		super(async);
 		this.serviceInstanceId = instanceId; 
 		this.serviceId = serviceId;
 		this.planId = planId;
-		this.asyncClient = acceptsIncomplete;
 	}
 
 	public String getServiceInstanceId() {
@@ -30,9 +29,5 @@ public class DeleteServiceInstanceRequest {
 
 	public String getPlanId() {
 		return planId;
-	}
-
-	public boolean hasAsyncClient() {
-		return asyncClient;
 	}
 }

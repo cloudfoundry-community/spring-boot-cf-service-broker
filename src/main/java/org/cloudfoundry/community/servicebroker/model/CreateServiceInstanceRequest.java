@@ -16,7 +16,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
  * @author sgreenberg@gopivotal.com
  */
 @JsonAutoDetect(getterVisibility = JsonAutoDetect.Visibility.NONE)
-public class CreateServiceInstanceRequest {
+public class CreateServiceInstanceRequest extends ServiceInstanceRequest {
 
 	@NotEmpty
 	@JsonSerialize
@@ -49,23 +49,17 @@ public class CreateServiceInstanceRequest {
 	//Cloud Controller doesn't send instanceId in the body
 	@JsonIgnore
 	private String serviceInstanceId;
-
-	@JsonIgnore
-	private boolean acceptsIncomplete;
 	
 	public CreateServiceInstanceRequest() {
+		super(false);
 	}
-
-	public CreateServiceInstanceRequest(String serviceDefinitionId, String planId, String organizationGuid, String spaceGuid) {
+	
+	public CreateServiceInstanceRequest(String serviceDefinitionId, String planId, String organizationGuid, String spaceGuid, boolean async, Map<String, Object> parameters) {
+		super(async);
 		this.serviceDefinitionId = serviceDefinitionId;
 		this.planId = planId;
 		this.organizationGuid = organizationGuid;
 		this.spaceGuid = spaceGuid;
-		this.acceptsIncomplete = false;
-	}
-
-	public CreateServiceInstanceRequest(String serviceDefinitionId, String planId, String organizationGuid, String spaceGuid, Map<String, Object> parameters) {
-		this(serviceDefinitionId, planId, organizationGuid, spaceGuid);
 		this.parameters = parameters;
 	}
 
@@ -123,17 +117,12 @@ public class CreateServiceInstanceRequest {
 		this.parameters = parameters;
 	}
 
-	public boolean hasAsyncClient() {
-		return acceptsIncomplete;
-	}
-
 	public CreateServiceInstanceRequest withServiceDefinition(ServiceDefinition svc) {
 		this.serviceDefinition = svc;
 		return this;
 	}
 
-	public CreateServiceInstanceRequest withServiceInstanceId(
-			final String serviceInstanceId) {
+	public CreateServiceInstanceRequest withServiceInstanceId(final String serviceInstanceId) {
 		this.serviceInstanceId = serviceInstanceId;
 		return this;
 	}
@@ -156,11 +145,12 @@ public class CreateServiceInstanceRequest {
 				Objects.equals(planId, that.planId) &&
 				Objects.equals(organizationGuid, that.organizationGuid) &&
 				Objects.equals(spaceGuid, that.spaceGuid) &&
+				Objects.equals(acceptsIncomplete, that.acceptsIncomplete) &&
 				Objects.equals(parameters, that.parameters);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(serviceDefinitionId, planId, organizationGuid, spaceGuid, parameters);
+		return Objects.hash(serviceDefinitionId, planId, organizationGuid, spaceGuid, acceptsIncomplete, parameters);
 	}
 }
