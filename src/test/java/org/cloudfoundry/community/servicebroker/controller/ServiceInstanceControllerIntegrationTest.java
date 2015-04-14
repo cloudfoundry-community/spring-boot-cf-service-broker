@@ -128,7 +128,7 @@ public class ServiceInstanceControllerIntegrationTest {
 	    		.accept(MediaType.APPLICATION_JSON)
 	    	)
 	    	.andExpect(status().isUnprocessableEntity())
-	    	.andExpect(jsonPath("$.description", containsString("foo")));
+	    	.andExpect(jsonPath("$.description", containsString("Missing required fields")));
  	}
 	
 	@Test
