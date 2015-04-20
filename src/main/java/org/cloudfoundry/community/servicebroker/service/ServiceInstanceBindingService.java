@@ -16,11 +16,10 @@ public interface ServiceInstanceBindingService {
 	 * @return The newly created ServiceInstanceBinding
 	 * @throws ServiceInstanceBindingExistsException if the same binding already exists
 	 * @throws ServiceBrokerException on internal failure
-	 * @throws ServiceBrokerAsyncRequiredException if we must use an async comparable cloud controller
 	 */
 	ServiceInstanceBinding createServiceInstanceBinding(
 			CreateServiceInstanceBindingRequest createServiceInstanceBindingRequest)
-			throws ServiceInstanceBindingExistsException, ServiceBrokerException, ServiceBrokerAsyncRequiredException;
+			throws ServiceInstanceBindingExistsException, ServiceBrokerException;
 
 	/**
 	 * Delete the service instance binding. If a binding doesn't exist, 
