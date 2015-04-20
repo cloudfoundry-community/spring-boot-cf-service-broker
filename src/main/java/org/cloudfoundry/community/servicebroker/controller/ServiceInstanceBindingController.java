@@ -50,7 +50,7 @@ public class ServiceInstanceBindingController extends BaseController {
 			@PathVariable("bindingId") String bindingId,
 			@Valid @RequestBody CreateServiceInstanceBindingRequest request) throws
 			ServiceInstanceDoesNotExistException, ServiceInstanceBindingExistsException, 
-			ServiceBrokerException, ServiceBrokerAsyncRequiredException {
+			ServiceBrokerException {
 		logger.debug( "PUT: " + BASE_PATH + "/{bindingId}"
 				+ ", bindServiceInstance(), serviceInstance.id = " + instanceId 
 				+ ", bindingId = " + bindingId);
