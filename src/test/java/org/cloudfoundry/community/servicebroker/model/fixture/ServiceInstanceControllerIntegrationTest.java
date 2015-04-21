@@ -52,7 +52,7 @@ public class ServiceInstanceControllerIntegrationTest {
 		when(catalogService.getServiceDefinition(any(String.class)))
 			.thenReturn(ServiceFixture.getService());
 		
-		String dashboardUrl = ServiceInstanceFixture.getCreateServiceInstanceResponse().getDashboardUrl();
+		String dashboardUrl = ServiceInstanceFixture.getServiceInstance().getDashboardUrl();
 
 		String url = ServiceInstanceController.BASE_PATH + "/" + instance.getServiceInstanceId();
 		String body = ServiceInstanceFixture.getCreateServiceInstanceRequestJson();
@@ -67,7 +67,7 @@ public class ServiceInstanceControllerIntegrationTest {
 			.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
 			.andExpect(jsonPath("$.dashboard_url", is(dashboardUrl)));
 	}
-	
+
 	@Test
 	public void unknownServiceDefinitionInstanceCreationFails() throws Exception {
 		ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
@@ -303,6 +303,7 @@ public class ServiceInstanceControllerIntegrationTest {
 	@Test
 	public void itShouldPassAnAsyncCreateServiceRequestAndReturn202() throws Exception {
 		ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
+		instance.withLastOperation(new ServiceInstanceLastOperation("Doing stuff", OperationState.IN_PROGRESS));
 
 		when(catalogService.getServiceDefinition(any(String.class)))
 			.thenReturn(ServiceFixture.getService());
@@ -319,7 +320,9 @@ public class ServiceInstanceControllerIntegrationTest {
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(body)
 				.accept(MediaType.APPLICATION_JSON)
-			).andExpect(status().isAccepted());
+			)
+			.andExpect(status().isAccepted())
+			.andExpect(jsonPath("last_operation.state", is("in progress")));
 	}
 	
 	@Test
