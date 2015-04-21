@@ -34,7 +34,7 @@ public class ServiceInstanceController extends BaseController {
  	}
 	
 	@RequestMapping(value = BASE_PATH + "/{instanceId}", method = RequestMethod.PUT)
-	public ResponseEntity<CreateServiceInstanceResponse> createServiceInstance(
+	public ResponseEntity<ServiceInstance> createServiceInstance(
 			@PathVariable("instanceId") String serviceInstanceId, 
 			@RequestParam(value="accepts_incomplete", required=false) boolean acceptsIncomplete,
 			@Valid @RequestBody CreateServiceInstanceRequest request) throws
@@ -52,9 +52,8 @@ public class ServiceInstanceController extends BaseController {
 					.and().withAsyncClient(acceptsIncomplete));
 		logger.debug("ServiceInstance Created: " + instance.getServiceInstanceId());
 
-        return new ResponseEntity<CreateServiceInstanceResponse>(
-    		new CreateServiceInstanceResponse(instance), 
-    		instance.isAsync() ? HttpStatus.ACCEPTED : HttpStatus.CREATED);
+        return new ResponseEntity<ServiceInstance>(
+    		instance, instance.isAsync() ? HttpStatus.ACCEPTED : HttpStatus.CREATED);
 		
 	}
 	

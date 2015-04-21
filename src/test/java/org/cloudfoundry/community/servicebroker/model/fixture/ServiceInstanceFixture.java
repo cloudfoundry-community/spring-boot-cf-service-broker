@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.cloudfoundry.community.servicebroker.model.CreateServiceInstanceRequest;
-import org.cloudfoundry.community.servicebroker.model.CreateServiceInstanceResponse;
 import org.cloudfoundry.community.servicebroker.model.ServiceDefinition;
 import org.cloudfoundry.community.servicebroker.model.ServiceInstance;
 import org.cloudfoundry.community.servicebroker.model.UpdateServiceInstanceRequest;
@@ -61,10 +60,6 @@ public class ServiceInstanceFixture {
 	
 	public static String getCreateServiceInstanceRequestJson() throws JsonGenerationException, JsonMappingException, IOException {
 		 return DataFixture.toJson(getCreateServiceInstanceRequest());
-	}
-		
-	public static CreateServiceInstanceResponse getCreateServiceInstanceResponse() {
-		return new CreateServiceInstanceResponse(getServiceInstance());
 	}
 
 	public static String getUpdateServiceInstanceRequestJson() throws JsonGenerationException,
