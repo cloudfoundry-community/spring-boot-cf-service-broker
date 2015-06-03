@@ -77,14 +77,14 @@ public class ServiceDefinition {
 		this.setPlans(plans);
 	}
 
-	public ServiceDefinition(String id, String name, String description, boolean bindable, boolean planUpdatable, 
+	public ServiceDefinition(String id, String name, String description, boolean bindable, boolean planUpdateable, 
 			List<Plan> plans, List<String> tags, Map<String,Object> metadata, List<String> requires, 
 			DashboardClient dashboardClient) {
 		this(id, name, description, bindable, plans);
 		setTags(tags);
 		setMetadata(metadata);
 		setRequires(requires);
-		setPlanUpdatable(planUpdatable);
+		setPlanUpdateable(planUpdateable);
 		this.dashboardClient = dashboardClient;
 	}
 	
@@ -104,12 +104,12 @@ public class ServiceDefinition {
 		return bindable;
 	}
 
-	public boolean isPlanUpdatable() {
+	public boolean isPlanUpdateable() {
 		return planUpdateable;
 	}
 
-	public void setPlanUpdatable(boolean planUpdatable) {
-		this.planUpdateable = planUpdatable;
+	public void setPlanUpdateable(boolean planUpdateable) {
+		this.planUpdateable = planUpdateable;
 	}
 
 	public List<Plan> getPlans() {
