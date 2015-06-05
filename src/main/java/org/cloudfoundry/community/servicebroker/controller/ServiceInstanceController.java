@@ -57,22 +57,23 @@ public class ServiceInstanceController extends BaseController {
 		
 	}
 	
-	@RequestMapping(value = BASE_PATH + "/{instanceId}", method = RequestMethod.GET)
-	public ResponseEntity<?> getServiceInstance(
+	@RequestMapping(value = BASE_PATH + "/{instanceId}/last_operation", method = RequestMethod.GET)
+	public ResponseEntity<?> getServiceInstanceLastOperation(
 			@PathVariable("instanceId") String instanceId) {
-		
-		logger.debug("GET: " + BASE_PATH + "/{instanceId}" 
+
+		logger.debug("GET: " + BASE_PATH + "/{instanceId}/last_operation"
 				+ ", getServiceInstance(), serviceInstanceId = " + instanceId);
-		
+
 		ServiceInstance instance = service.getServiceInstance(instanceId);
-		
+
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
-		if (null == instance) { 
+		if (null == instance) {
 			return new ResponseEntity<String>("{}", headers, HttpStatus.GONE);
-		} 
-		logger.debug("ServiceInstance: " + instance.getServiceInstanceId());
-		return new ResponseEntity<ServiceInstance>(instance, headers, HttpStatus.OK);
+		}
+		ServiceInstanceLastOperation lastOperation = instance.getServiceInstanceLastOperation();
+		logger.debug("ServiceInstance: " + instance.getServiceInstanceId() + "is in " +lastOperation.getState() + " state. Details : " +lastOperation.getDescription());
+		return new ResponseEntity<ServiceInstanceLastOperation>(lastOperation, headers, HttpStatus.OK);
 	}
 	
 	@RequestMapping(value = BASE_PATH + "/{instanceId}", method = RequestMethod.DELETE)
