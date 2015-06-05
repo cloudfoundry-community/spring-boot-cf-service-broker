@@ -7,15 +7,12 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 public class ServiceInstanceLastOperation {
 	
 	@JsonSerialize
-	@JsonProperty("dashboard_url")
-	private String dashboarUrl; 
-	
-	@JsonSerialize
 	private String description;
 	
 	private OperationState state; 
 	
-	public ServiceInstanceLastOperation() {}
+	public ServiceInstanceLastOperation() {
+	}
 	
 	public ServiceInstanceLastOperation(
 			final String description, 
