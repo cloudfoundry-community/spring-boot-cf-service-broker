@@ -3,6 +3,7 @@ package org.cloudfoundry.community.servicebroker.model;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -14,6 +15,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
  * request is successful.
  * 
  * @author sgreenberg@gopivotal.com
+ * @author <A href="mailto:josh@joshlong.com">Josh Long</A>
  */
 @JsonAutoDetect(getterVisibility = JsonAutoDetect.Visibility.NONE)
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -36,6 +38,7 @@ public class ServiceInstanceBindingResponse {
 
 	@JsonSerialize
 	@JsonProperty("syslog_drain_url")
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	public String getSyslogDrainUrl() {
 		return binding.getSyslogDrainUrl();
 	}
