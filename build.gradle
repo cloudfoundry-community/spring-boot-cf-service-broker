@@ -15,11 +15,11 @@ apply plugin: 'spring-boot'
 apply plugin: 'maven-publish'
 apply plugin: 'maven'
 
-version = "2.4.1"
+version = "2.4.2"
 group = "org.cloudfoundry"
 description = "Spring Boot project for creating Cloud Foundry service brokers"
 
-archivesBaseName = "spring-boot-cf-service-broker" 
+archivesBaseName = "spring-boot-cf-service-broker"
 
 ext {
     springBootVersion = '1.2.2.RELEASE'
