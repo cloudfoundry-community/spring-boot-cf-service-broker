@@ -33,6 +33,10 @@ public class CreateServiceInstanceRequest {
 	@JsonSerialize
 	@JsonProperty("space_guid")
 	private String spaceGuid;
+	
+	@JsonSerialize
+	@JsonProperty("parameters")
+	private Object parameters;
 
 	//Cloud Controller dosen't send the definition, it's populated later
 	@JsonIgnore
@@ -87,6 +91,14 @@ public class CreateServiceInstanceRequest {
 	public String getServiceInstanceId() { 
 		return serviceInstanceId;
 	}
+	
+	public void setParameters(Object parameters) {
+        this.parameters = parameters;
+    }
+	
+	public Object getParameters() {
+        return parameters;
+    }
 	
 	public CreateServiceInstanceRequest withServiceDefinition(ServiceDefinition svc) {
 		this.serviceDefinition = svc;

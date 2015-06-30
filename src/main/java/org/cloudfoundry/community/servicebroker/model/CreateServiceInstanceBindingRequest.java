@@ -30,6 +30,10 @@ public class CreateServiceInstanceBindingRequest {
 	@JsonProperty("app_guid")
 	private String appGuid;
 
+    @JsonSerialize
+    @JsonProperty("parameters")
+    private Object parameters;
+
 	@JsonIgnore
 	private String serviceInstanceId;
 

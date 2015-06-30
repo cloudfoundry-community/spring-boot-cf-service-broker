@@ -18,6 +18,10 @@ public class UpdateServiceInstanceRequest {
 	@JsonProperty("plan_id")
 	private String planId;
 	
+    @JsonSerialize
+    @JsonProperty("parameters")
+    private Object parameters;
+	
 	@JsonIgnore
 	private String serviceInstanceId;
 
