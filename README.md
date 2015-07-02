@@ -33,7 +33,7 @@ The value of `springBootCfServiceBrokerVersion` corresponds to the service broke
 
 ## Latest
 
-springBootCfServiceBrokerVersion: 2.4.2
+springBootCfServiceBrokerVersion: 2.5.0
 
 # Configuring the broker
 
