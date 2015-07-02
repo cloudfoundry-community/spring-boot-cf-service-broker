@@ -3,6 +3,7 @@ package org.cloudfoundry.community.servicebroker.model;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
@@ -38,6 +39,11 @@ public class UpdateServiceInstanceRequest {
 	public String getServiceInstanceId() { 
 		return serviceInstanceId;
 	}
+	
+    public <T> T getParameters(Class<T> cls) {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.convertValue(parameters, cls);
+    }
 
 	public UpdateServiceInstanceRequest withInstanceId(String serviceInstanceId) {
 		this.serviceInstanceId = serviceInstanceId; 
