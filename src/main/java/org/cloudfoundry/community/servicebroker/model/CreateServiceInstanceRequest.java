@@ -1,5 +1,7 @@
 package org.cloudfoundry.community.servicebroker.model;
 
+import java.util.Map;
+
 import org.hibernate.validator.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.*;
@@ -97,9 +99,17 @@ public class CreateServiceInstanceRequest {
         this.parameters = parameters;
     }
 	
-    public <T> T getParameters(Class<T> cls) {
-        ObjectMapper mapper = new ObjectMapper();
-        return mapper.convertValue(parameters, cls);
+    public Map<?, ?> getParameters() {
+        return getParameters(Map.class);
+    }
+
+    public <T> T getParameters(Class<T> cls) throws IllegalArgumentException {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.convertValue(parameters, cls);
+        } catch (Exception e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 	
 	public CreateServiceInstanceRequest withServiceDefinition(ServiceDefinition svc) {
