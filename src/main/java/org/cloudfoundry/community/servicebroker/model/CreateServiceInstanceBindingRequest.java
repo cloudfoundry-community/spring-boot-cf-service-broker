@@ -1,8 +1,13 @@
 package org.cloudfoundry.community.servicebroker.model;
 
+import java.util.Map;
+
 import org.hibernate.validator.constraints.NotEmpty;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
@@ -29,6 +34,10 @@ public class CreateServiceInstanceBindingRequest {
 	@JsonSerialize
 	@JsonProperty("app_guid")
 	private String appGuid;
+
+    @JsonSerialize
+    @JsonProperty("parameters")
+    private Object parameters;
 
 	@JsonIgnore
 	private String serviceInstanceId;
@@ -75,6 +84,23 @@ public class CreateServiceInstanceBindingRequest {
 	public String getServiceInstanceId() { 
 		return serviceInstanceId;
 	}
+	
+	public Map<?, ?> getParameters(){
+	    return getParameters(Map.class);
+	}
+	
+	public <T> T getParameters(Class<T> cls) throws IllegalArgumentException{
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.convertValue(parameters, cls);
+        } catch (Exception e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+	
+	public void setParameters(Object parameters) {
+        this.parameters = parameters;
+    }
 
 	public CreateServiceInstanceBindingRequest withServiceInstanceId(final String serviceInstanceId) {
 		this.serviceInstanceId = serviceInstanceId;
