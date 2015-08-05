@@ -6,7 +6,6 @@ import java.util.Map;
 import org.cloudfoundry.community.servicebroker.model.Catalog;
 import org.cloudfoundry.community.servicebroker.model.ServiceDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 /**
  * An implementation of the CatalogService that gets the catalog injected (ie configure 
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Service;
  * @author sgreenberg@gopivotal.com
  *
  */
-@Service
 public class BeanCatalogService implements CatalogService {
 
 	private Catalog catalog;
