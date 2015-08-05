@@ -21,6 +21,9 @@ description = "Spring Boot project for creating Cloud Foundry service brokers"
 
 archivesBaseName = "spring-boot-cf-service-broker"
 
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
 ext {
     springBootVersion = '1.2.2.RELEASE'
     hibernateValidatorVersion = '5.1.0.Final'
@@ -52,6 +55,7 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
     compile("org.springframework.boot:spring-boot-starter-security:${springBootVersion}")
     compile("org.hibernate:hibernate-validator:${hibernateValidatorVersion}")
+    compile("commons-beanutils:commons-beanutils:1.9.2")
 
     testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
     testCompile("com.jayway.jsonpath:json-path:${jsonPathVersion}")

@@ -1,11 +1,12 @@
 package org.cloudfoundry.community.servicebroker.model;
 
 import java.util.Map;
+import java.util.Objects;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.*;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
@@ -39,18 +40,18 @@ public class CreateServiceInstanceRequest {
 	
 	@JsonSerialize
 	@JsonProperty("parameters")
-	private Object parameters;
+	private Map<String, Object> parameters;
 
-	//Cloud Controller dosen't send the definition, it's populated later
+	//Cloud Controller doesn't send the definition, it's populated later
 	@JsonIgnore
 	private ServiceDefinition serviceDefinition;
 
-	//Cloud Controller dosen't send instanceId in the body
+	//Cloud Controller doesn't send instanceId in the body
 	@JsonIgnore
 	private String serviceInstanceId;
 	
-	public CreateServiceInstanceRequest() {}
-	
+	public CreateServiceInstanceRequest() {
+	}
 
 	public CreateServiceInstanceRequest(String serviceDefinitionId, String planId, String organizationGuid, String spaceGuid) {
 		this.serviceDefinitionId = serviceDefinitionId;
@@ -58,7 +59,12 @@ public class CreateServiceInstanceRequest {
 		this.organizationGuid = organizationGuid;
 		this.spaceGuid = spaceGuid;
 	}
-	
+
+	public CreateServiceInstanceRequest(String serviceDefinitionId, String planId, String organizationGuid, String spaceGuid, Map<String, Object> parameters) {
+		this(serviceDefinitionId, planId, organizationGuid, spaceGuid);
+		this.parameters = parameters;
+	}
+
 	public String getServiceDefinitionId() {
 		return serviceDefinitionId;
 	}
@@ -94,24 +100,25 @@ public class CreateServiceInstanceRequest {
 	public String getServiceInstanceId() { 
 		return serviceInstanceId;
 	}
-	
-	public void setParameters(Object parameters) {
-        this.parameters = parameters;
-    }
-	
-    public Map<?, ?> getParameters() {
-        return getParameters(Map.class);
-    }
 
-    public <T> T getParameters(Class<T> cls) throws IllegalArgumentException {
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            return mapper.convertValue(parameters, cls);
-        } catch (Exception e) {
-            throw new IllegalArgumentException(e);
-        }
-    }
-	
+	public Map<String, Object> getParameters() {
+		return parameters;
+	}
+
+	public <T> T getParameters(Class<T> cls) {
+		try {
+			T bean = cls.newInstance();
+			BeanUtils.populate(bean, parameters);
+			return bean;
+		} catch (Exception e) {
+			throw new IllegalArgumentException("Error mapping parameters to class of type " + cls.getName());
+		}
+	}
+
+	public void setParameters(Map<String, Object> parameters) {
+		this.parameters = parameters;
+	}
+
 	public CreateServiceInstanceRequest withServiceDefinition(ServiceDefinition svc) {
 		this.serviceDefinition = svc;
 		return this;
@@ -125,5 +132,21 @@ public class CreateServiceInstanceRequest {
 	public CreateServiceInstanceRequest and() {
 		return this;
 	}
-	
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		CreateServiceInstanceRequest that = (CreateServiceInstanceRequest) o;
+		return Objects.equals(serviceDefinitionId, that.serviceDefinitionId) &&
+				Objects.equals(planId, that.planId) &&
+				Objects.equals(organizationGuid, that.organizationGuid) &&
+				Objects.equals(spaceGuid, that.spaceGuid) &&
+				Objects.equals(parameters, that.parameters);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(serviceDefinitionId, planId, organizationGuid, spaceGuid, parameters);
+	}
 }

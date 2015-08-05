@@ -6,8 +6,6 @@ import java.util.Map;
 
 import org.cloudfoundry.community.servicebroker.model.*;
 
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class ServiceInstanceBindingFixture {
@@ -47,11 +45,12 @@ public class ServiceInstanceBindingFixture {
 		return new CreateServiceInstanceBindingRequest(
 				ServiceFixture.getService().getId(), 
 				PlanFixture.getPlanOne().getId(),
-				getAppGuid()
+				getAppGuid(),
+				ParametersFixture.getParameters()
 		); 	
 	}
 	
-	public static String getServiceInstanceBindingRequestJson() throws JsonGenerationException, JsonMappingException, IOException {
+	public static String getServiceInstanceBindingRequestJson() throws IOException {
 		 ObjectMapper mapper = new ObjectMapper();
 		 return mapper.writeValueAsString(getServiceInstanceBindingRequest());
 	}

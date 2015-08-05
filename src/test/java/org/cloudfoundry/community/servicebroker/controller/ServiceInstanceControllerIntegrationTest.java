@@ -2,6 +2,7 @@ package org.cloudfoundry.community.servicebroker.controller;
 
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -34,173 +35,175 @@ public class ServiceInstanceControllerIntegrationTest {
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 
-	    this.mockMvc = MockMvcBuilders.standaloneSetup(controller)
-	            .setMessageConverters(new MappingJackson2HttpMessageConverter()).build();
+		this.mockMvc = MockMvcBuilders.standaloneSetup(controller)
+				.setMessageConverters(new MappingJackson2HttpMessageConverter()).build();
 	}
 	
 	@Test
 	public void serviceInstanceIsCreatedCorrectly() throws Exception {
-	    ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
+		ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
 		
-		when(serviceInstanceService.createServiceInstance(any(CreateServiceInstanceRequest.class)))
-	    	.thenReturn(instance);
-	    
+		when(serviceInstanceService.createServiceInstance(
+				eq(ServiceInstanceFixture.getCreateServiceInstanceRequest())))
+			.thenReturn(instance);
+
 		when(catalogService.getServiceDefinition(any(String.class)))
-    	.thenReturn(ServiceFixture.getService());
+			.thenReturn(ServiceFixture.getService());
 		
-	    String dashboardUrl = ServiceInstanceFixture.getCreateServiceInstanceResponse().getDashboardUrl();
-	    
-	    String url = ServiceInstanceController.BASE_PATH + "/" + instance.getServiceInstanceId();
-	    String body = ServiceInstanceFixture.getCreateServiceInstanceRequestJson();
-	    
-	    mockMvc.perform(
-	    		put(url)
-	    		.contentType(MediaType.APPLICATION_JSON)
-	    		.content(body)
-	    		.accept(MediaType.APPLICATION_JSON)
-	    	)
-	    	.andExpect(status().isCreated())
-            .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.dashboard_url", is(dashboardUrl)));
- 	}
+		String dashboardUrl = ServiceInstanceFixture.getCreateServiceInstanceResponse().getDashboardUrl();
+
+		String url = ServiceInstanceController.BASE_PATH + "/" + instance.getServiceInstanceId();
+		String body = ServiceInstanceFixture.getCreateServiceInstanceRequestJson();
+
+		mockMvc.perform(
+				put(url)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(body)
+				.accept(MediaType.APPLICATION_JSON)
+			)
+			.andExpect(status().isCreated())
+			.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+			.andExpect(jsonPath("$.dashboard_url", is(dashboardUrl)));
+	}
 	
 	@Test
 	public void unknownServiceDefinitionInstanceCreationFails() throws Exception {
-	    ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
-	    
+		ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
+
 		when(catalogService.getServiceDefinition(any(String.class)))
-    	.thenReturn(null);
-	    
-	    String url = ServiceInstanceController.BASE_PATH + "/" + instance.getServiceInstanceId();
-	    String body = ServiceInstanceFixture.getCreateServiceInstanceRequestJson();
-	    
-	    mockMvc.perform(
-	    		put(url)
-	    		.contentType(MediaType.APPLICATION_JSON)
-	    		.content(body)
-	    		.accept(MediaType.APPLICATION_JSON)
-	    	)
-	    	.andExpect(status().isUnprocessableEntity())
-	    	.andExpect(jsonPath("$.description", containsString(instance.getServiceDefinitionId())));
- 	}
+			.thenReturn(null);
+
+		String url = ServiceInstanceController.BASE_PATH + "/" + instance.getServiceInstanceId();
+		String body = ServiceInstanceFixture.getCreateServiceInstanceRequestJson();
+
+		mockMvc.perform(
+				put(url)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(body)
+				.accept(MediaType.APPLICATION_JSON)
+			)
+			.andExpect(status().isUnprocessableEntity())
+			.andExpect(jsonPath("$.description", containsString(instance.getServiceDefinitionId())));
+	}
 	
 	@Test
 	public void duplicateServiceInstanceCreationFails() throws Exception {
-	    ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
-	    
-	    when(catalogService.getServiceDefinition(any(String.class)))
-    	.thenReturn(ServiceFixture.getService());
-	    
+		ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
+
+		when(catalogService.getServiceDefinition(any(String.class)))
+			.thenReturn(ServiceFixture.getService());
+
 		when(serviceInstanceService.createServiceInstance(any(CreateServiceInstanceRequest.class)))
-	    	.thenThrow(new ServiceInstanceExistsException(instance));
-	    
-	    String url = ServiceInstanceController.BASE_PATH + "/" + instance.getServiceInstanceId();
-	    String body = ServiceInstanceFixture.getCreateServiceInstanceRequestJson();
-	    
-	    mockMvc.perform(
-	    		put(url)
-	    		.contentType(MediaType.APPLICATION_JSON)
-	    		.content(body)
-	    		.accept(MediaType.APPLICATION_JSON)
-	    	)
-	    	.andExpect(status().isConflict())
-	    	.andExpect(jsonPath("$.description", containsString(instance.getServiceInstanceId())));
- 	}
+			.thenThrow(new ServiceInstanceExistsException(instance));
+
+		String url = ServiceInstanceController.BASE_PATH + "/" + instance.getServiceInstanceId();
+		String body = ServiceInstanceFixture.getCreateServiceInstanceRequestJson();
+
+		mockMvc.perform(
+				put(url)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(body)
+				.accept(MediaType.APPLICATION_JSON)
+			)
+			.andExpect(status().isConflict())
+			.andExpect(jsonPath("$.description", containsString(instance.getServiceInstanceId())));
+	}
 	
 	@Test
 	public void badJsonServiceInstanceCreationFails() throws Exception {
-	    ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
+		ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
 		
 		when(serviceInstanceService.createServiceInstance(any(CreateServiceInstanceRequest.class)))
-	    	.thenReturn(instance);
-	    
+			.thenReturn(instance);
+
 		when(catalogService.getServiceDefinition(any(String.class)))
-    	.thenReturn(ServiceFixture.getService());
-	    
-	    String url = ServiceInstanceController.BASE_PATH + "/" + instance.getServiceInstanceId();
-	    String body = ServiceInstanceFixture.getCreateServiceInstanceRequestJson();
-	    body = body.replace("service_id", "foo");
-	    
-	    mockMvc.perform(
-	    		put(url)
-	    		.contentType(MediaType.APPLICATION_JSON)
-	    		.content(body)
-	    		.accept(MediaType.APPLICATION_JSON)
-	    	)
-	    	.andExpect(status().isUnprocessableEntity())
-	    	.andExpect(jsonPath("$.description", containsString("Missing required fields")));
- 	}
+			.thenReturn(ServiceFixture.getService());
+
+		String url = ServiceInstanceController.BASE_PATH + "/" + instance.getServiceInstanceId();
+		String body = ServiceInstanceFixture.getCreateServiceInstanceRequestJson();
+		body = body.replace("service_id", "foo");
+
+		mockMvc.perform(
+				put(url)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(body)
+				.accept(MediaType.APPLICATION_JSON)
+			)
+			.andExpect(status().isUnprocessableEntity())
+			.andExpect(jsonPath("$.description", containsString("Missing required fields")));
+	}
 	
 	@Test
 	public void badJsonServiceInstanceCreationFailsMissingFields() throws Exception {
-	    ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
+		ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
 		
 		when(serviceInstanceService.createServiceInstance(any(CreateServiceInstanceRequest.class)))
-	    	.thenReturn(instance);
-	    
+			.thenReturn(instance);
+
 		when(catalogService.getServiceDefinition(any(String.class)))
-    	.thenReturn(ServiceFixture.getService());
-	    
-	    String url = ServiceInstanceController.BASE_PATH + "/" + instance.getServiceInstanceId();
-	    String body = "{}";
-	    
-	    mockMvc.perform(
-	    		put(url)
-	    		.contentType(MediaType.APPLICATION_JSON)
-	    		.content(body)
-	    		.accept(MediaType.APPLICATION_JSON)
-	    	)
-	    	.andExpect(status().isUnprocessableEntity())
-	    	.andExpect(jsonPath("$.description", containsString("serviceDefinitionId")))
-	    	.andExpect(jsonPath("$.description", containsString("planId")))
-	    	.andExpect(jsonPath("$.description", containsString("organizationGuid")))
-	    	.andExpect(jsonPath("$.description", containsString("spaceGuid")));
- 	}
+			.thenReturn(ServiceFixture.getService());
+
+		String url = ServiceInstanceController.BASE_PATH + "/" + instance.getServiceInstanceId();
+		String body = "{}";
+
+		mockMvc.perform(
+				put(url)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(body)
+				.accept(MediaType.APPLICATION_JSON)
+			)
+			.andExpect(status().isUnprocessableEntity())
+			.andExpect(jsonPath("$.description", containsString("serviceDefinitionId")))
+			.andExpect(jsonPath("$.description", containsString("planId")))
+			.andExpect(jsonPath("$.description", containsString("organizationGuid")))
+			.andExpect(jsonPath("$.description", containsString("spaceGuid")));
+	}
 	
 	@Test
 	public void serviceInstanceIsDeletedSuccessfully() throws Exception {
-	    ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
-			    
+		ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
+
 		when(serviceInstanceService.deleteServiceInstance(any(DeleteServiceInstanceRequest.class)))
-    		.thenReturn(instance);
-	    
-	    String url = ServiceInstanceController.BASE_PATH + "/" + instance.getServiceInstanceId() 
-	    		+ "?service_id=" + instance.getServiceDefinitionId()
-	    		+ "&plan_id=" + instance.getPlanId();
-	    
-	    mockMvc.perform(delete(url)
-	    		.accept(MediaType.APPLICATION_JSON)
-	    	)
-	    	.andExpect(status().isOk())
-            .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$", is("{}"))
-        );
- 	}
+			.thenReturn(instance);
+
+		String url = ServiceInstanceController.BASE_PATH + "/" + instance.getServiceInstanceId()
+				+ "?service_id=" + instance.getServiceDefinitionId()
+				+ "&plan_id=" + instance.getPlanId();
+
+		mockMvc.perform(delete(url)
+				.accept(MediaType.APPLICATION_JSON)
+			)
+			.andExpect(status().isOk())
+			.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+			.andExpect(jsonPath("$", is("{}"))
+			);
+	}
 	
 	@Test
 	public void deleteUnknownServiceInstanceFailsWithA410() throws Exception {
-	    ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
-			    
+		ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
+
 		when(serviceInstanceService.deleteServiceInstance(any(DeleteServiceInstanceRequest.class)))
-    		.thenReturn(null);
-	    
-	    String url = ServiceInstanceController.BASE_PATH + "/" + instance.getServiceInstanceId() 
-	    		+ "?service_id=" + instance.getServiceDefinitionId()
-	    		+ "&plan_id=" + instance.getPlanId();
-	    
-	    mockMvc.perform(delete(url)
-	    		.accept(MediaType.APPLICATION_JSON)
-	    	)
-	    	.andExpect(status().isGone())
-	    	.andExpect(jsonPath("$", is("{}")));
- 	}
+			.thenReturn(null);
+
+		String url = ServiceInstanceController.BASE_PATH + "/" + instance.getServiceInstanceId()
+				+ "?service_id=" + instance.getServiceDefinitionId()
+				+ "&plan_id=" + instance.getPlanId();
+
+		mockMvc.perform(delete(url)
+				.accept(MediaType.APPLICATION_JSON)
+			)
+			.andExpect(status().isGone())
+			.andExpect(jsonPath("$", is("{}")));
+	}
 
 	@Test
 	public void serviceInstanceIsUpdatedSuccessfully() throws Exception {
 		ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
 
-		when(serviceInstanceService.updateServiceInstance(any(UpdateServiceInstanceRequest.class)))
-		.thenReturn(instance);
+		when(serviceInstanceService.updateServiceInstance(
+				eq(ServiceInstanceFixture.getUpdateServiceInstanceRequest())))
+			.thenReturn(instance);
 
 		String url = ServiceInstanceController.BASE_PATH + "/" + instance.getServiceInstanceId();
 
