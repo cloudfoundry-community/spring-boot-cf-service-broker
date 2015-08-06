@@ -1,6 +1,5 @@
 package org.cloudfoundry.community.servicebroker.controller;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.cloudfoundry.community.servicebroker.exception.*;
@@ -52,8 +51,8 @@ public class ServiceInstanceController extends BaseController {
 					.and().withAcceptsIncomplete(acceptsIncomplete));
 		logger.debug("ServiceInstance Created: " + instance.getServiceInstanceId());
 
-        return new ResponseEntity<ServiceInstance>(
-    		instance, instance.isAsync() ? HttpStatus.ACCEPTED : HttpStatus.CREATED);
+		return new ResponseEntity<>(
+				instance, instance.isAsync() ? HttpStatus.ACCEPTED : HttpStatus.CREATED);
 		
 	}
 	
@@ -69,11 +68,11 @@ public class ServiceInstanceController extends BaseController {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		if (null == instance) {
-			return new ResponseEntity<String>("{}", headers, HttpStatus.GONE);
+			return new ResponseEntity<>("{}", headers, HttpStatus.GONE);
 		}
 		ServiceInstanceLastOperation lastOperation = instance.getServiceInstanceLastOperation();
-		logger.debug("ServiceInstance: " + instance.getServiceInstanceId() + "is in " +lastOperation.getState() + " state. Details : " +lastOperation.getDescription());
-		return new ResponseEntity<ServiceInstanceLastOperation>(lastOperation, headers, HttpStatus.OK);
+		logger.debug("ServiceInstance: " + instance.getServiceInstanceId() + "is in " + lastOperation.getState() + " state. Details : " +lastOperation.getDescription());
+		return new ResponseEntity<>(lastOperation, headers, HttpStatus.OK);
 	}
 	
 	@RequestMapping(value = BASE_PATH + "/{instanceId}", method = RequestMethod.DELETE)
@@ -91,12 +90,12 @@ public class ServiceInstanceController extends BaseController {
 				new DeleteServiceInstanceRequest(instanceId, serviceId, planId, acceptsIncomplete));
 		
 		if (instance == null) {
-			return new ResponseEntity<String>("{}", HttpStatus.GONE);
+			return new ResponseEntity<>("{}", HttpStatus.GONE);
 		}
 		
 		logger.debug("ServiceInstance Deleted: " + instance.getServiceInstanceId());
-		return new ResponseEntity<ServiceInstance>(instance,
-				instance.isAsync() ? HttpStatus.ACCEPTED : HttpStatus.OK );
+		return new ResponseEntity<>(instance,
+				instance.isAsync() ? HttpStatus.ACCEPTED : HttpStatus.OK);
 	}
 	
 	@RequestMapping(value = BASE_PATH + "/{instanceId}", method = RequestMethod.PATCH)
@@ -115,33 +114,25 @@ public class ServiceInstanceController extends BaseController {
 				request.withInstanceId(instanceId).withAcceptsIncomplete(acceptsIncomplete));
 		logger.debug("ServiceInstance updated: " + instance.getServiceInstanceId());
 		HttpStatus status = instance.isAsync() ? HttpStatus.ACCEPTED : HttpStatus.OK; 
-		return new ResponseEntity<String>("{}", status);
+		return new ResponseEntity<>("{}", status);
 	}
 
-	
 	@ExceptionHandler(ServiceDefinitionDoesNotExistException.class)
 	@ResponseBody
-	public ResponseEntity<ErrorMessage> handleException(
-			ServiceDefinitionDoesNotExistException ex, 
-			HttpServletResponse response) {
+	public ResponseEntity<ErrorMessage> handleException(ServiceDefinitionDoesNotExistException ex) {
 	    return getErrorResponse(ex.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
 	}
 	
 	@ExceptionHandler(ServiceInstanceExistsException.class)
 	@ResponseBody
-	public ResponseEntity<ErrorMessage> handleException(
-			ServiceInstanceExistsException ex, 
-			HttpServletResponse response) {
+	public ResponseEntity<ErrorMessage> handleException(ServiceInstanceExistsException ex) {
 	    return getErrorResponse(ex.getMessage(), HttpStatus.CONFLICT);
 	}
 
 	@ExceptionHandler(ServiceInstanceUpdateNotSupportedException.class)
 	@ResponseBody
-	public ResponseEntity<ErrorMessage> handleException(
-			ServiceInstanceUpdateNotSupportedException ex,
-			HttpServletResponse response) {
-		return getErrorResponse(ex.getMessage(),
-				HttpStatus.UNPROCESSABLE_ENTITY);
+	public ResponseEntity<ErrorMessage> handleException(ServiceInstanceUpdateNotSupportedException ex) {
+		return getErrorResponse(ex.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
 	}
 
 }

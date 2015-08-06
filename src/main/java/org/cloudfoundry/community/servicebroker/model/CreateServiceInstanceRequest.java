@@ -67,35 +67,23 @@ public class CreateServiceInstanceRequest extends ServiceInstanceRequest {
 		return serviceDefinitionId;
 	}
 
-	public void setServiceDefinitionId(String serviceDefinitionId) {
-		this.serviceDefinitionId = serviceDefinitionId;
+	public ServiceDefinition getServiceDefinition() {
+		return serviceDefinition;
 	}
 
 	public String getPlanId() {
 		return planId;
 	}
 
-	public void setPlanId(String planId) {
-		this.planId = planId;
-	}
-
 	public String getOrganizationGuid() {
 		return organizationGuid;
-	}
-
-	public void setOrganizationGuid(String organizationGuid) {
-		this.organizationGuid = organizationGuid;
 	}
 
 	public String getSpaceGuid() {
 		return spaceGuid;
 	}
 
-	public void setSpaceGuid(String spaceGuid) {
-		this.spaceGuid = spaceGuid;
-	}
-	
-	public String getServiceInstanceId() { 
+	public String getServiceInstanceId() {
 		return serviceInstanceId;
 	}
 
@@ -111,10 +99,6 @@ public class CreateServiceInstanceRequest extends ServiceInstanceRequest {
 		} catch (Exception e) {
 			throw new IllegalArgumentException("Error mapping parameters to class of type " + cls.getName());
 		}
-	}
-
-	public void setParameters(Map<String, Object> parameters) {
-		this.parameters = parameters;
 	}
 
 	public CreateServiceInstanceRequest withServiceDefinition(ServiceDefinition svc) {

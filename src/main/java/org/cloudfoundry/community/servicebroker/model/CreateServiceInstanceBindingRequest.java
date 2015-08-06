@@ -49,14 +49,10 @@ public class CreateServiceInstanceBindingRequest {
 	public CreateServiceInstanceBindingRequest() {
 	}
 	
-	public CreateServiceInstanceBindingRequest(String serviceDefinitionId, String planId, String appGuid) {
+	public CreateServiceInstanceBindingRequest(String serviceDefinitionId, String planId, String appGuid, Map<String, Object> parameters) {
 		this.serviceDefinitionId = serviceDefinitionId;
 		this.planId = planId;
 		this.appGuid = appGuid;
-	}
-
-	public CreateServiceInstanceBindingRequest(String serviceDefinitionId, String planId, String appGuid, Map<String, Object> parameters) {
-		this(serviceDefinitionId, planId, appGuid);
 		this.parameters = parameters;
 	}
 
@@ -64,27 +60,15 @@ public class CreateServiceInstanceBindingRequest {
 		return serviceDefinitionId;
 	}
 	
-	public void setServiceDefinitionId(String serviceDefinitionId) {
-		this.serviceDefinitionId = serviceDefinitionId;
-	}
-
 	public String getPlanId() {
 		return planId;
 	}
 	
-	public void setPlanId(String planId) {
-		this.planId = planId;
-	}
-
 	public String getAppGuid() {
 		return appGuid;
 	}
 
-	public void setAppGuid(String appGuid) {
-		this.appGuid = appGuid;
-	}
-	
-	public String getBindingId() { 
+	public String getBindingId() {
 		return bindingId;
 	}
 	
@@ -104,10 +88,6 @@ public class CreateServiceInstanceBindingRequest {
 		} catch (Exception e) {
 			throw new IllegalArgumentException("Error mapping parameters to class of type " + cls.getName());
 		}
-	}
-
-	public void setParameters(Map<String, Object> parameters) {
-		this.parameters = parameters;
 	}
 
 	public CreateServiceInstanceBindingRequest withServiceInstanceId(final String serviceInstanceId) {

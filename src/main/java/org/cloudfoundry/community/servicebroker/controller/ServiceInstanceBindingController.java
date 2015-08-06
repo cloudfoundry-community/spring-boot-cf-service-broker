@@ -61,9 +61,9 @@ public class ServiceInstanceBindingController extends BaseController {
 		ServiceInstanceBinding binding = serviceInstanceBindingService.createServiceInstanceBinding(
 				request.withServiceInstanceId(instanceId).and().withBindingId(bindingId));
 		logger.debug("ServiceInstanceBinding Created: " + binding.getId());
-        return new ResponseEntity<ServiceInstanceBindingResponse>(
-        		new ServiceInstanceBindingResponse(binding), 
-        		HttpStatus.CREATED);
+        return new ResponseEntity<>(
+				new ServiceInstanceBindingResponse(binding),
+				HttpStatus.CREATED);
 	}
 	
 	@RequestMapping(value = BASE_PATH + "/{bindingId}", method = RequestMethod.DELETE)
@@ -84,25 +84,23 @@ public class ServiceInstanceBindingController extends BaseController {
 		ServiceInstanceBinding binding = serviceInstanceBindingService.deleteServiceInstanceBinding(
 		        new DeleteServiceInstanceBindingRequest( bindingId, instance, serviceId, planId));
 		if (binding == null) {
-			return new ResponseEntity<String>("{}", HttpStatus.GONE);
+			return new ResponseEntity<>("{}", HttpStatus.GONE);
 		}
 		logger.debug("ServiceInstanceBinding Deleted: " + binding.getId());
-        return new ResponseEntity<String>("{}", HttpStatus.OK);
+        return new ResponseEntity<>("{}", HttpStatus.OK);
 	}
 	
 	@ExceptionHandler(ServiceInstanceDoesNotExistException.class)
 	@ResponseBody
 	public ResponseEntity<ErrorMessage> handleException(
-			ServiceInstanceDoesNotExistException ex, 
-			HttpServletResponse response) {
+			ServiceInstanceDoesNotExistException ex) {
 	    return getErrorResponse(ex.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
 	}
 	
 	@ExceptionHandler(ServiceInstanceBindingExistsException.class)
 	@ResponseBody
 	public ResponseEntity<ErrorMessage> handleException(
-			ServiceInstanceBindingExistsException ex, 
-			HttpServletResponse response) {
+			ServiceInstanceBindingExistsException ex) {
 	    return getErrorResponse(ex.getMessage(), HttpStatus.CONFLICT);
 	}
 	

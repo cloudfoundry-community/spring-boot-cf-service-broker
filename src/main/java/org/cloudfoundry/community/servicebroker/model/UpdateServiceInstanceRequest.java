@@ -61,10 +61,6 @@ public class UpdateServiceInstanceRequest  extends ServiceInstanceRequest {
 		}
 	}
 
-	public void setParameters(Map<String, Object> parameters) {
-		this.parameters = parameters;
-	}
-
 	public UpdateServiceInstanceRequest withInstanceId(String serviceInstanceId) {
 		this.serviceInstanceId = serviceInstanceId; 
 		return this;
