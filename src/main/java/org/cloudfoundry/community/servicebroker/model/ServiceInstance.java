@@ -54,7 +54,6 @@ public class ServiceInstance {
 	 * @param request containing details of ServiceInstance
 	 */
 	public ServiceInstance(CreateServiceInstanceRequest request) {
-		this.async = request.acceptsIncomplete;
 		this.serviceDefinitionId = request.getServiceDefinitionId();
 		this.planId = request.getPlanId();
 		this.organizationGuid = request.getOrganizationGuid();
@@ -70,7 +69,6 @@ public class ServiceInstance {
 	 * @param request containing details of ServiceInstance
 	 */
 	public ServiceInstance(DeleteServiceInstanceRequest request) {
-		this.async = request.acceptsIncomplete;
 		this.serviceInstanceId = request.getServiceInstanceId();
 		this.planId = request.getPlanId();
 		this.serviceDefinitionId = request.getServiceId();
@@ -87,15 +85,9 @@ public class ServiceInstance {
 	public ServiceInstance(UpdateServiceInstanceRequest request) { 
 		request.getPlanId();
 		request.getServiceInstanceId();
-		this.async = request.acceptsIncomplete;
 		this.lastOperation = new ServiceInstanceLastOperation("Updating", OperationState.IN_PROGRESS);
 	}
 	
-	public ServiceInstance withDashboardUrl(String dashboardUrl) { 
-		this.dashboardUrl = dashboardUrl;
-		return this;
-	}
-
 	public String getServiceInstanceId() {
 		return serviceInstanceId;
 	}
@@ -130,6 +122,16 @@ public class ServiceInstance {
 
 	public ServiceInstance withLastOperation(ServiceInstanceLastOperation lastOperation) {
 		this.lastOperation = lastOperation;
+		return this;
+	}
+
+	public ServiceInstance withDashboardUrl(String dashboardUrl) {
+		this.dashboardUrl = dashboardUrl;
+		return this;
+	}
+
+	public ServiceInstance withAsync(boolean async) {
+		this.async = async;
 		return this;
 	}
 

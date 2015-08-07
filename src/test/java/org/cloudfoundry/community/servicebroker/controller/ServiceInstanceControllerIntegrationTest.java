@@ -303,14 +303,15 @@ public class ServiceInstanceControllerIntegrationTest {
 
 	@Test
 	public void itShouldPassAnAsyncCreateServiceRequestAndReturn202() throws Exception {
-		ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
-		instance.withLastOperation(new ServiceInstanceLastOperation("Doing stuff", OperationState.IN_PROGRESS));
+		ServiceInstance instance = ServiceInstanceFixture.getServiceInstance()
+				.withLastOperation(new ServiceInstanceLastOperation("Doing stuff", OperationState.IN_PROGRESS))
+				.withAsync(true);
 
 		when(catalogService.getServiceDefinition(any(String.class)))
 			.thenReturn(ServiceFixture.getService());
 
 		when(serviceInstanceService.createServiceInstance(any(CreateServiceInstanceRequest.class)))
-			.thenReturn(ServiceInstanceFixture.getAsyncServiceInstance());
+			.thenReturn(instance);
 
 		String url = ServiceInstanceController.BASE_PATH + "/" + instance.getServiceInstanceId();
 		String body = ServiceInstanceFixture.getCreateServiceInstanceRequestJson();
@@ -407,7 +408,8 @@ public class ServiceInstanceControllerIntegrationTest {
 	
 	@Test
 	public void itShouldReturn202ForUpdatedInstanceWithAsync() throws Exception { 
-		ServiceInstance instance = ServiceInstanceFixture.getAsyncServiceInstance();
+		ServiceInstance instance = ServiceInstanceFixture.getAsyncServiceInstance()
+				.withAsync(true);
 
 		when(serviceInstanceService.updateServiceInstance(any(UpdateServiceInstanceRequest.class)))
 			.thenReturn(instance);
@@ -445,7 +447,8 @@ public class ServiceInstanceControllerIntegrationTest {
 	@Test
 	public void itShouldReturn202ForAsyncDelete() throws Exception { 
 		ServiceInstance instance = ServiceInstanceFixture.getAsyncServiceInstance()
-			.withLastOperation(new ServiceInstanceLastOperation("doin stuff", OperationState.IN_PROGRESS));
+			.withLastOperation(new ServiceInstanceLastOperation("doin stuff", OperationState.IN_PROGRESS))
+			.withAsync(true);
 
 		when(serviceInstanceService.deleteServiceInstance(
 				(DeleteServiceInstanceRequest) anyAsyncRequest())).thenReturn(instance);
