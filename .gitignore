@@ -9,3 +9,5 @@ bin
 spring-shell.log
 gradle.properties
 /target/
+*.iml
+.idea/
