@@ -31,7 +31,6 @@ public class CreateServiceInstanceBindingRequest {
 	@JsonProperty("plan_id")
 	private String planId;
 
-	@NotEmpty
 	@JsonSerialize
 	@JsonProperty("app_guid")
 	private String appGuid;
