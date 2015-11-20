@@ -68,14 +68,14 @@ public class ServiceInstance {
 	}
 	
 	/**
-	 * Create a service instance from a delete request. If fields 
+	 * Create a service instance from an update request. If fields
 	 * are not present in the request they will remain null in the 
 	 * ServiceInstance.
 	 * @param request containing details of ServiceInstance
 	 */
-	public ServiceInstance(UpdateServiceInstanceRequest request) { 
-		request.getPlanId();
-		request.getServiceInstanceId();
+	public ServiceInstance(UpdateServiceInstanceRequest request) {
+        this.serviceInstanceId = request.getServiceInstanceId();
+        this.planId = request.getPlanId();
 	}
 	
 	public ServiceInstance withDashboardUrl(String dashboardUrl) { 
