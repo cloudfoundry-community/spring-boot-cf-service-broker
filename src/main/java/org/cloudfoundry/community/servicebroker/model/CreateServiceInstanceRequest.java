@@ -16,7 +16,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
  * @author sgreenberg@gopivotal.com
  */
 @JsonAutoDetect(getterVisibility = JsonAutoDetect.Visibility.NONE)
-public class CreateServiceInstanceRequest {
+public class CreateServiceInstanceRequest extends ServiceInstanceRequest {
 
 	@NotEmpty
 	@JsonSerialize
@@ -51,17 +51,15 @@ public class CreateServiceInstanceRequest {
 	private String serviceInstanceId;
 	
 	public CreateServiceInstanceRequest() {
+		super(false);
 	}
-
-	public CreateServiceInstanceRequest(String serviceDefinitionId, String planId, String organizationGuid, String spaceGuid) {
+	
+	public CreateServiceInstanceRequest(String serviceDefinitionId, String planId, String organizationGuid, String spaceGuid, boolean async, Map<String, Object> parameters) {
+		super(async);
 		this.serviceDefinitionId = serviceDefinitionId;
 		this.planId = planId;
 		this.organizationGuid = organizationGuid;
 		this.spaceGuid = spaceGuid;
-	}
-
-	public CreateServiceInstanceRequest(String serviceDefinitionId, String planId, String organizationGuid, String spaceGuid, Map<String, Object> parameters) {
-		this(serviceDefinitionId, planId, organizationGuid, spaceGuid);
 		this.parameters = parameters;
 	}
 
@@ -69,35 +67,23 @@ public class CreateServiceInstanceRequest {
 		return serviceDefinitionId;
 	}
 
-	public void setServiceDefinitionId(String serviceDefinitionId) {
-		this.serviceDefinitionId = serviceDefinitionId;
+	public ServiceDefinition getServiceDefinition() {
+		return serviceDefinition;
 	}
 
 	public String getPlanId() {
 		return planId;
 	}
 
-	public void setPlanId(String planId) {
-		this.planId = planId;
-	}
-
 	public String getOrganizationGuid() {
 		return organizationGuid;
-	}
-
-	public void setOrganizationGuid(String organizationGuid) {
-		this.organizationGuid = organizationGuid;
 	}
 
 	public String getSpaceGuid() {
 		return spaceGuid;
 	}
 
-	public void setSpaceGuid(String spaceGuid) {
-		this.spaceGuid = spaceGuid;
-	}
-	
-	public String getServiceInstanceId() { 
+	public String getServiceInstanceId() {
 		return serviceInstanceId;
 	}
 
@@ -115,20 +101,21 @@ public class CreateServiceInstanceRequest {
 		}
 	}
 
-	public void setParameters(Map<String, Object> parameters) {
-		this.parameters = parameters;
-	}
-
 	public CreateServiceInstanceRequest withServiceDefinition(ServiceDefinition svc) {
 		this.serviceDefinition = svc;
 		return this;
 	}
 
-	public CreateServiceInstanceRequest withServiceInstanceId(
-			final String serviceInstanceId) {
+	public CreateServiceInstanceRequest withServiceInstanceId(final String serviceInstanceId) {
 		this.serviceInstanceId = serviceInstanceId;
 		return this;
 	}
+
+	public CreateServiceInstanceRequest withAcceptsIncomplete(boolean b) {
+		this.acceptsIncomplete = b;
+		return this;
+	}
+
 	public CreateServiceInstanceRequest and() {
 		return this;
 	}
@@ -142,11 +129,12 @@ public class CreateServiceInstanceRequest {
 				Objects.equals(planId, that.planId) &&
 				Objects.equals(organizationGuid, that.organizationGuid) &&
 				Objects.equals(spaceGuid, that.spaceGuid) &&
+				Objects.equals(acceptsIncomplete, that.acceptsIncomplete) &&
 				Objects.equals(parameters, that.parameters);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(serviceDefinitionId, planId, organizationGuid, spaceGuid, parameters);
+		return Objects.hash(serviceDefinitionId, planId, organizationGuid, spaceGuid, acceptsIncomplete, parameters);
 	}
 }

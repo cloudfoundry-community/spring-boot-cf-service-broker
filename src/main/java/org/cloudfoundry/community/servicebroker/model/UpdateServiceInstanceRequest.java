@@ -15,7 +15,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
  */
 @JsonAutoDetect(getterVisibility = JsonAutoDetect.Visibility.NONE)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class UpdateServiceInstanceRequest {
+public class UpdateServiceInstanceRequest  extends ServiceInstanceRequest {
 
 	@NotEmpty
 	@JsonSerialize
@@ -30,14 +30,12 @@ public class UpdateServiceInstanceRequest {
 	private String serviceInstanceId;
 
 	public UpdateServiceInstanceRequest() {
-	}
+		super(false);
+	} 
 	
-	public UpdateServiceInstanceRequest(String planId) {
+	public UpdateServiceInstanceRequest(String planId, boolean async, Map<String, Object> parameters) {
+		super(async);
 		this.planId = planId;
-	}
-
-	public UpdateServiceInstanceRequest(String planId, Map<String, Object> parameters) {
-		this(planId);
 		this.parameters = parameters;
 	}
 
@@ -63,12 +61,13 @@ public class UpdateServiceInstanceRequest {
 		}
 	}
 
-	public void setParameters(Map<String, Object> parameters) {
-		this.parameters = parameters;
-	}
-
 	public UpdateServiceInstanceRequest withInstanceId(String serviceInstanceId) {
 		this.serviceInstanceId = serviceInstanceId; 
+		return this;
+	}
+
+	public UpdateServiceInstanceRequest withAcceptsIncomplete(boolean b) {
+		this.acceptsIncomplete = b;
 		return this;
 	}
 
@@ -78,11 +77,12 @@ public class UpdateServiceInstanceRequest {
 		if (o == null || getClass() != o.getClass()) return false;
 		UpdateServiceInstanceRequest that = (UpdateServiceInstanceRequest) o;
 		return Objects.equals(planId, that.planId) &&
+				Objects.equals(acceptsIncomplete, that.acceptsIncomplete) &&
 				Objects.equals(parameters, that.parameters);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(planId, parameters);
+		return Objects.hash(planId, acceptsIncomplete, parameters);
 	}
 }

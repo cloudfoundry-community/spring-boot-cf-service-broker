@@ -5,14 +5,15 @@ package org.cloudfoundry.community.servicebroker.model;
  * @author krujos
  *
  */
-public class DeleteServiceInstanceRequest {
+public class DeleteServiceInstanceRequest extends ServiceInstanceRequest {
 
 	private final String serviceInstanceId;
 	private final String serviceId;
 	private final String planId;
 
 	public DeleteServiceInstanceRequest(String instanceId, String serviceId,
-			String planId) {
+			String planId, boolean async) {
+		super(async);
 		this.serviceInstanceId = instanceId; 
 		this.serviceId = serviceId;
 		this.planId = planId;
@@ -29,5 +30,4 @@ public class DeleteServiceInstanceRequest {
 	public String getPlanId() {
 		return planId;
 	}
-
 }

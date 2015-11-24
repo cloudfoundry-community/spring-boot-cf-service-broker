@@ -4,9 +4,7 @@ package org.cloudfoundry.community.servicebroker.controller;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
-import org.cloudfoundry.community.servicebroker.exception.ServiceBrokerException;
-import org.cloudfoundry.community.servicebroker.exception.ServiceInstanceBindingExistsException;
-import org.cloudfoundry.community.servicebroker.exception.ServiceInstanceDoesNotExistException;
+import org.cloudfoundry.community.servicebroker.exception.*;
 import org.cloudfoundry.community.servicebroker.model.*;
 import org.cloudfoundry.community.servicebroker.service.ServiceInstanceBindingService;
 import org.cloudfoundry.community.servicebroker.service.ServiceInstanceService;
@@ -63,9 +61,9 @@ public class ServiceInstanceBindingController extends BaseController {
 		ServiceInstanceBinding binding = serviceInstanceBindingService.createServiceInstanceBinding(
 				request.withServiceInstanceId(instanceId).and().withBindingId(bindingId));
 		logger.debug("ServiceInstanceBinding Created: " + binding.getId());
-        return new ResponseEntity<ServiceInstanceBindingResponse>(
-        		new ServiceInstanceBindingResponse(binding), 
-        		HttpStatus.CREATED);
+        return new ResponseEntity<>(
+				new ServiceInstanceBindingResponse(binding),
+				HttpStatus.CREATED);
 	}
 	
 	@RequestMapping(value = BASE_PATH + "/{bindingId}", method = RequestMethod.DELETE)
@@ -73,7 +71,7 @@ public class ServiceInstanceBindingController extends BaseController {
 			@PathVariable("instanceId") String instanceId, 
 			@PathVariable("bindingId") String bindingId,
 			@RequestParam("service_id") String serviceId,
-			@RequestParam("plan_id") String planId) throws ServiceBrokerException, ServiceInstanceDoesNotExistException {
+			@RequestParam("plan_id") String planId) throws ServiceBrokerException, ServiceInstanceDoesNotExistException, ServiceBrokerAsyncRequiredException {
 		logger.debug( "DELETE: " + BASE_PATH + "/{bindingId}"
 				+ ", deleteServiceInstanceBinding(),  serviceInstance.id = " + instanceId 
 				+ ", bindingId = " + bindingId 
@@ -86,25 +84,23 @@ public class ServiceInstanceBindingController extends BaseController {
 		ServiceInstanceBinding binding = serviceInstanceBindingService.deleteServiceInstanceBinding(
 		        new DeleteServiceInstanceBindingRequest( bindingId, instance, serviceId, planId));
 		if (binding == null) {
-			return new ResponseEntity<String>("{}", HttpStatus.GONE);
+			return new ResponseEntity<>("{}", HttpStatus.GONE);
 		}
 		logger.debug("ServiceInstanceBinding Deleted: " + binding.getId());
-        return new ResponseEntity<String>("{}", HttpStatus.OK);
+        return new ResponseEntity<>("{}", HttpStatus.OK);
 	}
 	
 	@ExceptionHandler(ServiceInstanceDoesNotExistException.class)
 	@ResponseBody
 	public ResponseEntity<ErrorMessage> handleException(
-			ServiceInstanceDoesNotExistException ex, 
-			HttpServletResponse response) {
+			ServiceInstanceDoesNotExistException ex) {
 	    return getErrorResponse(ex.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
 	}
 	
 	@ExceptionHandler(ServiceInstanceBindingExistsException.class)
 	@ResponseBody
 	public ResponseEntity<ErrorMessage> handleException(
-			ServiceInstanceBindingExistsException ex, 
-			HttpServletResponse response) {
+			ServiceInstanceBindingExistsException ex) {
 	    return getErrorResponse(ex.getMessage(), HttpStatus.CONFLICT);
 	}
 	

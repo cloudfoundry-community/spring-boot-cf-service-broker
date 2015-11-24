@@ -1,7 +1,6 @@
 package org.cloudfoundry.community.servicebroker.service;
 
-import org.cloudfoundry.community.servicebroker.exception.ServiceBrokerException;
-import org.cloudfoundry.community.servicebroker.exception.ServiceInstanceBindingExistsException;
+import org.cloudfoundry.community.servicebroker.exception.*;
 import org.cloudfoundry.community.servicebroker.model.*;
 
 /**
@@ -28,9 +27,10 @@ public interface ServiceInstanceBindingService {
 	 * @param deleteServiceInstanceBindingRequest containing parameters sent from Cloud Controller
      * @return The deleted ServiceInstanceBinding or null if one does not exist
      * @throws ServiceBrokerException on internal failure
+	 * @throws ServiceBrokerAsyncRequiredException if we must use an async comparable cloud controller
 	 */
 	ServiceInstanceBinding deleteServiceInstanceBinding(
 			DeleteServiceInstanceBindingRequest deleteServiceInstanceBindingRequest) 
-	        throws ServiceBrokerException;
+	        throws ServiceBrokerException, ServiceBrokerAsyncRequiredException;
 	
 }

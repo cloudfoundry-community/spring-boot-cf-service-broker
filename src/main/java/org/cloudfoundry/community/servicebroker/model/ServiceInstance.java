@@ -1,7 +1,6 @@
 package org.cloudfoundry.community.servicebroker.model;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 
@@ -38,6 +37,13 @@ public class ServiceInstance {
 	@JsonProperty("dashboard_url")
 	private String dashboardUrl;
 
+	@JsonSerialize
+	@JsonProperty("last_operation")
+	private ServiceInstanceLastOperation lastOperation; 
+	
+	@JsonIgnore
+	private boolean async;
+	
 	@SuppressWarnings("unused")
 	private ServiceInstance() {}
 	
@@ -53,6 +59,7 @@ public class ServiceInstance {
 		this.organizationGuid = request.getOrganizationGuid();
 		this.spaceGuid = request.getSpaceGuid();
 		this.serviceInstanceId = request.getServiceInstanceId();
+		this.lastOperation = new ServiceInstanceLastOperation("Provisioning", OperationState.IN_PROGRESS);
 	}
 	
 	/**
@@ -61,10 +68,12 @@ public class ServiceInstance {
 	 * ServiceInstance.
 	 * @param request containing details of ServiceInstance
 	 */
-	public ServiceInstance(DeleteServiceInstanceRequest request) { 
+	public ServiceInstance(DeleteServiceInstanceRequest request) {
 		this.serviceInstanceId = request.getServiceInstanceId();
 		this.planId = request.getPlanId();
 		this.serviceDefinitionId = request.getServiceId();
+		this.lastOperation = new ServiceInstanceLastOperation("Deprovisioning", OperationState.IN_PROGRESS);
+
 	}
 	
 	/**
@@ -74,13 +83,9 @@ public class ServiceInstance {
 	 * @param request containing details of ServiceInstance
 	 */
 	public ServiceInstance(UpdateServiceInstanceRequest request) {
-        this.serviceInstanceId = request.getServiceInstanceId();
-        this.planId = request.getPlanId();
-	}
-	
-	public ServiceInstance withDashboardUrl(String dashboardUrl) { 
-		this.dashboardUrl = dashboardUrl;
-		return this;
+		this.serviceInstanceId = request.getServiceInstanceId();
+		this.planId = request.getPlanId();
+		this.lastOperation = new ServiceInstanceLastOperation("Updating", OperationState.IN_PROGRESS);
 	}
 	
 	public String getServiceInstanceId() {
@@ -105,6 +110,33 @@ public class ServiceInstance {
 
 	public String getDashboardUrl() {
 		return dashboardUrl;
+	}
+
+	public boolean isAsync() {
+		return async;
+	}
+
+	public ServiceInstance and() {
+		return this;
+	}
+
+	public ServiceInstance withLastOperation(ServiceInstanceLastOperation lastOperation) {
+		this.lastOperation = lastOperation;
+		return this;
+	}
+
+	public ServiceInstance withDashboardUrl(String dashboardUrl) {
+		this.dashboardUrl = dashboardUrl;
+		return this;
+	}
+
+	public ServiceInstance withAsync(boolean async) {
+		this.async = async;
+		return this;
+	}
+
+	public ServiceInstanceLastOperation getServiceInstanceLastOperation() {
+		return lastOperation;
 	}
 	
 }
