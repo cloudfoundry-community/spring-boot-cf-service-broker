@@ -12,13 +12,14 @@ public interface ServiceInstanceService {
 
 	/**
 	 * Create a new instance of a service
-	 * @param createServiceInstanceRequest containing the parameters from CloudController
-	 * @return The newly created ServiceInstance
-	 * @throws ServiceInstanceExistsException if the service instance already exists.
+	 *
+	 * @param request containing the parameters from Cloud Controller
+	 * @return a CreateServiceInstanceResponse
+	 * @throws ServiceInstanceExistsException if the service instance already exists
 	 * @throws ServiceBrokerException if something goes wrong internally
-	 * @throws ServiceBrokerAsyncRequiredException if we must use an async comparable cloud controller
+	 * @throws ServiceBrokerAsyncRequiredException if we must use an async comparable Cloud Controller
 	 */
-	ServiceInstance createServiceInstance(CreateServiceInstanceRequest createServiceInstanceRequest) 
+	CreateServiceInstanceResponse createServiceInstance(CreateServiceInstanceRequest request)
 			throws ServiceInstanceExistsException, ServiceBrokerException, ServiceBrokerAsyncRequiredException;
 	
 	/**
@@ -26,32 +27,40 @@ public interface ServiceInstanceService {
 	 * @return The ServiceInstance with the given id or null if one does not exist
 	 */
 	ServiceInstance getServiceInstance(String serviceInstanceId);
-	
+
+	/**
+	 * @param request containing the parameters from Cloud Controller
+	 * @return The ServiceInstance with the given id or null if one does not exist
+	 */
+	GetLastServiceOperationResponse getLastOperation(GetLastServiceOperationRequest request)
+			throws ServiceInstanceDoesNotExistException;
+
 	/**
 	 * Delete and return the instance if it exists.
+	 *
 	 * @param deleteServiceInstanceRequest containing pertinent information for deleting the service.
-	 * @return The deleted ServiceInstance or null if one did not exist.
+	 * @return a DeleteServiceInstanceResponse
 	 * @throws ServiceBrokerException is something goes wrong internally
-	 * @throws ServiceBrokerAsyncRequiredException if we must use an async comparable cloud controller
+	 * @throws ServiceBrokerAsyncRequiredException if we must use an async comparable Cloud Controller
 	 * 
 	 */
-	ServiceInstance deleteServiceInstance(DeleteServiceInstanceRequest deleteServiceInstanceRequest) 
-			throws ServiceBrokerException, ServiceBrokerAsyncRequiredException;
+	DeleteServiceInstanceResponse deleteServiceInstance(DeleteServiceInstanceRequest deleteServiceInstanceRequest)
+			throws ServiceBrokerException, ServiceInstanceDoesNotExistException, ServiceBrokerAsyncRequiredException;
 
 	/**
 	 * Update a service instance. Only modification of service plan is supported.
-	 * @param updateServiceInstanceRequest detailing the request parameters
+	 *
+	 * @param request detailing the request parameters
 	 * 
-	 * @return The updated serviceInstance
+	 * @return an UpdateServiceInstanceResponse
 	 * @throws ServiceInstanceUpdateNotSupportedException if particular plan change is not supported
-	 *         or if the request can not currently be fulfilled due to the state of the instance.
+	 *         or if the request can not currently be fulfilled due to the state of the instance
 	 * @throws ServiceInstanceDoesNotExistException if the service instance does not exist
 	 * @throws ServiceBrokerException if something goes wrong internally
-	 * @throws ServiceBrokerAsyncRequiredException if we must use an async comparable cloud controller
+	 * @throws ServiceBrokerAsyncRequiredException if we must use an async comparable Cloud Controller
 	 * 
 	 */
-	ServiceInstance updateServiceInstance(UpdateServiceInstanceRequest updateServiceInstanceRequest)
+	UpdateServiceInstanceResponse updateServiceInstance(UpdateServiceInstanceRequest request)
 			throws ServiceInstanceUpdateNotSupportedException, ServiceBrokerException,
 			ServiceInstanceDoesNotExistException, ServiceBrokerAsyncRequiredException;
-
 }

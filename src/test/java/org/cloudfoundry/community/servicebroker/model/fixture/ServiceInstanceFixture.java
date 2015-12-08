@@ -1,82 +1,71 @@
 package org.cloudfoundry.community.servicebroker.model.fixture;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.cloudfoundry.community.servicebroker.model.CreateServiceInstanceRequest;
+import org.cloudfoundry.community.servicebroker.model.CreateServiceInstanceResponse;
+import org.cloudfoundry.community.servicebroker.model.DeleteServiceInstanceRequest;
+import org.cloudfoundry.community.servicebroker.model.DeleteServiceInstanceResponse;
+import org.cloudfoundry.community.servicebroker.model.GetLastServiceOperationRequest;
 import org.cloudfoundry.community.servicebroker.model.ServiceDefinition;
 import org.cloudfoundry.community.servicebroker.model.ServiceInstance;
 import org.cloudfoundry.community.servicebroker.model.UpdateServiceInstanceRequest;
+import org.cloudfoundry.community.servicebroker.model.UpdateServiceInstanceResponse;
 
 public class ServiceInstanceFixture {
 
-	public static List<ServiceInstance> getAllServiceInstances() {
-		List<ServiceInstance> instances = new ArrayList<ServiceInstance>();
-		instances.add(getServiceInstance());
-		instances.add(getServiceInstanceTwo());
-		return instances;
-	}
-	
 	public static ServiceInstance getServiceInstance() {
 		return new ServiceInstance(new CreateServiceInstanceRequest(
-				"service-one-id", 
-				"plan-one-id", 
-				DataFixture.getOrgOneGuid(), 
-				DataFixture.getSpaceOneGuid(), 
-				false,
-				ParametersFixture.getParameters())
-			.withServiceInstanceId("service-instnce-one-id"))
-			.withDashboardUrl("dashboard_url");
-				
-	}
-	
-	public static ServiceInstance getServiceInstanceTwo() {
-		return new ServiceInstance(new CreateServiceInstanceRequest(
-				"service-two-id", 
-				"plan-two-id", 
-				DataFixture.getOrgOneGuid(), 
+				"service-one-id",
+				"plan-one-id",
+				DataFixture.getOrgOneGuid(),
 				DataFixture.getSpaceOneGuid(),
-				false,
-				ParametersFixture.getParameters())
-			.withServiceInstanceId("service-instnce-two-id"))
-			.withDashboardUrl("dashboard_url");
+				ParametersFixture.getParameters(), false)
+				.withServiceInstanceId("service-instance-one-id"))
+				.withDashboardUrl("dashboard_url");
+	}
 
-	}
-	
-	public static String getServiceInstanceId() {
-		return "service-instance-id";
-	}
-	
-	public static CreateServiceInstanceRequest getCreateServiceInstanceRequest() {
+	public static CreateServiceInstanceRequest buildCreateServiceInstanceRequest(boolean acceptsIncomplete) {
 		ServiceDefinition service = ServiceFixture.getService();
 		return new CreateServiceInstanceRequest(
-				service.getId(), 
+				service.getId(),
 				service.getPlans().get(0).getId(),
 				DataFixture.getOrgOneGuid(),
 				DataFixture.getSpaceOneGuid(),
-				false,
-				ParametersFixture.getParameters()
-		);
-	}
-	
-	public static String getCreateServiceInstanceRequestJson() throws IOException {
-		 return DataFixture.toJson(getCreateServiceInstanceRequest());
+				ParametersFixture.getParameters(),
+				acceptsIncomplete)
+				.withServiceInstanceId("service-instance-id");
 	}
 
-	public static String getUpdateServiceInstanceRequestJson() throws IOException {
-		return DataFixture.toJson(getUpdateServiceInstanceRequest());
+	public static CreateServiceInstanceResponse buildCreateServiceInstanceResponse(boolean async) {
+		return new CreateServiceInstanceResponse("https://dashboard_url.example.com", async);
 	}
-	
-	public static UpdateServiceInstanceRequest getUpdateServiceInstanceRequest() {
+
+	public static DeleteServiceInstanceRequest buildDeleteServiceInstanceRequest(boolean acceptsIncomplete) {
 		ServiceDefinition service = ServiceFixture.getService();
-		return new UpdateServiceInstanceRequest(service.getPlans().get(0).getId(), false,
-				ParametersFixture.getParameters());
+		return new DeleteServiceInstanceRequest("service-instance-id",
+				service.getId(),
+				service.getPlans().get(0).getId(),
+				acceptsIncomplete);
 	}
 
-	public static ServiceInstance getAsyncServiceInstance() {
-		return new ServiceInstance(
-				new CreateServiceInstanceRequest(null, null, null, null, true, null))
-				.withDashboardUrl(null);
+	public static DeleteServiceInstanceResponse buildDeleteServiceInstanceResponse(boolean async) {
+		return new DeleteServiceInstanceResponse(async);
+	}
+
+	public static UpdateServiceInstanceRequest buildUpdateServiceInstanceRequest(boolean acceptsIncomplete) {
+		ServiceDefinition service = ServiceFixture.getService();
+		return new UpdateServiceInstanceRequest(
+				service.getId(),
+				service.getPlans().get(0).getId(),
+				ParametersFixture.getParameters(),
+				acceptsIncomplete)
+				.withServiceInstanceId("service-instance-id");
+	}
+
+	public static UpdateServiceInstanceResponse buildUpdateServiceInstanceResponse(boolean async) {
+		return new UpdateServiceInstanceResponse(async);
+	}
+
+	public static GetLastServiceOperationRequest buildGetLastOperationRequest() {
+		return new GetLastServiceOperationRequest("service-instance-id");
 	}
 }

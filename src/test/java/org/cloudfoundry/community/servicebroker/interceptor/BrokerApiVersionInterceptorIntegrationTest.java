@@ -6,7 +6,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.cloudfoundry.community.servicebroker.controller.CatalogController;
-import org.cloudfoundry.community.servicebroker.interceptor.BrokerApiVersionInterceptor;
 import org.cloudfoundry.community.servicebroker.model.BrokerApiVersion;
 import org.cloudfoundry.community.servicebroker.service.CatalogService;
 import org.junit.Before;
@@ -28,39 +27,40 @@ public class BrokerApiVersionInterceptorIntegrationTest {
 
 	@Mock
 	CatalogService catalogService;
-	
+
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 
-	    this.mockMvc = MockMvcBuilders.standaloneSetup(controller)
-	    		.addInterceptors(new BrokerApiVersionInterceptor(new BrokerApiVersion("header","version")))
-	            .setMessageConverters(new MappingJackson2HttpMessageConverter()).build();
+		this.mockMvc = MockMvcBuilders.standaloneSetup(controller)
+				.addInterceptors(new BrokerApiVersionInterceptor(new BrokerApiVersion("header", "expected-version")))
+				.setMessageConverters(new MappingJackson2HttpMessageConverter()).build();
 	}
-	
+
 	@Test
 	public void noHeaderSent() throws Exception {
-	    this.mockMvc.perform(get(CatalogController.BASE_PATH)
-	        .accept(MediaType.APPLICATION_JSON))
-	        .andExpect(status().isPreconditionFailed())
-            .andExpect(jsonPath("$.description.", containsString("Expected Version")));
+		this.mockMvc.perform(get(CatalogController.BASE_PATH)
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isPreconditionFailed())
+				.andExpect(jsonPath("$.description.", containsString("expected-version")));
 	}
-	
+
 	@Test
 	public void incorrectHeaderSent() throws Exception {
-	    this.mockMvc.perform(get(CatalogController.BASE_PATH)
-	    	.header("header", "wrong-version")
-	        .accept(MediaType.APPLICATION_JSON))
-	        .andExpect(status().isPreconditionFailed())
-            .andExpect(jsonPath("$.description.", containsString("Expected Version")));
+		this.mockMvc.perform(get(CatalogController.BASE_PATH)
+				.header("header", "wrong-version")
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isPreconditionFailed())
+				.andExpect(jsonPath("$.description.", containsString("expected-version")))
+				.andExpect(jsonPath("$.description.", containsString("wrong-version")));
 	}
-	
+
 	@Test
 	public void correctHeaderSent() throws Exception {
-	    this.mockMvc.perform(get(CatalogController.BASE_PATH)
-	    	.header("header", "version")
-	        .accept(MediaType.APPLICATION_JSON))
-	        .andExpect(status().isOk());
+		this.mockMvc.perform(get(CatalogController.BASE_PATH)
+				.header("header", "expected-version")
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk());
 	}
-	
+
 }

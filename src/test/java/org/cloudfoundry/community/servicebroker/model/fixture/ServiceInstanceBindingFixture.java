@@ -26,7 +26,7 @@ public class ServiceInstanceBindingFixture {
 	}
 	
 	public static Map<String,Object> getCredentials() {
-		Map<String,Object> credentials = new HashMap<String,Object>();
+		Map<String,Object> credentials = new HashMap<>();
 		credentials.put("uri","uri");
 		credentials.put("username", "username");
 		credentials.put("password", "password");

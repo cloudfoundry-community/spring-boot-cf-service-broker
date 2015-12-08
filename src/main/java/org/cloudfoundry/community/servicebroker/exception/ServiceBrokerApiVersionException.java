@@ -7,8 +7,8 @@ public class ServiceBrokerApiVersionException extends Exception {
 
 	public ServiceBrokerApiVersionException(String expectedVersion, String providedVersion) {
 		super("The provided service broker API version is not supported: "
-				+ "Expected Version = " + expectedVersion + ", "
-				+ "Provided Version = " + providedVersion);
+				+ "expected version=" + expectedVersion
+				+ ", provided version = " + providedVersion);
 	}
 	
 }

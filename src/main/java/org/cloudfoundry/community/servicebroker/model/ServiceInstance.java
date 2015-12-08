@@ -39,7 +39,7 @@ public class ServiceInstance {
 
 	@JsonSerialize
 	@JsonProperty("last_operation")
-	private ServiceInstanceLastOperation lastOperation; 
+	private GetLastServiceOperationResponse lastOperation;
 	
 	@JsonIgnore
 	private boolean async;
@@ -59,7 +59,7 @@ public class ServiceInstance {
 		this.organizationGuid = request.getOrganizationGuid();
 		this.spaceGuid = request.getSpaceGuid();
 		this.serviceInstanceId = request.getServiceInstanceId();
-		this.lastOperation = new ServiceInstanceLastOperation("Provisioning", OperationState.IN_PROGRESS);
+		this.lastOperation = new GetLastServiceOperationResponse(OperationState.IN_PROGRESS, "Provisioning", false);
 	}
 	
 	/**
@@ -71,9 +71,8 @@ public class ServiceInstance {
 	public ServiceInstance(DeleteServiceInstanceRequest request) {
 		this.serviceInstanceId = request.getServiceInstanceId();
 		this.planId = request.getPlanId();
-		this.serviceDefinitionId = request.getServiceId();
-		this.lastOperation = new ServiceInstanceLastOperation("Deprovisioning", OperationState.IN_PROGRESS);
-
+		this.serviceDefinitionId = request.getServiceDefinitionId();
+		this.lastOperation = new GetLastServiceOperationResponse(OperationState.IN_PROGRESS, "Deprovisioning", false);
 	}
 	
 	/**
@@ -85,7 +84,7 @@ public class ServiceInstance {
 	public ServiceInstance(UpdateServiceInstanceRequest request) {
 		this.serviceInstanceId = request.getServiceInstanceId();
 		this.planId = request.getPlanId();
-		this.lastOperation = new ServiceInstanceLastOperation("Updating", OperationState.IN_PROGRESS);
+		this.lastOperation = new GetLastServiceOperationResponse(OperationState.IN_PROGRESS, "Updating", false);
 	}
 	
 	public String getServiceInstanceId() {
@@ -120,7 +119,7 @@ public class ServiceInstance {
 		return this;
 	}
 
-	public ServiceInstance withLastOperation(ServiceInstanceLastOperation lastOperation) {
+	public ServiceInstance withLastOperation(GetLastServiceOperationResponse lastOperation) {
 		this.lastOperation = lastOperation;
 		return this;
 	}
@@ -135,7 +134,7 @@ public class ServiceInstance {
 		return this;
 	}
 
-	public ServiceInstanceLastOperation getServiceInstanceLastOperation() {
+	public GetLastServiceOperationResponse getServiceInstanceLastOperation() {
 		return lastOperation;
 	}
 	

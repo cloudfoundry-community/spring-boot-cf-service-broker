@@ -3,7 +3,6 @@ package org.cloudfoundry.community.servicebroker.model;
 import java.util.Map;
 import java.util.Objects;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.*;
@@ -16,7 +15,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
  * @author sgreenberg@gopivotal.com
  */
 @JsonAutoDetect(getterVisibility = JsonAutoDetect.Visibility.NONE)
-public class CreateServiceInstanceRequest extends ServiceInstanceRequest {
+public class CreateServiceInstanceRequest extends AsyncParameterizedServiceInstanceRequest {
 
 	@NotEmpty
 	@JsonSerialize
@@ -37,16 +36,12 @@ public class CreateServiceInstanceRequest extends ServiceInstanceRequest {
 	@JsonSerialize
 	@JsonProperty("space_guid")
 	private String spaceGuid;
-	
-	@JsonSerialize
-	@JsonProperty("parameters")
-	private Map<String, Object> parameters;
 
-	//Cloud Controller doesn't send the definition, it's populated later
+	// Cloud Controller doesn't send the definition, it's populated later
 	@JsonIgnore
 	private ServiceDefinition serviceDefinition;
 
-	//Cloud Controller doesn't send instanceId in the body
+	// Cloud Controller doesn't send instanceId in the body
 	@JsonIgnore
 	private String serviceInstanceId;
 	
@@ -54,8 +49,10 @@ public class CreateServiceInstanceRequest extends ServiceInstanceRequest {
 		super(false);
 	}
 	
-	public CreateServiceInstanceRequest(String serviceDefinitionId, String planId, String organizationGuid, String spaceGuid, boolean async, Map<String, Object> parameters) {
-		super(async);
+	public CreateServiceInstanceRequest(String serviceDefinitionId, String planId,
+										String organizationGuid, String spaceGuid,
+										Map<String, Object> parameters, boolean acceptsIncomplete) {
+		super(acceptsIncomplete);
 		this.serviceDefinitionId = serviceDefinitionId;
 		this.planId = planId;
 		this.organizationGuid = organizationGuid;
@@ -87,22 +84,8 @@ public class CreateServiceInstanceRequest extends ServiceInstanceRequest {
 		return serviceInstanceId;
 	}
 
-	public Map<String, Object> getParameters() {
-		return parameters;
-	}
-
-	public <T> T getParameters(Class<T> cls) {
-		try {
-			T bean = cls.newInstance();
-			BeanUtils.populate(bean, parameters);
-			return bean;
-		} catch (Exception e) {
-			throw new IllegalArgumentException("Error mapping parameters to class of type " + cls.getName());
-		}
-	}
-
-	public CreateServiceInstanceRequest withServiceDefinition(ServiceDefinition svc) {
-		this.serviceDefinition = svc;
+	public CreateServiceInstanceRequest withServiceDefinition(ServiceDefinition serviceDefinition) {
+		this.serviceDefinition = serviceDefinition;
 		return this;
 	}
 
@@ -111,30 +94,22 @@ public class CreateServiceInstanceRequest extends ServiceInstanceRequest {
 		return this;
 	}
 
-	public CreateServiceInstanceRequest withAcceptsIncomplete(boolean b) {
-		this.acceptsIncomplete = b;
-		return this;
-	}
-
-	public CreateServiceInstanceRequest and() {
-		return this;
-	}
-
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		CreateServiceInstanceRequest that = (CreateServiceInstanceRequest) o;
-		return Objects.equals(serviceDefinitionId, that.serviceDefinitionId) &&
+		return Objects.equals(serviceInstanceId, that.serviceInstanceId) &&
+				Objects.equals(serviceDefinitionId, that.serviceDefinitionId) &&
 				Objects.equals(planId, that.planId) &&
 				Objects.equals(organizationGuid, that.organizationGuid) &&
 				Objects.equals(spaceGuid, that.spaceGuid) &&
-				Objects.equals(acceptsIncomplete, that.acceptsIncomplete) &&
+				Objects.equals(async, that.async) &&
 				Objects.equals(parameters, that.parameters);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(serviceDefinitionId, planId, organizationGuid, spaceGuid, acceptsIncomplete, parameters);
+		return Objects.hash(serviceInstanceId, serviceDefinitionId, planId, organizationGuid, spaceGuid, async, parameters);
 	}
 }
