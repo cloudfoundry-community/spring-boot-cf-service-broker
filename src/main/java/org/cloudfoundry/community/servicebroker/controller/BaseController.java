@@ -40,6 +40,16 @@ public class BaseController {
 		return getErrorResponse(ex.getMessage(), HttpStatus.PRECONDITION_FAILED);
 	}
 
+	@ExceptionHandler(ServiceInstanceDoesNotExistException.class)
+	public ResponseEntity<ErrorMessage> handleException(ServiceInstanceDoesNotExistException ex) {
+		return getErrorResponse(ex.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
+	}
+
+	@ExceptionHandler(ServiceDefinitionDoesNotExistException.class)
+	public ResponseEntity<ErrorMessage> handleException(ServiceDefinitionDoesNotExistException ex) {
+		return getErrorResponse(ex.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
+	}
+
 	@ExceptionHandler(HttpMessageNotReadableException.class)
 	@ResponseBody
 	public ResponseEntity<ErrorMessage> handleException(HttpMessageNotReadableException ex) {

@@ -116,7 +116,7 @@ public class ServiceInstanceControllerIntegrationTest extends ControllerIntegrat
 	}
 
 	@Test
-	public void createServiceInstanceWithUnknownServiceDefinitionFails() throws Exception {
+	public void createServiceInstanceWithUnknownServiceDefinitionIdFails() throws Exception {
 		when(catalogService.getServiceDefinition(eq(syncCreateRequest.getServiceDefinitionId())))
 				.thenReturn(null);
 
@@ -129,7 +129,7 @@ public class ServiceInstanceControllerIntegrationTest extends ControllerIntegrat
 	}
 
 	@Test
-	public void createDuplicateServiceInstanceFails() throws Exception {
+	public void createDuplicateServiceInstanceIdFails() throws Exception {
 		when(serviceInstanceService.createServiceInstance(eq(syncCreateRequest)))
 				.thenThrow(new ServiceInstanceExistsException(syncCreateRequest.getServiceInstanceId(),
 						syncCreateRequest.getServiceDefinitionId()));
@@ -234,6 +234,20 @@ public class ServiceInstanceControllerIntegrationTest extends ControllerIntegrat
 	}
 
 	@Test
+	public void deleteServiceInstanceWithUnknownServiceDefinitionIdFails() throws Exception {
+		when(serviceInstanceService.deleteServiceInstance(eq(syncDeleteRequest)))
+				.thenThrow(new ServiceInstanceDoesNotExistException(syncDeleteRequest.getServiceInstanceId()));
+
+		when(catalogService.getServiceDefinition(eq(syncDeleteRequest.getServiceDefinitionId())))
+				.thenReturn(null);
+
+		mockMvc.perform(delete(buildUrl(syncDeleteRequest))
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isUnprocessableEntity())
+				.andExpect(jsonPath("$.description", containsString(syncDeleteRequest.getServiceDefinitionId())));
+	}
+
+	@Test
 	public void deleteServiceInstanceWithAsyncRequiredFails() throws Exception {
 		when(serviceInstanceService.deleteServiceInstance(eq(syncDeleteRequest)))
 				.thenThrow(new ServiceBrokerAsyncRequiredException("async required description"));
@@ -310,7 +324,24 @@ public class ServiceInstanceControllerIntegrationTest extends ControllerIntegrat
 	}
 
 	@Test
-	public void updateServiceInstanceWithUnknownPlanFails() throws Exception {
+	public void updateServiceInstanceWithUnknownServiceDefinitionIdFails() throws Exception {
+		when(serviceInstanceService.updateServiceInstance(eq(syncUpdateRequest)))
+				.thenThrow(new ServiceInstanceUpdateNotSupportedException("description"));
+
+		when(catalogService.getServiceDefinition(eq(syncUpdateRequest.getServiceDefinitionId())))
+				.thenReturn(null);
+
+		mockMvc.perform(patch(buildUrl(syncUpdateRequest))
+				.content(toJson(syncUpdateRequest))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isUnprocessableEntity())
+				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+				.andExpect(jsonPath("$.description", containsString(syncUpdateRequest.getServiceDefinitionId())));
+	}
+
+	@Test
+	public void updateServiceInstanceWithUnknownPlanIdFails() throws Exception {
 		when(serviceInstanceService.updateServiceInstance(eq(syncUpdateRequest)))
 				.thenThrow(new ServiceInstanceUpdateNotSupportedException("description"));
 

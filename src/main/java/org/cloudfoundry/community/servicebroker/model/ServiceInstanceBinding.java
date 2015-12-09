@@ -8,6 +8,9 @@ import java.util.Map;
  * 
  * @author sgreenberg@gopivotal.com
  *
+ * @deprecated This class is no longer used internally to represent service instance bindings. Implementing brokers should
+ * create their own class to represent service instances bindings and persist them as necessary. The will remain in the project
+ * for a time as a convenience, but it should no longer be used by implementing brokers.
  */
 public class ServiceInstanceBinding {
 

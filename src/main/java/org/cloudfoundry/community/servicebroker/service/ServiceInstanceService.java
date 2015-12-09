@@ -21,12 +21,6 @@ public interface ServiceInstanceService {
 	 */
 	CreateServiceInstanceResponse createServiceInstance(CreateServiceInstanceRequest request)
 			throws ServiceInstanceExistsException, ServiceBrokerException, ServiceBrokerAsyncRequiredException;
-	
-	/**
-	 * @param serviceInstanceId The id of the serviceInstance
-	 * @return The ServiceInstance with the given id or null if one does not exist
-	 */
-	ServiceInstance getServiceInstance(String serviceInstanceId);
 
 	/**
 	 * @param request containing the parameters from Cloud Controller

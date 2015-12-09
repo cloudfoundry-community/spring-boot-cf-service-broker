@@ -6,7 +6,6 @@ import org.cloudfoundry.community.servicebroker.exception.*;
 import org.cloudfoundry.community.servicebroker.model.*;
 import org.cloudfoundry.community.servicebroker.service.CatalogService;
 import org.cloudfoundry.community.servicebroker.service.ServiceInstanceBindingService;
-import org.cloudfoundry.community.servicebroker.service.ServiceInstanceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,15 +31,12 @@ public class ServiceInstanceBindingController extends BaseController {
 	private static final Logger logger = LoggerFactory.getLogger(ServiceInstanceBindingController.class);
 	
 	private ServiceInstanceBindingService serviceInstanceBindingService;
-	private ServiceInstanceService serviceInstanceService;
-	
+
 	@Autowired
 	public ServiceInstanceBindingController(CatalogService catalogService,
-											ServiceInstanceService serviceInstanceService,
 											ServiceInstanceBindingService serviceInstanceBindingService) {
 		super(catalogService);
 		this.serviceInstanceBindingService = serviceInstanceBindingService;
-		this.serviceInstanceService = serviceInstanceService;
 	}
 
 	@RequestMapping(method = RequestMethod.PUT)
@@ -54,18 +50,15 @@ public class ServiceInstanceBindingController extends BaseController {
 				+ "serviceInstanceId=" + serviceInstanceId
 				+ ", bindingId=" + bindingId);
 
-		ServiceInstance instance = serviceInstanceService.getServiceInstance(serviceInstanceId);
-		if (instance == null) {
-			throw new ServiceInstanceDoesNotExistException(serviceInstanceId);
-		}
-
 		request.withServiceInstanceId(serviceInstanceId)
 				.withBindingId(bindingId)
 				.withServiceDefinition(getServiceDefinition(request.getServiceDefinitionId()));
 
 		CreateServiceInstanceBindingResponse response = serviceInstanceBindingService.createServiceInstanceBinding(request);
 
-		logger.debug("createServiceInstanceBinding(): succeeded: bindingId=" + bindingId);
+		logger.debug("createServiceInstanceBinding(): succeeded: "
+				+ "serviceInstanceId=" + serviceInstanceId
+				+ "bindingId=" + bindingId);
 
 		return new ResponseEntity<>(response, HttpStatus.CREATED);
 	}
@@ -84,11 +77,6 @@ public class ServiceInstanceBindingController extends BaseController {
 				+ ", serviceDefinitionId=" + serviceDefinitionId
 				+ ", planId=" + planId);
 
-		ServiceInstance instance = serviceInstanceService.getServiceInstance(serviceInstanceId);
-		if (instance == null) {
-			throw new ServiceInstanceDoesNotExistException(serviceInstanceId);
-		}
-
 		try {
 			DeleteServiceInstanceBindingRequest request =
 					new DeleteServiceInstanceBindingRequest(serviceInstanceId, bindingId, serviceDefinitionId, planId,
@@ -102,11 +90,6 @@ public class ServiceInstanceBindingController extends BaseController {
 		logger.debug("deleteServiceInstanceBinding(): succeeded: bindingId=" + bindingId);
 
 		return new ResponseEntity<>("{}", HttpStatus.OK);
-	}
-
-	@ExceptionHandler(ServiceInstanceDoesNotExistException.class)
-	public ResponseEntity<ErrorMessage> handleException(ServiceInstanceDoesNotExistException ex) {
-		return getErrorResponse(ex.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
 	}
 
 	@ExceptionHandler(ServiceInstanceBindingExistsException.class)

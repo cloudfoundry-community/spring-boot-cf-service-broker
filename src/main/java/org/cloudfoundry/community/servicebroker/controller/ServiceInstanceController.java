@@ -149,16 +149,6 @@ public class ServiceInstanceController extends BaseController {
 		return new ResponseEntity<>("{}", response.isAsync() ? HttpStatus.ACCEPTED : HttpStatus.OK);
 	}
 
-	@ExceptionHandler(ServiceInstanceDoesNotExistException.class)
-	public ResponseEntity<ErrorMessage> handleException(ServiceInstanceDoesNotExistException ex) {
-		return getErrorResponse(ex.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
-	}
-	
-	@ExceptionHandler(ServiceDefinitionDoesNotExistException.class)
-	public ResponseEntity<ErrorMessage> handleException(ServiceDefinitionDoesNotExistException ex) {
-		return getErrorResponse(ex.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
-	}
-
 	@ExceptionHandler(ServiceInstanceExistsException.class)
 	public ResponseEntity<ErrorMessage> handleException(ServiceInstanceExistsException ex) {
 		return getErrorResponse(ex.getMessage(), HttpStatus.CONFLICT);

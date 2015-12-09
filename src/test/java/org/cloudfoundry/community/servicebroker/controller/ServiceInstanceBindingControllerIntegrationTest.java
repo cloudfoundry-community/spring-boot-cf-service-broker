@@ -6,10 +6,7 @@ import org.cloudfoundry.community.servicebroker.exception.ServiceInstanceDoesNot
 import org.cloudfoundry.community.servicebroker.model.CreateServiceInstanceBindingRequest;
 import org.cloudfoundry.community.servicebroker.model.CreateServiceInstanceBindingResponse;
 import org.cloudfoundry.community.servicebroker.model.DeleteServiceInstanceBindingRequest;
-import org.cloudfoundry.community.servicebroker.model.ServiceInstance;
-import org.cloudfoundry.community.servicebroker.model.fixture.ServiceInstanceFixture;
 import org.cloudfoundry.community.servicebroker.service.ServiceInstanceBindingService;
-import org.cloudfoundry.community.servicebroker.service.ServiceInstanceService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,9 +47,6 @@ public class ServiceInstanceBindingControllerIntegrationTest extends ControllerI
 	@Mock
 	private ServiceInstanceBindingService serviceInstanceBindingService;
 	
-	@Mock
-	private ServiceInstanceService serviceInstanceService;
-
 	private UriComponentsBuilder uriBuilder;
 
 	private CreateServiceInstanceBindingRequest createRequest;
@@ -66,7 +60,7 @@ public class ServiceInstanceBindingControllerIntegrationTest extends ControllerI
 				.setMessageConverters(new MappingJackson2HttpMessageConverter()).build();
 
 		uriBuilder = UriComponentsBuilder.fromPath("/v2/service_instances/")
-				.pathSegment(ServiceInstanceFixture.getServiceInstance().getServiceInstanceId(), "service_bindings");
+				.pathSegment("service-instance-one-id", "service_bindings");
 
 		createRequest = buildCreateServiceInstanceBindingRequest();
 		createResponse = buildCreateServiceInstanceBindingResponse();
@@ -76,11 +70,6 @@ public class ServiceInstanceBindingControllerIntegrationTest extends ControllerI
 
 	@Test
 	public void createBindingSucceeds() throws Exception {
-		ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
-
-		when(serviceInstanceService.getServiceInstance(eq(createRequest.getServiceInstanceId())))
-				.thenReturn(instance);
-
 		when(serviceInstanceBindingService.createServiceInstanceBinding(eq(createRequest)))
 				.thenReturn(createResponse);
 
@@ -99,11 +88,6 @@ public class ServiceInstanceBindingControllerIntegrationTest extends ControllerI
 
 	@Test
 	public void createBindingWithoutSyslogDrainUrlSucceeds() throws Exception {
-		ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
-
-		when(serviceInstanceService.getServiceInstance(eq(createRequest.getServiceInstanceId())))
-			.thenReturn(instance);
-
 		CreateServiceInstanceBindingResponse response = buildCreateServiceInstanceBindingResponseWithoutSyslog();
 		when(serviceInstanceBindingService.createServiceInstanceBinding(eq(createRequest)))
 			.thenReturn(response);
@@ -122,9 +106,11 @@ public class ServiceInstanceBindingControllerIntegrationTest extends ControllerI
 	}
 
 	@Test
-	public void createBindingWithUnknownIdFails() throws Exception {
-		when(serviceInstanceService.getServiceInstance(eq(createRequest.getServiceInstanceId())))
-				.thenReturn(null);
+	public void createBindingWithUnknownServiceInstanceIdFails() throws Exception {
+		when(serviceInstanceBindingService.createServiceInstanceBinding(eq(createRequest)))
+				.thenThrow(new ServiceInstanceDoesNotExistException(createRequest.getServiceInstanceId()));
+
+		setupCatalogService(createRequest.getServiceDefinitionId());
 
 		mockMvc.perform(put(buildUrl(createRequest))
 				.content(toJson(createRequest))
@@ -135,12 +121,23 @@ public class ServiceInstanceBindingControllerIntegrationTest extends ControllerI
 	}
 
 	@Test
+	public void createBindingWithUnknownServiceDefinitionIdFails() throws Exception {
+		when(serviceInstanceBindingService.createServiceInstanceBinding(eq(createRequest)))
+				.thenReturn(createResponse);
+
+		when(catalogService.getServiceDefinition(eq(createRequest.getServiceDefinitionId())))
+				.thenReturn(null);
+
+		mockMvc.perform(put(buildUrl(createRequest))
+				.content(toJson(createRequest))
+				.accept(MediaType.APPLICATION_JSON)
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isUnprocessableEntity())
+				.andExpect(jsonPath("$.description", containsString(createRequest.getServiceDefinitionId())));
+	}
+
+	@Test
 	public void createBindingWithDuplicateIdFails() throws Exception {
-		ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
-
-		when(serviceInstanceService.getServiceInstance(eq(createRequest.getServiceInstanceId())))
-			.thenReturn(instance);
-
 		when(serviceInstanceBindingService.createServiceInstanceBinding(eq(createRequest)))
 			.thenThrow(new ServiceInstanceBindingExistsException(createRequest.getServiceInstanceId(), createRequest.getBindingId()));
 
@@ -182,14 +179,9 @@ public class ServiceInstanceBindingControllerIntegrationTest extends ControllerI
 
 	@Test
 	public void deleteBindingSucceeds() throws Exception {
-		ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
-
-		when(serviceInstanceService.getServiceInstance(eq(deleteRequest.getServiceInstanceId())))
-				.thenReturn(instance);
-
 		setupCatalogService(deleteRequest.getServiceDefinitionId());
 
-		mockMvc.perform(delete(buildUrl(deleteRequest, instance))
+		mockMvc.perform(delete(buildUrl(deleteRequest))
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$", is("{}")));
@@ -199,17 +191,12 @@ public class ServiceInstanceBindingControllerIntegrationTest extends ControllerI
 
 	@Test
 	public void deleteBindingWithUnknownInstanceIdFails() throws Exception {
-		ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
-
-		when(serviceInstanceService.getServiceInstance(eq(deleteRequest.getServiceInstanceId())))
-				.thenReturn(instance);
-
 		doThrow(new ServiceInstanceDoesNotExistException(deleteRequest.getServiceInstanceId()))
 				.when(serviceInstanceBindingService).deleteServiceInstanceBinding(eq(deleteRequest));
 
 		setupCatalogService(deleteRequest.getServiceDefinitionId());
 
-		mockMvc.perform(delete(buildUrl(deleteRequest, instance))
+		mockMvc.perform(delete(buildUrl(deleteRequest))
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isUnprocessableEntity())
 				.andExpect(jsonPath("$.description", containsString(deleteRequest.getServiceInstanceId())));
@@ -217,30 +204,39 @@ public class ServiceInstanceBindingControllerIntegrationTest extends ControllerI
 
 	@Test
 	public void deleteBindingWithUnknownBindingIdFails() throws Exception {
-		ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
-
-		when(serviceInstanceService.getServiceInstance(eq(deleteRequest.getServiceInstanceId())))
-				.thenReturn(instance);
-
 		doThrow(new ServiceInstanceBindingDoesNotExistException(deleteRequest.getBindingId()))
 				.when(serviceInstanceBindingService).deleteServiceInstanceBinding(eq(deleteRequest));
 
 		setupCatalogService(deleteRequest.getServiceDefinitionId());
 
-		mockMvc.perform(delete(buildUrl(deleteRequest, instance))
+		mockMvc.perform(delete(buildUrl(deleteRequest))
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isGone())
 				.andExpect(jsonPath("$", is("{}")));
+	}
+
+	@Test
+	public void deleteBindingWithUnknownServiceDefinitionIdFails() throws Exception {
+		doThrow(new ServiceInstanceDoesNotExistException(deleteRequest.getServiceInstanceId()))
+				.when(serviceInstanceBindingService).deleteServiceInstanceBinding(eq(deleteRequest));
+
+		when(catalogService.getServiceDefinition(eq(deleteRequest.getServiceDefinitionId())))
+				.thenReturn(null);
+
+		mockMvc.perform(delete(buildUrl(deleteRequest))
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isUnprocessableEntity())
+				.andExpect(jsonPath("$.description", containsString(deleteRequest.getServiceDefinitionId())));
 	}
 
 	private String buildUrl(CreateServiceInstanceBindingRequest request) {
 		return uriBuilder.path(request.getBindingId()).toUriString();
 	}
 
-	private String buildUrl(DeleteServiceInstanceBindingRequest request, ServiceInstance instance) {
+	private String buildUrl(DeleteServiceInstanceBindingRequest request) {
 		return uriBuilder.path(request.getBindingId())
-				.queryParam("service_id", instance.getServiceDefinitionId())
-				.queryParam("plan_id", instance.getPlanId())
+				.queryParam("service_id", request.getServiceDefinitionId())
+				.queryParam("plan_id", request.getPlanId())
 				.toUriString();
 	}
 }

@@ -7,18 +7,23 @@ import org.cloudfoundry.community.servicebroker.model.*;
 
 public class ServiceInstanceBindingFixture {
 
+	public static final String SERVICE_INSTANCE_BINDING_ID = "service_instance_binding_id";
+	public static final String SERVICE_INSTANCE_ID = "service-instance-one-id";
+	public static final String SYSLOG_DRAIN_URL = "http://syslog.example.com";
+	public static final String APP_GUID = "app_guid";
+
 	public static CreateServiceInstanceBindingRequest buildCreateServiceInstanceBindingRequest() {
 		return new CreateServiceInstanceBindingRequest(
 				ServiceFixture.getService().getId(),
 				PlanFixture.getPlanOne().getId(),
-				getAppGuid(),
+				APP_GUID,
 				ParametersFixture.getParameters())
-				.withBindingId(getServiceInstanceBindingId())
-				.withServiceInstanceId("service-instance-one-id");
+				.withBindingId(SERVICE_INSTANCE_BINDING_ID)
+				.withServiceInstanceId(SERVICE_INSTANCE_ID);
 	}
 
 	public static CreateServiceInstanceBindingResponse buildCreateServiceInstanceBindingResponse() {
-		return new CreateServiceInstanceBindingResponse(getCredentials(), getSysLogDrainUrl());
+		return new CreateServiceInstanceBindingResponse(getCredentials(), SYSLOG_DRAIN_URL);
 	}
 
 	public static CreateServiceInstanceBindingResponse buildCreateServiceInstanceBindingResponseWithoutSyslog() {
@@ -26,15 +31,10 @@ public class ServiceInstanceBindingFixture {
 	}
 
 	public static DeleteServiceInstanceBindingRequest buildDeleteServiceInstanceBindingRequest() {
-		ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
 		ServiceDefinition service = ServiceFixture.getService();
 
-		return new DeleteServiceInstanceBindingRequest(instance.getServiceInstanceId(), getServiceInstanceBindingId(),
+		return new DeleteServiceInstanceBindingRequest(SERVICE_INSTANCE_ID, SERVICE_INSTANCE_BINDING_ID,
 				service.getId(), service.getPlans().get(0).getId(), service);
-	}
-
-	public static String getServiceInstanceBindingId() {
-		return "service_instance_binding_id";
 	}
 
 	private static Map<String,Object> getCredentials() {
@@ -43,13 +43,5 @@ public class ServiceInstanceBindingFixture {
 		credentials.put("username", "user1");
 		credentials.put("password", "pwd1");
 		return credentials;
-	}
-
-	private static String getSysLogDrainUrl() {
-		return "http://syslog.example.com";
-	}
-
-	private static String getAppGuid() {
-		return "app_guid";
 	}
 }

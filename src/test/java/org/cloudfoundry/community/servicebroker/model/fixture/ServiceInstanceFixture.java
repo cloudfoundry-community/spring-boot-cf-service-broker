@@ -6,22 +6,10 @@ import org.cloudfoundry.community.servicebroker.model.DeleteServiceInstanceReque
 import org.cloudfoundry.community.servicebroker.model.DeleteServiceInstanceResponse;
 import org.cloudfoundry.community.servicebroker.model.GetLastServiceOperationRequest;
 import org.cloudfoundry.community.servicebroker.model.ServiceDefinition;
-import org.cloudfoundry.community.servicebroker.model.ServiceInstance;
 import org.cloudfoundry.community.servicebroker.model.UpdateServiceInstanceRequest;
 import org.cloudfoundry.community.servicebroker.model.UpdateServiceInstanceResponse;
 
 public class ServiceInstanceFixture {
-
-	public static ServiceInstance getServiceInstance() {
-		return new ServiceInstance(new CreateServiceInstanceRequest(
-				"service-one-id",
-				"plan-one-id",
-				DataFixture.getOrgOneGuid(),
-				DataFixture.getSpaceOneGuid(),
-				ParametersFixture.getParameters(), false)
-				.withServiceInstanceId("service-instance-one-id"))
-				.withDashboardUrl("dashboard_url");
-	}
 
 	public static CreateServiceInstanceRequest buildCreateServiceInstanceRequest(boolean acceptsIncomplete) {
 		ServiceDefinition service = ServiceFixture.getService();
