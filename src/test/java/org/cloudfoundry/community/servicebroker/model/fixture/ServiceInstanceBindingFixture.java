@@ -1,58 +1,55 @@
 package org.cloudfoundry.community.servicebroker.model.fixture;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.cloudfoundry.community.servicebroker.model.*;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 public class ServiceInstanceBindingFixture {
 
-	public static ServiceInstanceBinding getServiceInstanceBinding() {
+	public static CreateServiceInstanceBindingRequest buildCreateServiceInstanceBindingRequest() {
+		return new CreateServiceInstanceBindingRequest(
+				ServiceFixture.getService().getId(),
+				PlanFixture.getPlanOne().getId(),
+				getAppGuid(),
+				ParametersFixture.getParameters())
+				.withBindingId(getServiceInstanceBindingId())
+				.withServiceInstanceId("service-instance-one-id");
+	}
+
+	public static CreateServiceInstanceBindingResponse buildCreateServiceInstanceBindingResponse() {
+		return new CreateServiceInstanceBindingResponse(getCredentials(), getSysLogDrainUrl());
+	}
+
+	public static CreateServiceInstanceBindingResponse buildCreateServiceInstanceBindingResponseWithoutSyslog() {
+		return new CreateServiceInstanceBindingResponse(getCredentials(), null);
+	}
+
+	public static DeleteServiceInstanceBindingRequest buildDeleteServiceInstanceBindingRequest() {
 		ServiceInstance instance = ServiceInstanceFixture.getServiceInstance();
-		return new ServiceInstanceBinding(
-				getServiceInstanceBindingId(),
-				instance.getServiceInstanceId(),
-				getCredentials(),
-				getSysLogDrainUrl(),
-				getAppGuid()
-		);
+		ServiceDefinition service = ServiceFixture.getService();
+
+		return new DeleteServiceInstanceBindingRequest(instance.getServiceInstanceId(), getServiceInstanceBindingId(),
+				service.getId(), service.getPlans().get(0).getId(), service);
 	}
 
 	public static String getServiceInstanceBindingId() {
 		return "service_instance_binding_id";
 	}
-	
-	public static Map<String,Object> getCredentials() {
+
+	private static Map<String,Object> getCredentials() {
 		Map<String,Object> credentials = new HashMap<>();
-		credentials.put("uri","uri");
-		credentials.put("username", "username");
-		credentials.put("password", "password");
+		credentials.put("uri","http://uri.example.com");
+		credentials.put("username", "user1");
+		credentials.put("password", "pwd1");
 		return credentials;
 	}
-	
-	public static String getSysLogDrainUrl() {
-		return "syslog_drain_url";
+
+	private static String getSysLogDrainUrl() {
+		return "http://syslog.example.com";
 	}
-	
-	public static String getAppGuid() {
+
+	private static String getAppGuid() {
 		return "app_guid";
 	}
-	
-	public static CreateServiceInstanceBindingRequest getServiceInstanceBindingRequest() {
-		return new CreateServiceInstanceBindingRequest(
-				ServiceFixture.getService().getId(), 
-				PlanFixture.getPlanOne().getId(),
-				getAppGuid(),
-				ParametersFixture.getParameters()
-		); 	
-	}
-	
-	public static String getServiceInstanceBindingRequestJson() throws IOException {
-		 ObjectMapper mapper = new ObjectMapper();
-		 return mapper.writeValueAsString(getServiceInstanceBindingRequest());
-	}
-	
 }

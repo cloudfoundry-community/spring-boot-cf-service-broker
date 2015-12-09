@@ -44,6 +44,9 @@ public class CreateServiceInstanceBindingRequest {
 
 	@JsonIgnore
 	private String bindingId;
+
+	@JsonIgnore
+	private ServiceDefinition serviceDefinition;
 	
 	public CreateServiceInstanceBindingRequest() {
 	}
@@ -58,11 +61,15 @@ public class CreateServiceInstanceBindingRequest {
 	public String getServiceDefinitionId() {
 		return serviceDefinitionId;
 	}
-	
+
+	public ServiceDefinition getServiceDefinition() {
+		return serviceDefinition;
+	}
+
 	public String getPlanId() {
 		return planId;
 	}
-	
+
 	public String getAppGuid() {
 		return appGuid;
 	}
@@ -70,8 +77,8 @@ public class CreateServiceInstanceBindingRequest {
 	public String getBindingId() {
 		return bindingId;
 	}
-	
-	public String getServiceInstanceId() { 
+
+	public String getServiceInstanceId() {
 		return serviceInstanceId;
 	}
 
@@ -89,6 +96,11 @@ public class CreateServiceInstanceBindingRequest {
 		}
 	}
 
+	public CreateServiceInstanceBindingRequest withServiceDefinition(final ServiceDefinition serviceDefinition) {
+		this.serviceDefinition = serviceDefinition;
+		return this;
+	}
+
 	public CreateServiceInstanceBindingRequest withServiceInstanceId(final String serviceInstanceId) {
 		this.serviceInstanceId = serviceInstanceId;
 		return this;
@@ -96,10 +108,6 @@ public class CreateServiceInstanceBindingRequest {
 
 	public CreateServiceInstanceBindingRequest withBindingId(final String bindingId) {
 		this.bindingId = bindingId;
-		return this;
-	}
-	
-	public CreateServiceInstanceBindingRequest and() {
 		return this;
 	}
 

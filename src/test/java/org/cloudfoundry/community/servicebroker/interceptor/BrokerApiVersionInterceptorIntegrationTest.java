@@ -10,28 +10,30 @@ import org.cloudfoundry.community.servicebroker.model.BrokerApiVersion;
 import org.cloudfoundry.community.servicebroker.service.CatalogService;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+@RunWith(MockitoJUnitRunner.class)
 public class BrokerApiVersionInterceptorIntegrationTest {
 
-	MockMvc mockMvc;
+	private final static String CATALOG_PATH = "/v2/catalog";
+
+	private MockMvc mockMvc;
 
 	@InjectMocks
-	CatalogController controller;
+	private CatalogController controller;
 
 	@Mock
-	CatalogService catalogService;
+	private CatalogService catalogService;
 
 	@Before
 	public void setup() {
-		MockitoAnnotations.initMocks(this);
-
 		this.mockMvc = MockMvcBuilders.standaloneSetup(controller)
 				.addInterceptors(new BrokerApiVersionInterceptor(new BrokerApiVersion("header", "expected-version")))
 				.setMessageConverters(new MappingJackson2HttpMessageConverter()).build();
@@ -39,7 +41,7 @@ public class BrokerApiVersionInterceptorIntegrationTest {
 
 	@Test
 	public void noHeaderSent() throws Exception {
-		this.mockMvc.perform(get(CatalogController.BASE_PATH)
+		this.mockMvc.perform(get(CATALOG_PATH)
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isPreconditionFailed())
 				.andExpect(jsonPath("$.description.", containsString("expected-version")));
@@ -47,7 +49,7 @@ public class BrokerApiVersionInterceptorIntegrationTest {
 
 	@Test
 	public void incorrectHeaderSent() throws Exception {
-		this.mockMvc.perform(get(CatalogController.BASE_PATH)
+		this.mockMvc.perform(get(CATALOG_PATH)
 				.header("header", "wrong-version")
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isPreconditionFailed())
@@ -57,7 +59,7 @@ public class BrokerApiVersionInterceptorIntegrationTest {
 
 	@Test
 	public void correctHeaderSent() throws Exception {
-		this.mockMvc.perform(get(CatalogController.BASE_PATH)
+		this.mockMvc.perform(get(CATALOG_PATH)
 				.header("header", "expected-version")
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());

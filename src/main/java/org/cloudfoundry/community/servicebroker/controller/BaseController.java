@@ -2,6 +2,7 @@ package org.cloudfoundry.community.servicebroker.controller;
 
 import org.cloudfoundry.community.servicebroker.exception.*;
 import org.cloudfoundry.community.servicebroker.model.*;
+import org.cloudfoundry.community.servicebroker.service.CatalogService;
 import org.slf4j.*;
 import org.springframework.http.*;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -17,6 +18,21 @@ import org.springframework.web.bind.annotation.*;
 public class BaseController {
 
 	private static final Logger logger = LoggerFactory.getLogger(BaseController.class);
+
+	protected CatalogService catalogService;
+
+	public BaseController(CatalogService catalogService) {
+		this.catalogService = catalogService;
+	}
+
+	protected ServiceDefinition getServiceDefinition(String serviceDefinitionId)
+			throws ServiceDefinitionDoesNotExistException {
+		ServiceDefinition serviceDefinition = catalogService.getServiceDefinition(serviceDefinitionId);
+		if (serviceDefinition == null) {
+			throw new ServiceDefinitionDoesNotExistException(serviceDefinitionId);
+		}
+		return serviceDefinition;
+	}
 
 	@ExceptionHandler(ServiceBrokerApiVersionException.class)
 	@ResponseBody
@@ -41,17 +57,18 @@ public class BaseController {
 		return getErrorResponse(message, HttpStatus.UNPROCESSABLE_ENTITY);
 	}
 
+	@ExceptionHandler(ServiceBrokerAsyncRequiredException.class)
+	@ResponseBody
+	public ResponseEntity<AsyncRequiredErrorMessage> handleException(ServiceBrokerAsyncRequiredException ex) {
+		return new ResponseEntity<>(
+				new AsyncRequiredErrorMessage(ex.getMessage()), HttpStatus.UNPROCESSABLE_ENTITY);
+	}
+
 	@ExceptionHandler(Exception.class)
 	@ResponseBody
 	public ResponseEntity<ErrorMessage> handleException(Exception ex) {
 		logger.warn("Exception", ex);
 		return getErrorResponse(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-	}
-
-	@ExceptionHandler(ServiceBrokerAsyncRequiredException.class)
-	public ResponseEntity<AsyncRequiredErrorMessage> handleException(ServiceBrokerAsyncRequiredException ex) {
-		return new ResponseEntity<>(
-				new AsyncRequiredErrorMessage(ex.getDescription()), HttpStatus.UNPROCESSABLE_ENTITY);
 	}
 
 	public ResponseEntity<ErrorMessage> getErrorResponse(String message, HttpStatus status) {

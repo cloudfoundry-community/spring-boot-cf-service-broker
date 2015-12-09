@@ -42,7 +42,7 @@ public class ServiceInstanceBinding {
 
 	private void setCredentials(Map<String, Object> credentials) {
 		if (credentials == null) {
-			credentials = new HashMap<String,Object>();
+			this.credentials = new HashMap<>();
 		} else {
 			this.credentials = credentials;
 		}

@@ -19,28 +19,31 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
  */
 @JsonAutoDetect(getterVisibility = JsonAutoDetect.Visibility.NONE)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ServiceInstanceBindingResponse {
-
-	ServiceInstanceBinding binding;
-	
-	public ServiceInstanceBindingResponse() {}
-	
-	public ServiceInstanceBindingResponse(ServiceInstanceBinding binding) {
-		this.binding = binding;
-	}
+public class CreateServiceInstanceBindingResponse {
 
 	@NotEmpty
 	@JsonSerialize
 	@JsonProperty("credentials")
-	public Map<String, Object> getCredentials() {
-		return binding.getCredentials();
-	}
+	private Map<String, Object> credentials;
 
 	@JsonSerialize
 	@JsonProperty("syslog_drain_url")
 	@JsonInclude(JsonInclude.Include.NON_NULL)
-	public String getSyslogDrainUrl() {
-		return binding.getSyslogDrainUrl();
+	private String syslogDrainUrl;
+
+	public CreateServiceInstanceBindingResponse() {
 	}
 	
+	public CreateServiceInstanceBindingResponse(Map<String, Object> credentials, String syslogDrainUrl) {
+		this.credentials = credentials;
+		this.syslogDrainUrl = syslogDrainUrl;
+	}
+
+	public Map<String, Object> getCredentials() {
+		return credentials;
+	}
+
+	public String getSyslogDrainUrl() {
+		return syslogDrainUrl;
+	}
 }

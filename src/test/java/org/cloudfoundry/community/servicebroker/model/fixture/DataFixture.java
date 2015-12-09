@@ -2,10 +2,7 @@ package org.cloudfoundry.community.servicebroker.model.fixture;
 
 import java.io.IOException;
 
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 
 public class DataFixture {
 
@@ -17,7 +14,7 @@ public class DataFixture {
 		return "space-guid-one";
 	}
 	
-	public static String toJson(Object object) throws JsonGenerationException, JsonMappingException, IOException {
+	public static String toJson(Object object) throws IOException {
 		 ObjectMapper mapper = new ObjectMapper();
 		 return mapper.writeValueAsString(object);
 	}

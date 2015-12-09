@@ -1,5 +1,6 @@
 package org.cloudfoundry.community.servicebroker.controller;
 
+import static org.cloudfoundry.community.servicebroker.model.AsyncRequiredErrorMessage.ASYNC_REQUIRED_ERROR;
 import static org.cloudfoundry.community.servicebroker.model.fixture.DataFixture.toJson;
 import static org.cloudfoundry.community.servicebroker.model.fixture.ServiceInstanceFixture.buildCreateServiceInstanceRequest;
 import static org.cloudfoundry.community.servicebroker.model.fixture.ServiceInstanceFixture.buildCreateServiceInstanceResponse;
@@ -17,7 +18,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import org.cloudfoundry.community.servicebroker.exception.*;
 import org.cloudfoundry.community.servicebroker.model.*;
-import org.cloudfoundry.community.servicebroker.model.fixture.ServiceFixture;
 import org.cloudfoundry.community.servicebroker.service.*;
 import org.junit.*;
 import org.junit.runner.RunWith;
@@ -30,9 +30,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ServiceInstanceControllerIntegrationTest {
-
-	private static final String BASE_PATH = "/v2/service_instances/";
+public class ServiceInstanceControllerIntegrationTest extends ControllerIntegrationTest {
 
 	private MockMvc mockMvc;
 
@@ -42,10 +40,24 @@ public class ServiceInstanceControllerIntegrationTest {
 	@Mock
 	private ServiceInstanceService serviceInstanceService;
 
-	@Mock
-	private CatalogService catalogService;
-
 	private UriComponentsBuilder uriBuilder;
+
+	private CreateServiceInstanceRequest syncCreateRequest;
+	private CreateServiceInstanceRequest asyncCreateRequest;
+	private CreateServiceInstanceResponse syncCreateResponse;
+	private CreateServiceInstanceResponse asyncCreateResponse;
+
+	private DeleteServiceInstanceRequest syncDeleteRequest;
+	private DeleteServiceInstanceRequest asyncDeleteRequest;
+	private DeleteServiceInstanceResponse syncDeleteResponse;
+	private DeleteServiceInstanceResponse asyncDeleteResponse;
+
+	private UpdateServiceInstanceRequest syncUpdateRequest;
+	private UpdateServiceInstanceRequest asyncUpdateRequest;
+	private UpdateServiceInstanceResponse syncUpdateResponse;
+	private UpdateServiceInstanceResponse asyncUpdateResponse;
+
+	private GetLastServiceOperationRequest lastOperationRequest;
 
 	@Before
 	public void setup() {
@@ -53,127 +65,130 @@ public class ServiceInstanceControllerIntegrationTest {
 				.setMessageConverters(new MappingJackson2HttpMessageConverter())
 				.build();
 
-		uriBuilder = UriComponentsBuilder.fromPath(BASE_PATH);
+		uriBuilder = UriComponentsBuilder.fromPath("/v2/service_instances/");
+
+		syncCreateRequest = buildCreateServiceInstanceRequest(false);
+		syncCreateResponse = buildCreateServiceInstanceResponse(false);
+		asyncCreateRequest = buildCreateServiceInstanceRequest(true);
+		asyncCreateResponse = buildCreateServiceInstanceResponse(true);
+
+		syncDeleteRequest = buildDeleteServiceInstanceRequest(false);
+		syncDeleteResponse = buildDeleteServiceInstanceResponse(false);
+		asyncDeleteRequest = buildDeleteServiceInstanceRequest(true);
+		asyncDeleteResponse = buildDeleteServiceInstanceResponse(true);
+
+		syncUpdateRequest = buildUpdateServiceInstanceRequest(false);
+		syncUpdateResponse = buildUpdateServiceInstanceResponse(false);
+		asyncUpdateRequest = buildUpdateServiceInstanceRequest(true);
+		asyncUpdateResponse = buildUpdateServiceInstanceResponse(true);
+
+		lastOperationRequest = buildGetLastOperationRequest();
 	}
 
 	@Test
 	public void createServiceInstanceSucceeds() throws Exception {
-		CreateServiceInstanceRequest request = buildCreateServiceInstanceRequest(false);
-		CreateServiceInstanceResponse response = buildCreateServiceInstanceResponse(false);
+		when(serviceInstanceService.createServiceInstance(eq(syncCreateRequest)))
+				.thenReturn(syncCreateResponse);
 
-		when(serviceInstanceService.createServiceInstance(eq(request)))
-				.thenReturn(response);
+		setupCatalogService(syncCreateRequest.getServiceDefinitionId());
 
-		setupCatalogService(request.getServiceDefinitionId());
-
-		mockMvc.perform(put(buildUrl(request))
-						.content(toJson(request))
-						.contentType(MediaType.APPLICATION_JSON)
-						.accept(MediaType.APPLICATION_JSON))
+		mockMvc.perform(put(buildUrl(syncCreateRequest))
+				.content(toJson(syncCreateRequest))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isCreated())
-				.andExpect(jsonPath("$.dashboard_url", is(response.getDashboardUrl())));
+				.andExpect(jsonPath("$.dashboard_url", is(syncCreateResponse.getDashboardUrl())));
 	}
 
 	@Test
 	public void createServiceInstanceWithAsyncSucceeds() throws Exception {
-		CreateServiceInstanceRequest request = buildCreateServiceInstanceRequest(true);
-		CreateServiceInstanceResponse response = buildCreateServiceInstanceResponse(true);
+		when(serviceInstanceService.createServiceInstance(eq(asyncCreateRequest)))
+				.thenReturn(asyncCreateResponse);
 
-		when(serviceInstanceService.createServiceInstance(eq(request)))
-				.thenReturn(response);
+		setupCatalogService(asyncCreateRequest.getServiceDefinitionId());
 
-		setupCatalogService(request.getServiceDefinitionId());
-
-		mockMvc.perform(put(buildUrl(request))
-						.content(toJson(request))
-						.contentType(MediaType.APPLICATION_JSON)
-						.accept(MediaType.APPLICATION_JSON))
+		mockMvc.perform(put(buildUrl(asyncCreateRequest))
+				.content(toJson(asyncCreateRequest))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isAccepted())
-				.andExpect(jsonPath("$.dashboard_url", is(response.getDashboardUrl())));
+				.andExpect(jsonPath("$.dashboard_url", is(asyncCreateResponse.getDashboardUrl())));
 	}
 
 	@Test
 	public void createServiceInstanceWithUnknownServiceDefinitionFails() throws Exception {
-		CreateServiceInstanceRequest request = buildCreateServiceInstanceRequest(false);
-
-		when(catalogService.getServiceDefinition(eq(request.getServiceDefinitionId())))
+		when(catalogService.getServiceDefinition(eq(syncCreateRequest.getServiceDefinitionId())))
 				.thenReturn(null);
 
-		mockMvc.perform(put(buildUrl(request))
-						.content(toJson(request))
-						.contentType(MediaType.APPLICATION_JSON)
-						.accept(MediaType.APPLICATION_JSON))
+		mockMvc.perform(put(buildUrl(syncCreateRequest))
+				.content(toJson(syncCreateRequest))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isUnprocessableEntity())
-				.andExpect(jsonPath("$.description", containsString(request.getServiceDefinitionId())));
+				.andExpect(jsonPath("$.description", containsString(syncCreateRequest.getServiceDefinitionId())));
 	}
 
 	@Test
 	public void createDuplicateServiceInstanceFails() throws Exception {
-		CreateServiceInstanceRequest request = buildCreateServiceInstanceRequest(false);
+		when(serviceInstanceService.createServiceInstance(eq(syncCreateRequest)))
+				.thenThrow(new ServiceInstanceExistsException(syncCreateRequest.getServiceInstanceId(),
+						syncCreateRequest.getServiceDefinitionId()));
 
-		when(serviceInstanceService.createServiceInstance(eq(request)))
-				.thenThrow(new ServiceInstanceExistsException(request.getServiceInstanceId(), request.getServiceDefinitionId()));
+		setupCatalogService(syncCreateRequest.getServiceDefinitionId());
 
-		setupCatalogService(request.getServiceDefinitionId());
-
-		mockMvc.perform(put(buildUrl(request))
-						.content(toJson(request))
-						.contentType(MediaType.APPLICATION_JSON)
-						.accept(MediaType.APPLICATION_JSON))
+		mockMvc.perform(put(buildUrl(syncCreateRequest))
+				.content(toJson(syncCreateRequest))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isConflict())
-				.andExpect(jsonPath("$.description", containsString(request.getServiceInstanceId())));
+				.andExpect(jsonPath("$.description", containsString(syncCreateRequest.getServiceInstanceId())));
 	}
 
 	@Test
 	public void createServiceInstanceWithAsyncRequiredFails() throws Exception {
-		CreateServiceInstanceRequest request = buildCreateServiceInstanceRequest(false);
+		when(serviceInstanceService.createServiceInstance(eq(syncCreateRequest)))
+				.thenThrow(new ServiceBrokerAsyncRequiredException("async required description"));
 
-		when(serviceInstanceService.createServiceInstance(eq(request)))
-				.thenThrow(new ServiceBrokerAsyncRequiredException("msg"));
+		setupCatalogService(syncCreateRequest.getServiceDefinitionId());
 
-		setupCatalogService(request.getServiceDefinitionId());
-
-		mockMvc.perform(put(buildUrl(request))
-						.content(toJson(request))
-						.contentType(MediaType.APPLICATION_JSON)
-						.accept(MediaType.APPLICATION_JSON))
+		mockMvc.perform(put(buildUrl(syncCreateRequest))
+				.content(toJson(syncCreateRequest))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isUnprocessableEntity())
-				.andExpect(jsonPath("$.error", is("AsyncRequired")));
+				.andExpect(jsonPath("$.error", is(ASYNC_REQUIRED_ERROR)))
+				.andExpect(jsonPath("$.description", is("async required description")));
 	}
 
 	@Test
-	public void createServiceInstanceWithBadJsonFails() throws Exception {
-		CreateServiceInstanceRequest request = buildCreateServiceInstanceRequest(false);
+	public void createServiceInstanceWithInvalidFieldsFails() throws Exception {
+		when(serviceInstanceService.createServiceInstance(eq(syncCreateRequest)))
+				.thenReturn(syncCreateResponse);
 
-		when(serviceInstanceService.createServiceInstance(eq(request)))
-				.thenReturn(buildCreateServiceInstanceResponse(false));
+		setupCatalogService(syncCreateRequest.getServiceDefinitionId());
 
-		setupCatalogService(request.getServiceDefinitionId());
-
-		String body = toJson(request);
+		String body = toJson(syncCreateRequest);
 		body = body.replace("service_id", "foo");
 
-		mockMvc.perform(put(buildUrl(request))
-						.content(body)
-						.contentType(MediaType.APPLICATION_JSON)
-						.accept(MediaType.APPLICATION_JSON))
+		mockMvc.perform(put(buildUrl(syncCreateRequest))
+				.content(body)
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isUnprocessableEntity())
-				.andExpect(jsonPath("$.description", containsString("Missing required fields")));
+				.andExpect(jsonPath("$.description", containsString("serviceDefinitionId")));
 	}
 
 	@Test
-	public void createServiceInstanceWithMissingJsonFieldsFails() throws Exception {
-		CreateServiceInstanceRequest request = buildCreateServiceInstanceRequest(false);
-
+	public void createServiceInstanceWithMissingFieldsFails() throws Exception {
 		when(serviceInstanceService.createServiceInstance(any(CreateServiceInstanceRequest.class)))
-				.thenReturn(buildCreateServiceInstanceResponse(false));
+				.thenReturn(syncCreateResponse);
 
 		String body = "{}";
 
-		mockMvc.perform(put(buildUrl(request))
-						.content(body)
-						.contentType(MediaType.APPLICATION_JSON)
-						.accept(MediaType.APPLICATION_JSON))
+		mockMvc.perform(put(buildUrl(syncCreateRequest))
+				.content(body)
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isUnprocessableEntity())
 				.andExpect(jsonPath("$.description", containsString("serviceDefinitionId")))
 				.andExpect(jsonPath("$.description", containsString("planId")))
@@ -183,136 +198,128 @@ public class ServiceInstanceControllerIntegrationTest {
 
 	@Test
 	public void deleteServiceInstanceSucceeds() throws Exception {
-		DeleteServiceInstanceRequest request = buildDeleteServiceInstanceRequest(false);
+		when(serviceInstanceService.deleteServiceInstance(eq(syncDeleteRequest)))
+				.thenReturn(syncDeleteResponse);
 
-		when(serviceInstanceService.deleteServiceInstance(eq(request)))
-				.thenReturn(buildDeleteServiceInstanceResponse(false));
+		setupCatalogService(syncDeleteRequest.getServiceDefinitionId());
 
-		mockMvc.perform(delete(buildUrl(request))
-						.accept(MediaType.APPLICATION_JSON))
+		mockMvc.perform(delete(buildUrl(syncDeleteRequest))
+				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
 	}
 
 	@Test
 	public void deleteServiceInstanceWithAsyncSucceeds() throws Exception {
-		DeleteServiceInstanceRequest request = buildDeleteServiceInstanceRequest(true);
+		when(serviceInstanceService.deleteServiceInstance(eq(asyncDeleteRequest)))
+				.thenReturn(asyncDeleteResponse);
 
-		when(serviceInstanceService.deleteServiceInstance(eq(request)))
-				.thenReturn(buildDeleteServiceInstanceResponse(true));
+		setupCatalogService(asyncDeleteRequest.getServiceDefinitionId());
 
-		mockMvc.perform(delete(buildUrl(request))
-						.accept(MediaType.APPLICATION_JSON))
+		mockMvc.perform(delete(buildUrl(asyncDeleteRequest))
+				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isAccepted());
 	}
 
 	@Test
 	public void deleteServiceInstanceWithUnknownIdFails() throws Exception {
-		DeleteServiceInstanceRequest request = buildDeleteServiceInstanceRequest(false);
+		when(serviceInstanceService.deleteServiceInstance(eq(syncDeleteRequest)))
+				.thenThrow(new ServiceInstanceDoesNotExistException(syncDeleteRequest.getServiceInstanceId()));
 
-		when(serviceInstanceService.deleteServiceInstance(eq(request)))
-				.thenThrow(new ServiceInstanceDoesNotExistException(request.getServiceInstanceId()));
+		setupCatalogService(syncDeleteRequest.getServiceDefinitionId());
 
-		mockMvc.perform(delete(buildUrl(request))
-						.accept(MediaType.APPLICATION_JSON))
+		mockMvc.perform(delete(buildUrl(syncDeleteRequest))
+				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isGone())
 				.andExpect(jsonPath("$", is("{}")));
 	}
 
 	@Test
 	public void deleteServiceInstanceWithAsyncRequiredFails() throws Exception {
-		DeleteServiceInstanceRequest request = buildDeleteServiceInstanceRequest(false);
+		when(serviceInstanceService.deleteServiceInstance(eq(syncDeleteRequest)))
+				.thenThrow(new ServiceBrokerAsyncRequiredException("async required description"));
 
-		when(serviceInstanceService.deleteServiceInstance(eq(request)))
-				.thenThrow(new ServiceBrokerAsyncRequiredException("msg"));
+		setupCatalogService(syncDeleteRequest.getServiceDefinitionId());
 
-		mockMvc.perform(delete(buildUrl(request))
-						.accept(MediaType.APPLICATION_JSON))
+		mockMvc.perform(delete(buildUrl(syncDeleteRequest))
+				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isUnprocessableEntity())
-				.andExpect(jsonPath("$.error", is("AsyncRequired")));
+				.andExpect(jsonPath("$.error", is(ASYNC_REQUIRED_ERROR)))
+				.andExpect(jsonPath("$.description", is("async required description")));
 	}
 
 	@Test
 	public void updateServiceInstanceSucceeds() throws Exception {
-		UpdateServiceInstanceRequest request = buildUpdateServiceInstanceRequest(false);
+		when(serviceInstanceService.updateServiceInstance(eq(syncUpdateRequest)))
+				.thenReturn(syncUpdateResponse);
 
-		when(serviceInstanceService.updateServiceInstance(eq(request)))
-				.thenReturn(buildUpdateServiceInstanceResponse(false));
+		setupCatalogService(syncUpdateRequest.getServiceDefinitionId());
 
-		setupCatalogService(request.getServiceDefinitionId());
-
-		mockMvc.perform(patch(buildUrl(request))
-						.content(toJson(request))
-						.contentType(MediaType.APPLICATION_JSON)
-						.accept(MediaType.APPLICATION_JSON))
+		mockMvc.perform(patch(buildUrl(syncUpdateRequest))
+				.content(toJson(syncUpdateRequest))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$", is("{}")));
 	}
 
 	@Test
 	public void updateServiceInstanceWithAsyncSucceeds() throws Exception {
-		UpdateServiceInstanceRequest request = buildUpdateServiceInstanceRequest(true);
+		when(serviceInstanceService.updateServiceInstance(eq(asyncUpdateRequest)))
+				.thenReturn(asyncUpdateResponse);
 
-		when(serviceInstanceService.updateServiceInstance(eq(request)))
-				.thenReturn(buildUpdateServiceInstanceResponse(true));
+		setupCatalogService(asyncUpdateRequest.getServiceDefinitionId());
 
-		setupCatalogService(request.getServiceDefinitionId());
-
-		mockMvc.perform(patch(buildUrl(request))
-						.content(toJson(request))
-						.contentType(MediaType.APPLICATION_JSON)
-						.accept(MediaType.APPLICATION_JSON))
+		mockMvc.perform(patch(buildUrl(asyncUpdateRequest))
+				.content(toJson(asyncUpdateRequest))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isAccepted())
 				.andExpect(jsonPath("$", is("{}")));
 	}
 
 	@Test
 	public void updateServiceInstanceWithAsyncRequiredFails() throws Exception {
-		UpdateServiceInstanceRequest request = buildUpdateServiceInstanceRequest(false);
+		when(serviceInstanceService.updateServiceInstance(eq(syncUpdateRequest)))
+				.thenThrow(new ServiceBrokerAsyncRequiredException("async required description"));
 
-		when(serviceInstanceService.updateServiceInstance(eq(request)))
-				.thenThrow(new ServiceBrokerAsyncRequiredException("msg"));
+		setupCatalogService(syncUpdateRequest.getServiceDefinitionId());
 
-		setupCatalogService(request.getServiceDefinitionId());
-
-		mockMvc.perform(patch(buildUrl(request))
-					.content(toJson(request))
-					.contentType(MediaType.APPLICATION_JSON)
-					.accept(MediaType.APPLICATION_JSON))
+		mockMvc.perform(patch(buildUrl(syncUpdateRequest))
+				.content(toJson(syncUpdateRequest))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isUnprocessableEntity())
-				.andExpect(jsonPath("$.error", is("AsyncRequired")));
+				.andExpect(jsonPath("$.error", is(ASYNC_REQUIRED_ERROR)))
+				.andExpect(jsonPath("$.description", is("async required description")));
 	}
 
 	@Test
 	public void updateServiceInstanceWithUnknownIdFails() throws Exception {
-		UpdateServiceInstanceRequest request = buildUpdateServiceInstanceRequest(false);
+		when(serviceInstanceService.updateServiceInstance(eq(syncUpdateRequest)))
+				.thenThrow(new ServiceInstanceDoesNotExistException(syncUpdateRequest.getServiceInstanceId()));
 
-		when(serviceInstanceService.updateServiceInstance(eq(request)))
-				.thenThrow(new ServiceInstanceDoesNotExistException(request.getServiceInstanceId()));
+		setupCatalogService(syncUpdateRequest.getServiceDefinitionId());
 
-		setupCatalogService(request.getServiceDefinitionId());
-
-		mockMvc.perform(patch(buildUrl(request))
-						.content(toJson(request))
-						.contentType(MediaType.APPLICATION_JSON)
-						.accept(MediaType.APPLICATION_JSON))
+		mockMvc.perform(patch(buildUrl(syncUpdateRequest))
+				.content(toJson(syncUpdateRequest))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isUnprocessableEntity())
 				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-				.andExpect(jsonPath("$.description", containsString(request.getServiceInstanceId())));
+				.andExpect(jsonPath("$.description", containsString(syncUpdateRequest.getServiceInstanceId())));
 	}
 
 	@Test
 	public void updateServiceInstanceWithUnknownPlanFails() throws Exception {
-		UpdateServiceInstanceRequest request = buildUpdateServiceInstanceRequest(false);
-
-		when(serviceInstanceService.updateServiceInstance(eq(request)))
+		when(serviceInstanceService.updateServiceInstance(eq(syncUpdateRequest)))
 				.thenThrow(new ServiceInstanceUpdateNotSupportedException("description"));
 
-		setupCatalogService(request.getServiceDefinitionId());
+		setupCatalogService(syncUpdateRequest.getServiceDefinitionId());
 
-		mockMvc.perform(patch(buildUrl(request))
-						.content(toJson(request))
-						.contentType(MediaType.APPLICATION_JSON)
-						.accept(MediaType.APPLICATION_JSON))
+		mockMvc.perform(patch(buildUrl(syncUpdateRequest))
+				.content(toJson(syncUpdateRequest))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isUnprocessableEntity())
 				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$.description", containsString("description")));
@@ -320,12 +327,10 @@ public class ServiceInstanceControllerIntegrationTest {
 
 	@Test
 	public void lastOperationHasInProgressStatus() throws Exception {
-		GetLastServiceOperationRequest request = buildGetLastOperationRequest();
-
-		when(serviceInstanceService.getLastOperation(eq(request)))
+		when(serviceInstanceService.getLastOperation(eq(lastOperationRequest)))
 				.thenReturn(new GetLastServiceOperationResponse(OperationState.IN_PROGRESS, "working on it", false));
 
-		mockMvc.perform(get(buildUrl(request)))
+		mockMvc.perform(get(buildUrl(lastOperationRequest)))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.state", is(OperationState.IN_PROGRESS.getValue())))
 				.andExpect(jsonPath("$.description", is("working on it")));
@@ -333,12 +338,10 @@ public class ServiceInstanceControllerIntegrationTest {
 
 	@Test
 	public void lastOperationHasSucceededStatus() throws Exception {
-		GetLastServiceOperationRequest request = buildGetLastOperationRequest();
-
-		when(serviceInstanceService.getLastOperation(eq(request)))
+		when(serviceInstanceService.getLastOperation(eq(lastOperationRequest)))
 				.thenReturn(new GetLastServiceOperationResponse(OperationState.SUCCEEDED, "all good", false));
 
-		mockMvc.perform(get(buildUrl(request)))
+		mockMvc.perform(get(buildUrl(lastOperationRequest)))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.state", is(OperationState.SUCCEEDED.getValue())))
 				.andExpect(jsonPath("$.description", is("all good")));
@@ -346,12 +349,10 @@ public class ServiceInstanceControllerIntegrationTest {
 
 	@Test
 	public void lastOperationHasSucceededStatusWithDeletionComplete() throws Exception {
-		GetLastServiceOperationRequest request = buildGetLastOperationRequest();
-
-		when(serviceInstanceService.getLastOperation(eq(request)))
+		when(serviceInstanceService.getLastOperation(eq(lastOperationRequest)))
 				.thenReturn(new GetLastServiceOperationResponse(OperationState.SUCCEEDED, "all gone", true));
 
-		mockMvc.perform(get(buildUrl(request)))
+		mockMvc.perform(get(buildUrl(lastOperationRequest)))
 				.andExpect(status().isGone())
 				.andExpect(jsonPath("$.state", is(OperationState.SUCCEEDED.getValue())))
 				.andExpect(jsonPath("$.description", is("all gone")));
@@ -359,12 +360,10 @@ public class ServiceInstanceControllerIntegrationTest {
 
 	@Test
 	public void lastOperationHasFailedStatus() throws Exception {
-		GetLastServiceOperationRequest request = buildGetLastOperationRequest();
-
-		when(serviceInstanceService.getLastOperation(eq(request)))
+		when(serviceInstanceService.getLastOperation(eq(lastOperationRequest)))
 				.thenReturn(new GetLastServiceOperationResponse(OperationState.FAILED, "not so good", false));
 
-		mockMvc.perform(get(buildUrl(request)))
+		mockMvc.perform(get(buildUrl(lastOperationRequest)))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.state", is(OperationState.FAILED.getValue())))
 				.andExpect(jsonPath("$.description", is("not so good")));
@@ -372,19 +371,12 @@ public class ServiceInstanceControllerIntegrationTest {
 
 	@Test
 	public void lastOperationWithUnknownIdFails() throws Exception {
-		GetLastServiceOperationRequest request = buildGetLastOperationRequest();
+		when(serviceInstanceService.getLastOperation(eq(lastOperationRequest)))
+				.thenThrow(new ServiceInstanceDoesNotExistException(lastOperationRequest.getServiceInstanceId()));
 
-		when(serviceInstanceService.getLastOperation(eq(request)))
-				.thenThrow(new ServiceInstanceDoesNotExistException(request.getServiceInstanceId()));
-
-		mockMvc.perform(get(buildUrl(request)))
+		mockMvc.perform(get(buildUrl(lastOperationRequest)))
 				.andExpect(status().isUnprocessableEntity())
-				.andExpect(jsonPath("$.description", containsString(request.getServiceInstanceId())));
-	}
-
-	private void setupCatalogService(String serviceDefinitionId) {
-		when(catalogService.getServiceDefinition(eq(serviceDefinitionId)))
-				.thenReturn(ServiceFixture.getService());
+				.andExpect(jsonPath("$.description", containsString(lastOperationRequest.getServiceInstanceId())));
 	}
 
 	private String buildUrl(CreateServiceInstanceRequest request) {

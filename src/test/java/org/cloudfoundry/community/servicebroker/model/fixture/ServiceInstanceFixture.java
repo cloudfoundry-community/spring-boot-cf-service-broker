@@ -44,6 +44,7 @@ public class ServiceInstanceFixture {
 		return new DeleteServiceInstanceRequest("service-instance-id",
 				service.getId(),
 				service.getPlans().get(0).getId(),
+				service,
 				acceptsIncomplete);
 	}
 

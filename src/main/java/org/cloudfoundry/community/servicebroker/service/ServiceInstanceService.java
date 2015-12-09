@@ -38,13 +38,13 @@ public interface ServiceInstanceService {
 	/**
 	 * Delete and return the instance if it exists.
 	 *
-	 * @param deleteServiceInstanceRequest containing pertinent information for deleting the service.
+	 * @param request containing pertinent information for deleting the service.
 	 * @return a DeleteServiceInstanceResponse
 	 * @throws ServiceBrokerException is something goes wrong internally
 	 * @throws ServiceBrokerAsyncRequiredException if we must use an async comparable Cloud Controller
 	 * 
 	 */
-	DeleteServiceInstanceResponse deleteServiceInstance(DeleteServiceInstanceRequest deleteServiceInstanceRequest)
+	DeleteServiceInstanceResponse deleteServiceInstance(DeleteServiceInstanceRequest request)
 			throws ServiceBrokerException, ServiceInstanceDoesNotExistException, ServiceBrokerAsyncRequiredException;
 
 	/**

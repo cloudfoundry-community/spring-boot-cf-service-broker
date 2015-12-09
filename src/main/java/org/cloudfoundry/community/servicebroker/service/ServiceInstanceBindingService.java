@@ -12,25 +12,23 @@ public interface ServiceInstanceBindingService {
 
 	/**
 	 * Create a new binding to a service instance.
-	 * @param createServiceInstanceBindingRequest containing parameters sent from Cloud Controller
-	 * @return The newly created ServiceInstanceBinding
+	 *
+	 * @param request containing parameters sent from Cloud Controller
+	 * @return a CreateServiceInstanceBindingResponse
 	 * @throws ServiceInstanceBindingExistsException if the same binding already exists
 	 * @throws ServiceBrokerException on internal failure
 	 */
-	ServiceInstanceBinding createServiceInstanceBinding(
-			CreateServiceInstanceBindingRequest createServiceInstanceBindingRequest)
+	CreateServiceInstanceBindingResponse createServiceInstanceBinding(CreateServiceInstanceBindingRequest request)
 			throws ServiceInstanceBindingExistsException, ServiceBrokerException;
 
 	/**
-	 * Delete the service instance binding. If a binding doesn't exist, 
-	 * return null.
-	 * @param deleteServiceInstanceBindingRequest containing parameters sent from Cloud Controller
-     * @return The deleted ServiceInstanceBinding or null if one does not exist
+	 * Delete the service instance binding.
+	 *
+	 * @param request containing parameters sent from Cloud Controller
      * @throws ServiceBrokerException on internal failure
-	 * @throws ServiceBrokerAsyncRequiredException if we must use an async comparable cloud controller
+	 * @throws ServiceInstanceDoesNotExistException if the service instance ID is not valid
+	 * @throws ServiceInstanceBindingDoesNotExistException if the service instance binding ID is not valid
 	 */
-	ServiceInstanceBinding deleteServiceInstanceBinding(
-			DeleteServiceInstanceBindingRequest deleteServiceInstanceBindingRequest) 
-	        throws ServiceBrokerException, ServiceBrokerAsyncRequiredException;
-	
+	void deleteServiceInstanceBinding(DeleteServiceInstanceBindingRequest request)
+			throws ServiceBrokerException, ServiceInstanceDoesNotExistException, ServiceInstanceBindingDoesNotExistException;
 }
