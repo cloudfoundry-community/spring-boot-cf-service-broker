@@ -1,7 +1,10 @@
 package org.cloudfoundry.community.servicebroker.exception;
 
-
-public class ServiceBrokerApiVersionException extends Exception {
+/**
+ * Thrown to indicate that the version of the API supported by the broker doesn't match the version
+ * in a request.
+ */
+public class ServiceBrokerApiVersionException extends RuntimeException {
 
 	private static final long serialVersionUID = -6792404679608443775L;
 

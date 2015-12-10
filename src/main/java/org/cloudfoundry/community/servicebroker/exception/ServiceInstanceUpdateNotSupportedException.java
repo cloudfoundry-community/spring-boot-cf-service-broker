@@ -1,10 +1,10 @@
 package org.cloudfoundry.community.servicebroker.exception;
 
 /**
- * May be thrown if the particular plan change requested is not supported or if the request 
- * can not currently be fulfilled due to the state of the instance
+ * Thrown to indicate that the plan change requested is not supported or if the request
+ * can not currently be fulfilled due to the state of the instance.
  */
-public class ServiceInstanceUpdateNotSupportedException extends Exception {
+public class ServiceInstanceUpdateNotSupportedException extends RuntimeException {
 
 	private static final long serialVersionUID = 4719676639792071582L;
 

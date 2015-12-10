@@ -4,21 +4,24 @@ import org.cloudfoundry.community.servicebroker.model.Catalog;
 import org.cloudfoundry.community.servicebroker.model.ServiceDefinition;
 
 /**
- * Handles the catalog of services made available by this 
- * broker.
+ * This interface is implemented by service brokers to process requests to retrieve the service catalog.
  * 
- * @author sgreenberg@gopivotal.com
+ * @author sgreenberg@pivotal.io
  */
 public interface CatalogService {
 
 	/**
-	 * @return The catalog of services provided by this broker.
+	 * Return the catalog of services provided by the service broker.
+	 *
+	 * @return the catalog of services
 	 */
 	Catalog getCatalog();
 
 	/**
-	 * @param serviceId  The id of the service in the catalog
-	 * @return The service definition or null if it doesn't exist
+	 * Get a service definition from the catalog by ID.
+	 *
+	 * @param serviceId  The ID of the service definition in the catalog
+	 * @return the service definition, or null if it doesn't exist
 	 */
 	ServiceDefinition getServiceDefinition(String serviceId);
 	

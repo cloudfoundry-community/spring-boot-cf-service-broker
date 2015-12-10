@@ -1,12 +1,11 @@
 package org.cloudfoundry.community.servicebroker.exception;
 
 /**
- * Thrown when a request is received for an unknown ServiceInstance.
+ * Thrown to indicate that a request is received for an unknown service instance ID.
  * 
  * @author sgreenberg@gopivotal.com
- *
  */
-public class ServiceInstanceDoesNotExistException extends Exception {
+public class ServiceInstanceDoesNotExistException extends RuntimeException {
 	
 	private static final long serialVersionUID = -1879753092397657116L;
 	

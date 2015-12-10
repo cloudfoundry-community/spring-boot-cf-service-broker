@@ -8,10 +8,9 @@ import org.cloudfoundry.community.servicebroker.model.ServiceDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * An implementation of the CatalogService that gets the catalog injected (ie configure 
- * in spring config)
+ * An implementation of the CatalogService that allows the Catalog to be specified as a Spring Bean.
  * 
- * @author sgreenberg@gopivotal.com
+ * @author sgreenberg@pivotal.io
  *
  */
 public class BeanCatalogService implements CatalogService {

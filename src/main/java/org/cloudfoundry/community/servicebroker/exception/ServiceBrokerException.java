@@ -7,7 +7,7 @@ package org.cloudfoundry.community.servicebroker.exception;
  * @author sgreenberg@gopivotal.com
  *
  */
-public class ServiceBrokerException extends Exception {
+public class ServiceBrokerException extends RuntimeException {
 
 	private static final long serialVersionUID = -5544859893499349135L;
 

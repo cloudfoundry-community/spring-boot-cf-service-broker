@@ -4,9 +4,10 @@ import org.cloudfoundry.community.servicebroker.exception.*;
 import org.cloudfoundry.community.servicebroker.model.*;
 
 /**
- * Handles bindings to service instances.
+ * This interface is implemented by service brokers to process requests to create and delete service instance bindings.
  * 
- * @author sgreenberg@gopivotal.com
+ * @author sgreenberg@pivotal.io
+ * @author Scott Frederick
  */
 public interface ServiceInstanceBindingService {
 
@@ -15,21 +16,18 @@ public interface ServiceInstanceBindingService {
 	 *
 	 * @param request containing parameters sent from Cloud Controller
 	 * @return a CreateServiceInstanceBindingResponse
-	 * @throws ServiceInstanceBindingExistsException if the same binding already exists
-	 * @throws ServiceInstanceDoesNotExistException if the service instance ID is not valid
+	 * @throws ServiceInstanceBindingExistsException if a binding with the requested ID already exists
+	 * @throws ServiceInstanceDoesNotExistException if a service instance with the requested ID does not exist
 	 * @throws ServiceBrokerException on internal failure
 	 */
-	CreateServiceInstanceBindingResponse createServiceInstanceBinding(CreateServiceInstanceBindingRequest request)
-			throws ServiceInstanceBindingExistsException, ServiceInstanceDoesNotExistException, ServiceBrokerException;
+	CreateServiceInstanceBindingResponse createServiceInstanceBinding(CreateServiceInstanceBindingRequest request);
 
 	/**
-	 * Delete the service instance binding.
+	 * Delete a service instance binding.
 	 *
 	 * @param request containing parameters sent from Cloud Controller
-     * @throws ServiceBrokerException on internal failure
-	 * @throws ServiceInstanceDoesNotExistException if the service instance ID is not valid
-	 * @throws ServiceInstanceBindingDoesNotExistException if the service instance binding ID is not valid
+	 * @throws ServiceInstanceDoesNotExistException if a service instance with the requested ID does not exist
+	 * @throws ServiceInstanceBindingDoesNotExistException if a binding with the requested ID does not exist
 	 */
-	void deleteServiceInstanceBinding(DeleteServiceInstanceBindingRequest request)
-			throws ServiceInstanceDoesNotExistException, ServiceInstanceBindingDoesNotExistException, ServiceBrokerException;
+	void deleteServiceInstanceBinding(DeleteServiceInstanceBindingRequest request);
 }

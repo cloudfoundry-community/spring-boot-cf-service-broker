@@ -40,12 +40,9 @@ public class ServiceInstanceBindingController extends BaseController {
 	}
 
 	@RequestMapping(method = RequestMethod.PUT)
-	public ResponseEntity<?> createServiceInstanceBinding(
-			@PathVariable("instanceId") String serviceInstanceId,
-			@PathVariable("bindingId") String bindingId,
-			@Valid @RequestBody CreateServiceInstanceBindingRequest request)
-			throws ServiceInstanceDoesNotExistException, ServiceInstanceBindingExistsException,
-			ServiceBrokerException, ServiceDefinitionDoesNotExistException {
+	public ResponseEntity<?> createServiceInstanceBinding(@PathVariable("instanceId") String serviceInstanceId,
+														  @PathVariable("bindingId") String bindingId,
+														  @Valid @RequestBody CreateServiceInstanceBindingRequest request) {
 		logger.debug("createServiceInstanceBinding(): "
 				+ "serviceInstanceId=" + serviceInstanceId
 				+ ", bindingId=" + bindingId);
@@ -64,13 +61,10 @@ public class ServiceInstanceBindingController extends BaseController {
 	}
 
 	@RequestMapping(method = RequestMethod.DELETE)
-	public ResponseEntity<String> deleteServiceInstanceBinding(
-			@PathVariable("instanceId") String serviceInstanceId,
-			@PathVariable("bindingId") String bindingId,
-			@RequestParam("service_id") String serviceDefinitionId,
-			@RequestParam("plan_id") String planId)
-			throws ServiceBrokerException, ServiceInstanceDoesNotExistException,
-			ServiceBrokerAsyncRequiredException, ServiceDefinitionDoesNotExistException {
+	public ResponseEntity<String> deleteServiceInstanceBinding(@PathVariable("instanceId") String serviceInstanceId,
+															   @PathVariable("bindingId") String bindingId,
+															   @RequestParam("service_id") String serviceDefinitionId,
+															   @RequestParam("plan_id") String planId) {
 		logger.debug("deleteServiceInstanceBinding(): "
 				+ "serviceInstanceId=" + serviceInstanceId
 				+ ", bindingId=" + bindingId

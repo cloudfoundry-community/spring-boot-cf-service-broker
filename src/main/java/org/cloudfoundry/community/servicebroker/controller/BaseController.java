@@ -25,8 +25,7 @@ public class BaseController {
 		this.catalogService = catalogService;
 	}
 
-	protected ServiceDefinition getServiceDefinition(String serviceDefinitionId)
-			throws ServiceDefinitionDoesNotExistException {
+	protected ServiceDefinition getServiceDefinition(String serviceDefinitionId) {
 		ServiceDefinition serviceDefinition = catalogService.getServiceDefinition(serviceDefinitionId);
 		if (serviceDefinition == null) {
 			throw new ServiceDefinitionDoesNotExistException(serviceDefinitionId);

@@ -4,57 +4,52 @@ import org.cloudfoundry.community.servicebroker.exception.*;
 import org.cloudfoundry.community.servicebroker.model.*;
 
 /**
- * Handles instances of service definitions.
+ * This interface is implemented by service brokers to process requests related to provisioning, updating,
+ * and deprovisioning service instances.
  * 
- * @author sgreenberg@gopivotal.com
+ * @author sgreenberg@pivotal.io
+ * @author Scott Frederick
  */
 public interface ServiceInstanceService {
 
 	/**
-	 * Create a new instance of a service
+	 * Create a new service instance.
 	 *
 	 * @param request containing the parameters from Cloud Controller
 	 * @return a CreateServiceInstanceResponse
-	 * @throws ServiceInstanceExistsException if the service instance already exists
-	 * @throws ServiceBrokerException if something goes wrong internally
-	 * @throws ServiceBrokerAsyncRequiredException if we must use an async comparable Cloud Controller
+	 * @throws ServiceInstanceExistsException if a service instance with the requested ID already exists
+	 * @throws ServiceBrokerAsyncRequiredException if the broker requires an async request
 	 */
-	CreateServiceInstanceResponse createServiceInstance(CreateServiceInstanceRequest request)
-			throws ServiceInstanceExistsException, ServiceBrokerException, ServiceBrokerAsyncRequiredException;
+	CreateServiceInstanceResponse createServiceInstance(CreateServiceInstanceRequest request);
 
 	/**
+	 * Get the status of the last requested operation for a service instance.
+	 *
 	 * @param request containing the parameters from Cloud Controller
 	 * @return The ServiceInstance with the given id or null if one does not exist
+	 * @throws ServiceInstanceDoesNotExistException if a service instance with the requested ID does not exist
 	 */
-	GetLastServiceOperationResponse getLastOperation(GetLastServiceOperationRequest request)
-			throws ServiceInstanceDoesNotExistException;
+	GetLastServiceOperationResponse getLastOperation(GetLastServiceOperationRequest request);
 
 	/**
-	 * Delete and return the instance if it exists.
+	 * Delete a service instance.
 	 *
-	 * @param request containing pertinent information for deleting the service.
+	 * @param request containing the parameters from Cloud Controller
 	 * @return a DeleteServiceInstanceResponse
-	 * @throws ServiceBrokerException is something goes wrong internally
-	 * @throws ServiceBrokerAsyncRequiredException if we must use an async comparable Cloud Controller
-	 * 
+	 * @throws ServiceInstanceDoesNotExistException if a service instance with the requested ID does not exist
+	 * @throws ServiceBrokerAsyncRequiredException if the broker requires an async request
 	 */
-	DeleteServiceInstanceResponse deleteServiceInstance(DeleteServiceInstanceRequest request)
-			throws ServiceBrokerException, ServiceInstanceDoesNotExistException, ServiceBrokerAsyncRequiredException;
+	DeleteServiceInstanceResponse deleteServiceInstance(DeleteServiceInstanceRequest request);
 
 	/**
-	 * Update a service instance. Only modification of service plan is supported.
+	 * Update a service instance. Only modification of the service plan is supported.
 	 *
-	 * @param request detailing the request parameters
-	 * 
+	 * @param request containing the parameters from Cloud Controller
 	 * @return an UpdateServiceInstanceResponse
 	 * @throws ServiceInstanceUpdateNotSupportedException if particular plan change is not supported
 	 *         or if the request can not currently be fulfilled due to the state of the instance
-	 * @throws ServiceInstanceDoesNotExistException if the service instance does not exist
-	 * @throws ServiceBrokerException if something goes wrong internally
-	 * @throws ServiceBrokerAsyncRequiredException if we must use an async comparable Cloud Controller
-	 * 
+	 * @throws ServiceInstanceDoesNotExistException if a service instance with the requested ID does not exist
+	 * @throws ServiceBrokerAsyncRequiredException if the broker requires an async request
 	 */
-	UpdateServiceInstanceResponse updateServiceInstance(UpdateServiceInstanceRequest request)
-			throws ServiceInstanceUpdateNotSupportedException, ServiceBrokerException,
-			ServiceInstanceDoesNotExistException, ServiceBrokerAsyncRequiredException;
+	UpdateServiceInstanceResponse updateServiceInstance(UpdateServiceInstanceRequest request);
 }

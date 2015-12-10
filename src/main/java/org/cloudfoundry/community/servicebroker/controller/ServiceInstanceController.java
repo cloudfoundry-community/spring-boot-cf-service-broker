@@ -53,13 +53,8 @@ public class ServiceInstanceController extends BaseController {
 	}
 
 	@RequestMapping(method = RequestMethod.PUT)
-	public ResponseEntity<?> createServiceInstance(
-			@PathVariable("instanceId") String serviceInstanceId,
-			@Valid @RequestBody CreateServiceInstanceRequest request) throws
-			ServiceDefinitionDoesNotExistException,
-			ServiceInstanceExistsException,
-			ServiceBrokerException,
-			ServiceBrokerAsyncRequiredException {
+	public ResponseEntity<?> createServiceInstance(@PathVariable("instanceId") String serviceInstanceId,
+												   @Valid @RequestBody CreateServiceInstanceRequest request) {
 		logger.debug("createServiceInstance(): serviceInstanceId=" + serviceInstanceId);
 
 		ServiceDefinition serviceDefinition = getServiceDefinition(request.getServiceDefinitionId());
@@ -75,8 +70,7 @@ public class ServiceInstanceController extends BaseController {
 	}
 
 	@RequestMapping(value = "/last_operation", method = RequestMethod.GET)
-	public ResponseEntity<?> getServiceInstanceLastOperation(@PathVariable("instanceId") String serviceInstanceId)
-			throws ServiceInstanceDoesNotExistException {
+	public ResponseEntity<?> getServiceInstanceLastOperation(@PathVariable("instanceId") String serviceInstanceId) {
 
 		logger.debug("getServiceInstanceLastOperation(): serviceInstanceId=" + serviceInstanceId);
 
@@ -92,12 +86,10 @@ public class ServiceInstanceController extends BaseController {
 	}
 
 	@RequestMapping(method = RequestMethod.DELETE)
-	public ResponseEntity<?> deleteServiceInstance(
-			@PathVariable("instanceId") String serviceInstanceId,
-			@RequestParam("service_id") String serviceDefinitionId,
-			@RequestParam("plan_id") String planId,
-			@RequestParam(value="accepts_incomplete", required=false) boolean acceptsIncomplete)
-			throws ServiceBrokerException, ServiceBrokerAsyncRequiredException, ServiceDefinitionDoesNotExistException {
+	public ResponseEntity<?> deleteServiceInstance(@PathVariable("instanceId") String serviceInstanceId,
+												   @RequestParam("service_id") String serviceDefinitionId,
+												   @RequestParam("plan_id") String planId,
+												   @RequestParam(value = "accepts_incomplete", required = false) boolean acceptsIncomplete) {
 		logger.debug("deleteServiceInstance(): "
 				+ "serviceInstanceId=" + serviceInstanceId
 				+ ", serviceDefinitionId=" + serviceDefinitionId
@@ -125,14 +117,8 @@ public class ServiceInstanceController extends BaseController {
 	}
 
 	@RequestMapping(method = RequestMethod.PATCH)
-	public ResponseEntity<String> updateServiceInstance(
-			@PathVariable("instanceId") String serviceInstanceId,
-			@Valid @RequestBody UpdateServiceInstanceRequest request) throws
-			ServiceInstanceUpdateNotSupportedException,
-			ServiceInstanceDoesNotExistException,
-			ServiceDefinitionDoesNotExistException,
-			ServiceBrokerException,
-			ServiceBrokerAsyncRequiredException {
+	public ResponseEntity<String> updateServiceInstance(@PathVariable("instanceId") String serviceInstanceId,
+														@Valid @RequestBody UpdateServiceInstanceRequest request) {
 		logger.debug("updateServiceInstance(): "
 				+ "serviceInstanceId = " + serviceInstanceId
 				+ ", planId = " + request.getPlanId());
