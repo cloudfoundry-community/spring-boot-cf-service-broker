@@ -22,21 +22,34 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class UpdateServiceInstanceRequest  extends AsyncParameterizedServiceInstanceRequest {
 
+	/**
+	 * The ID of the service to update, from the broker catalog.
+	 */
 	@NotEmpty
 	@JsonSerialize
 	@JsonProperty("service_id")
 	private final String serviceDefinitionId;
 
+	/**
+	 * The ID of the plan to update within the service, from the broker catalog.
+	 */
 	@NotEmpty
 	@JsonSerialize
 	@JsonProperty("plan_id")
 	private final String planId;
 
-	@JsonIgnore
-	private transient ServiceDefinition serviceDefinition;
-
+	/**
+	 * The Cloud Controller GUID of the service instance to update.
+	 */
 	@JsonIgnore
 	private transient String serviceInstanceId;
+
+	/**
+	 * The {@link ServiceDefinition} of the service to update. This is resolved from the
+	 * <code>serviceDefinitionId</code> as a convenience to the broker.
+	 */
+	@JsonIgnore
+	private transient ServiceDefinition serviceDefinition;
 
 	public UpdateServiceInstanceRequest() {
 		super(null, false);

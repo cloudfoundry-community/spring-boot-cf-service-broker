@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * See: Source: http://docs.cloudfoundry.com/docs/running/architecture/services/writing-service.html
  *
- * @author sgreenberg@gopivotal.com
+ * @author sgreenberg@pivotal.io
  * @author Scott Frederick
  */
 @RestController

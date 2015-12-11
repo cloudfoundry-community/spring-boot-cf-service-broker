@@ -13,10 +13,25 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 public class DeleteServiceInstanceRequest extends AsyncServiceInstanceRequest {
+	/**
+	 * The Cloud Controller GUID of the service instance to deprovision.
+	 */
 	private final String serviceInstanceId;
+
+	/**
+	 * The ID of the service to deprovision, from the broker catalog.
+	 */
 	private final String serviceDefinitionId;
+
+	/**
+	 * The ID of the plan to deprovision within the service, from the broker catalog.
+	 */
 	private final String planId;
 
+	/**
+	 * The {@link ServiceDefinition} of the service to deprovision. This is resolved from the
+	 * <code>serviceDefinitionId</code> as a convenience to the broker.
+	 */
 	private transient final ServiceDefinition serviceDefinition;
 
 	public DeleteServiceInstanceRequest(String instanceId, String serviceId,

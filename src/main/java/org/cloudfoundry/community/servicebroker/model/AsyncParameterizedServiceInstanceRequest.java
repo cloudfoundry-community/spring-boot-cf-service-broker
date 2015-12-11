@@ -18,6 +18,10 @@ import java.util.Map;
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 public abstract class AsyncParameterizedServiceInstanceRequest extends AsyncServiceInstanceRequest {
+	/**
+	 * Parameters passed by the user in the form of a JSON structure. The service broker is responsible
+	 * for validating the contents of the parameters for correctness or applicability.
+	 */
 	@JsonSerialize
 	@JsonProperty("parameters")
 	protected final Map<String, Object> parameters;

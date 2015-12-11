@@ -13,6 +13,9 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 public class GetLastServiceOperationRequest {
+	/**
+	 * The Cloud Controller GUID of the service instance to get the status of.
+	 */
 	private final String serviceInstanceId;
 
 	public GetLastServiceOperationRequest(String serviceInstanceId) {

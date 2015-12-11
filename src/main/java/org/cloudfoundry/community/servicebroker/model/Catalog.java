@@ -12,7 +12,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 import java.util.List;
 
 /**
- * The catalog of services offered by this broker.
+ * The catalog of services offered by the service broker.
  * 
  * @author sgreenberg@pivotal.io
  * @author Scott Frederick
@@ -24,6 +24,9 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Catalog {
 
+	/**
+	 * A list of service offerings provided by the service broker.
+	 */
 	@NotEmpty
 	@JsonSerialize(nullsUsing = EmptyListSerializer.class)
 	@JsonProperty("services")

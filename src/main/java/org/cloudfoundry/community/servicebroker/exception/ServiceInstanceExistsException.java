@@ -3,7 +3,7 @@ package org.cloudfoundry.community.servicebroker.exception;
 /**
  * Thrown to indicate that a duplicate service instance creation request is received.
  * 
- * @author sgreenberg@gopivotal.com
+ * @author sgreenberg@pivotal.io
  */
 public class ServiceInstanceExistsException extends RuntimeException {
 

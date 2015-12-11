@@ -13,43 +13,43 @@ import org.cloudfoundry.community.servicebroker.model.*;
 public interface ServiceInstanceService {
 
 	/**
-	 * Create a new service instance.
+	 * Create (provision) a new service instance.
 	 *
-	 * @param request containing the parameters from Cloud Controller
-	 * @return a CreateServiceInstanceResponse
-	 * @throws ServiceInstanceExistsException if a service instance with the requested ID already exists
-	 * @throws ServiceBrokerAsyncRequiredException if the broker requires an async request
+	 * @param request containing the details of the request
+	 * @return the details of the completed request
+	 * @throws ServiceInstanceExistsException if a service instance with the given ID is already known to the broker
+	 * @throws ServiceBrokerAsyncRequiredException if the broker requires asynchronous processing of the request
 	 */
 	CreateServiceInstanceResponse createServiceInstance(CreateServiceInstanceRequest request);
 
 	/**
 	 * Get the status of the last requested operation for a service instance.
 	 *
-	 * @param request containing the parameters from Cloud Controller
-	 * @return The ServiceInstance with the given id or null if one does not exist
-	 * @throws ServiceInstanceDoesNotExistException if a service instance with the requested ID does not exist
+	 * @param request containing the details of the request
+	 * @return the details of the completed request
+	 * @throws ServiceInstanceDoesNotExistException if a service instance with the given ID is not known to the broker
 	 */
 	GetLastServiceOperationResponse getLastOperation(GetLastServiceOperationRequest request);
 
 	/**
-	 * Delete a service instance.
+	 * Delete (deprovision) a service instance.
 	 *
-	 * @param request containing the parameters from Cloud Controller
-	 * @return a DeleteServiceInstanceResponse
-	 * @throws ServiceInstanceDoesNotExistException if a service instance with the requested ID does not exist
-	 * @throws ServiceBrokerAsyncRequiredException if the broker requires an async request
+	 * @param request containing the details of the request
+	 * @return the details of the completed request
+	 * @throws ServiceInstanceDoesNotExistException if a service instance with the given ID is not known to the broker
+	 * @throws ServiceBrokerAsyncRequiredException if the broker requires asynchronous processing of the request
 	 */
 	DeleteServiceInstanceResponse deleteServiceInstance(DeleteServiceInstanceRequest request);
 
 	/**
 	 * Update a service instance. Only modification of the service plan is supported.
 	 *
-	 * @param request containing the parameters from Cloud Controller
-	 * @return an UpdateServiceInstanceResponse
+	 * @param request containing the details of the request
+	 * @return the details of the completed request
 	 * @throws ServiceInstanceUpdateNotSupportedException if particular plan change is not supported
 	 *         or if the request can not currently be fulfilled due to the state of the instance
-	 * @throws ServiceInstanceDoesNotExistException if a service instance with the requested ID does not exist
-	 * @throws ServiceBrokerAsyncRequiredException if the broker requires an async request
+	 * @throws ServiceInstanceDoesNotExistException if a service instance with the given ID is not known to the broker
+	 * @throws ServiceBrokerAsyncRequiredException if the broker requires asynchronous processing of the request
 	 */
 	UpdateServiceInstanceResponse updateServiceInstance(UpdateServiceInstanceRequest request);
 }

@@ -17,6 +17,10 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 @JsonAutoDetect(getterVisibility = JsonAutoDetect.Visibility.NONE)
 public class CreateServiceInstanceResponse extends AsyncServiceInstanceResponse {
+	/**
+	 * The URL of a web-based management user interface for the service instance. Can be <code>null</code> to indicate
+	 * that a management dashboard is not provided.
+	 */
 	@JsonSerialize
 	@JsonProperty("dashboard_url")
 	private String dashboardUrl;

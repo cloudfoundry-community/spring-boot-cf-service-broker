@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * An error returned when a broker requires an asynchronous request.
  *
+ * @author krujos
  */
 public class AsyncRequiredErrorMessage extends ErrorMessage {
 

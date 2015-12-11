@@ -3,7 +3,7 @@ package org.cloudfoundry.community.servicebroker.exception;
 /**
  * Thrown to indicate that a request includes a service definition ID does not exist.
  * 
- * @author sgreenberg@gopivotal.com
+ * @author sgreenberg@pivotal.io
  */
 public class ServiceDefinitionDoesNotExistException extends RuntimeException {
 	

@@ -14,7 +14,7 @@ import java.util.Map;
 /**
  * Details of a request to create a new service instance.
  * 
- * @author sgreenberg@gopivotal.com
+ * @author sgreenberg@pivotal.io
  * @author Scott Frederick
  */
 @Getter
@@ -23,34 +23,53 @@ import java.util.Map;
 @JsonAutoDetect(getterVisibility = JsonAutoDetect.Visibility.NONE)
 public class CreateServiceInstanceRequest extends AsyncParameterizedServiceInstanceRequest {
 
+	/**
+	 * The ID of the service to provision, from the broker catalog.
+	 */
 	@NotEmpty
 	@JsonSerialize
 	@JsonProperty("service_id")
 	private final String serviceDefinitionId;
-	
+
+	/**
+	 * The ID of the plan to provision within the service, from the broker catalog.
+	 */
 	@NotEmpty
 	@JsonSerialize
 	@JsonProperty("plan_id")
 	private final String planId;
-	
+
+	/**
+	 * The Cloud Controller GUID of the organization under which the service is to be provisioned.
+	 */
 	@NotEmpty
 	@JsonSerialize
 	@JsonProperty("organization_guid")
 	private final String organizationGuid;
-	
+
+	/**
+	 * The Cloud Controller GUID of the space under which the service is to be provisioned.
+	 */
 	@NotEmpty
 	@JsonSerialize
 	@JsonProperty("space_guid")
 	private final String spaceGuid;
 
-	// Cloud Controller doesn't send the definition, it's populated later
+	/**
+	 * The Cloud Controller GUID of the service instance to provision. This ID will be used for future
+	 * requests for the same service instance (e.g. bind and deprovision), so the broker must use it to
+	 * correlate any resource it creates.
+	 */
+	@JsonIgnore
+	private transient String serviceInstanceId;
+
+	/**
+	 * The {@link ServiceDefinition} of the service to provision. This is resolved from the
+	 * <code>serviceDefinitionId</code> as a convenience to the broker.
+	 */
 	@JsonIgnore
 	private transient ServiceDefinition serviceDefinition;
 
-	// Cloud Controller doesn't send instanceId in the body
-	@JsonIgnore
-	private transient String serviceInstanceId;
-	
 	public CreateServiceInstanceRequest() {
 		super(null, false);
 		this.serviceDefinitionId = null;

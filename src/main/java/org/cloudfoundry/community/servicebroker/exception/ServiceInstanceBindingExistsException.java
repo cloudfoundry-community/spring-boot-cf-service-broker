@@ -3,7 +3,7 @@ package org.cloudfoundry.community.servicebroker.exception;
 /**
  * Thrown to indicate that a duplicate request to bind to a service instance is received.
  * 
- * @author sgreenberg@gopivotal.com
+ * @author sgreenberg@pivotal.io
  */
 public class ServiceInstanceBindingExistsException extends RuntimeException {
 

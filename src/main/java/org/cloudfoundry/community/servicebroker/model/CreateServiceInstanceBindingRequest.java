@@ -16,7 +16,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 /**
  * Details of a request to bind to a service instance binding.
  * 
- * @author sgreenberg@gopivotal.com
+ * @author sgreenberg@pivotal.io
  * @author Scott Frederick
  */
 @Getter
@@ -25,33 +25,58 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 @JsonAutoDetect(getterVisibility = JsonAutoDetect.Visibility.NONE)
 public class CreateServiceInstanceBindingRequest {
 
+	/**
+	 * The ID of the service being bound, from the broker catalog.
+	 */
 	@NotEmpty
 	@JsonSerialize
 	@JsonProperty("service_id")
 	private final String serviceDefinitionId;
-	
+
+	/**
+	 * The ID of the plan being bound within the service, from the broker catalog.
+	 */
 	@NotEmpty
 	@JsonSerialize
 	@JsonProperty("plan_id")
 	private final String planId;
 
+	/**
+	 * The Cloud Controller GUID of the application the service instance will be bound to. Will be provided when
+	 * users bind applications to service instances, or <code>null</code> if an application is not being bound.
+	 */
 	@JsonSerialize
 	@JsonProperty("app_guid")
 	private final String appGuid;
 
+	/**
+	 * Parameters passed by the user in the form of a JSON structure. The service broker is responsible
+	 * for validating the contents of the parameters for correctness or applicability.
+	 */
 	@JsonSerialize
 	@JsonProperty("parameters")
 	private final Map<String, Object> parameters;
 
+	/**
+	 * The Cloud Controller GUID of the service instance to being bound.
+	 */
 	@JsonIgnore
 	private transient String serviceInstanceId;
 
+	/**
+	 * The Cloud Controller GUID of the service binding being created. This ID will be used for future
+	 * requests for the same service instance binding, so the broker must use it to correlate any resource it creates.
+	 */
 	@JsonIgnore
 	private transient String bindingId;
 
+	/**
+	 * The {@link ServiceDefinition} of the service to provision. This is resolved from the
+	 * <code>serviceDefinitionId</code> as a convenience to the broker.
+	 */
 	@JsonIgnore
 	private transient ServiceDefinition serviceDefinition;
-	
+
 	public CreateServiceInstanceBindingRequest() {
 		serviceDefinitionId = null;
 		planId = null;

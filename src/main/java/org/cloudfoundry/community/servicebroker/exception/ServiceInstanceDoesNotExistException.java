@@ -3,7 +3,7 @@ package org.cloudfoundry.community.servicebroker.exception;
 /**
  * Thrown to indicate that a request is received for an unknown service instance ID.
  * 
- * @author sgreenberg@gopivotal.com
+ * @author sgreenberg@pivotal.io
  */
 public class ServiceInstanceDoesNotExistException extends RuntimeException {
 	

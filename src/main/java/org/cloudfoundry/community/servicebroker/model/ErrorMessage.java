@@ -8,8 +8,7 @@ import lombok.ToString;
 /**
  * Used to send errors back to the cloud controller.
  * 
- * @author sgreenberg@gopivotal.com
- *
+ * @author sgreenberg@pivotal.io
  */
 @Getter
 @ToString

@@ -4,7 +4,7 @@ package org.cloudfoundry.community.servicebroker.exception;
  * General exception for underlying broker errors (like connectivity to the service
  * being brokered).
  * 
- * @author sgreenberg@gopivotal.com
+ * @author sgreenberg@pivotal.io
  *
  */
 public class ServiceBrokerException extends RuntimeException {

@@ -16,11 +16,16 @@ import lombok.ToString;
 @EqualsAndHashCode
 public abstract class AsyncServiceInstanceRequest {
 
+	/**
+	 * Indicates whether clients of the service broker allow the broker to complete the request asynchronously. A
+	 * <code>false</code> value indicates that clients do not allow asynchronous processing of requests, a
+	 * <code>true</code> value indicates that clients do allow asynchronous processing.
+	 */
 	@JsonSerialize
 	@JsonProperty("accepts_incomplete")
-	protected final boolean async;
+	protected final boolean asyncAccepted;
 	
-	public AsyncServiceInstanceRequest(boolean async) {
-		this.async = async;
+	public AsyncServiceInstanceRequest(boolean asyncAccepted) {
+		this.asyncAccepted = asyncAccepted;
 	}
 }

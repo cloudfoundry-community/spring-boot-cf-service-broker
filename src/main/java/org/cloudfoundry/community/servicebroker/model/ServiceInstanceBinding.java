@@ -6,7 +6,7 @@ import java.util.Map;
 /**
  * A binding to a service instance
  * 
- * @author sgreenberg@gopivotal.com
+ * @author sgreenberg@pivotal.io
  *
  * @deprecated This class is no longer used internally to represent service instance bindings. Implementing brokers should
  * create their own class to represent service instances bindings and persist them as necessary. The will remain in the project

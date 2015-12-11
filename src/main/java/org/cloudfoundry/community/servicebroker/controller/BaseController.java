@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 /**
  * Base controller.
  *
- * @author sgreenberg@gopivotal.com
+ * @author sgreenberg@pivotal.io
  * @author Scott Frederick
  */
 @Slf4j

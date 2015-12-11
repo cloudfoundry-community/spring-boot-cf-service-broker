@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 /**
  * An instance of a ServiceDefinition.
  * 
- * @author sgreenberg@gopivotal.com
+ * @author sgreenberg@pivotal.io
  *
  * @deprecated This class is no longer used internally to represent service instances. Implementing brokers should
  * create their own class to represent service instances and persist them as necessary. The will remain in the project

@@ -15,7 +15,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 /**
  * A service plan available for a ServiceDefinition
  *
- * @author sgreenberg@gopivotal.com
+ * @author sgreenberg@pivotal.io
  * @author Scott Frederick
  */
 @Getter
@@ -25,25 +25,42 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Plan {
 
+	/**
+	 * An identifier used to correlate this plan in future requests to the catalog. This must be unique within
+	 * a Cloud Foundry deployment. Using a GUID is recommended.
+	 */
 	@NotEmpty
 	@JsonSerialize
 	@JsonProperty("id")
 	private String id;
 
+	/**
+	 * A CLI-friendly name of the plan that will appear in the catalog. The value should be all lowercase,
+	 * with no spaces.
+	 */
 	@NotEmpty
 	@JsonSerialize
 	@JsonProperty("name")
 	private String name;
 
+	/**
+	 * A user-friendly short description of the plan that will appear in the catalog.
+	 */
 	@NotEmpty
 	@JsonSerialize
 	@JsonProperty("description")
 	private String description;
 
+	/**
+	 * A map of metadata to further describe a service plan.
+	 */
 	@JsonSerialize(nullsUsing = EmptyMapSerializer.class)
 	@JsonProperty("metadata")
 	private Map<String, Object> metadata;
 
+	/**
+	 * Indicates whether the plan can be limited by the non_basic_services_allowed field in a Cloud Foundry Quota.
+	 */
 	@JsonSerialize
 	@JsonProperty("free")
 	private boolean free;

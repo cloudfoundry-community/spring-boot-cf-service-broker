@@ -11,6 +11,7 @@ import org.cloudfoundry.community.servicebroker.model.DeleteServiceInstanceRespo
 import org.cloudfoundry.community.servicebroker.model.ErrorMessage;
 import org.cloudfoundry.community.servicebroker.model.GetLastServiceOperationRequest;
 import org.cloudfoundry.community.servicebroker.model.GetLastServiceOperationResponse;
+import org.cloudfoundry.community.servicebroker.model.OperationState;
 import org.cloudfoundry.community.servicebroker.model.ServiceDefinition;
 import org.cloudfoundry.community.servicebroker.model.UpdateServiceInstanceRequest;
 import org.cloudfoundry.community.servicebroker.model.UpdateServiceInstanceResponse;
@@ -32,7 +33,7 @@ import javax.validation.Valid;
 /**
  * See: http://docs.cloudfoundry.org/services/api.html
  * 
- * @author sgreenberg@gopivotal.com
+ * @author sgreenberg@pivotal.io
  */
 @RestController
 @RequestMapping("/v2/service_instances/{instanceId}")
@@ -77,7 +78,9 @@ public class ServiceInstanceController extends BaseController {
 				+ ", state=" + response.getState()
 				+ ", description=" + response.getDescription());
 
-		return new ResponseEntity<>(response, response.isDeletionComplete() ? HttpStatus.GONE : HttpStatus.OK);
+		boolean isSuccessfulDelete = response.getState().equals(OperationState.SUCCEEDED) && response.isDeleteOperation();
+
+		return new ResponseEntity<>(response, isSuccessfulDelete ? HttpStatus.GONE : HttpStatus.OK);
 	}
 
 	@RequestMapping(method = RequestMethod.DELETE)

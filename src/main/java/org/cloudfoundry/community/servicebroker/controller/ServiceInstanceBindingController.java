@@ -25,7 +25,7 @@ import javax.validation.Valid;
 /**
  * See: Source: http://docs.cloudfoundry.com/docs/running/architecture/services/writing-service.html
  * 
- * @author sgreenberg@gopivotal.com
+ * @author sgreenberg@pivotal.io
  */
 @RestController
 @RequestMapping("/v2/service_instances/{instanceId}/service_bindings/{bindingId}")
