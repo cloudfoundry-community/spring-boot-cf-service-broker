@@ -1,6 +1,10 @@
 package org.cloudfoundry.community.servicebroker.controller;
 
+import org.cloudfoundry.community.servicebroker.model.Catalog;
+import org.cloudfoundry.community.servicebroker.model.Plan;
+import org.cloudfoundry.community.servicebroker.model.ServiceDefinition;
 import org.cloudfoundry.community.servicebroker.model.fixture.CatalogFixture;
+import org.cloudfoundry.community.servicebroker.model.fixture.PlanFixture;
 import org.cloudfoundry.community.servicebroker.model.fixture.ServiceFixture;
 import org.cloudfoundry.community.servicebroker.service.CatalogService;
 import org.junit.Before;
@@ -14,14 +18,19 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.util.Collections;
+import java.util.List;
+
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 
 @RunWith(MockitoJUnitRunner.class)
 public class CatalogControllerIntegrationTest {
@@ -44,14 +53,35 @@ public class CatalogControllerIntegrationTest {
 	public void catalogIsRetrievedCorrectly() throws Exception {
 		when(catalogService.getCatalog()).thenReturn(CatalogFixture.getCatalog());
 
+		ServiceDefinition service = ServiceFixture.getService();
+		List<Plan> plans = PlanFixture.getAllPlans();
+
+		this.mockMvc.perform(get("/v2/catalog")
+				.accept(MediaType.APPLICATION_JSON))
+				.andDo(print())
+				.andExpect(status().isOk())
+				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+				.andExpect(jsonPath("$.services.", hasSize(1)))
+				.andExpect(jsonPath("$.services[*].id", contains(service.getId())))
+				.andExpect(jsonPath("$.services[*].name", contains(service.getName())))
+				.andExpect(jsonPath("$.services[*].description", contains(service.getDescription())))
+				.andExpect(jsonPath("$.services[*].bindable", contains(service.isBindable())))
+				.andExpect(jsonPath("$.services[*].plan_updateable", contains(service.isPlanUpdateable())))
+				.andExpect(jsonPath("$.services[*].plans[*].id", containsInAnyOrder(plans.get(0).getId(), plans.get(1).getId())))
+				.andExpect(jsonPath("$.services[*].plans[*].name", containsInAnyOrder(plans.get(0).getName(), plans.get(1).getName())))
+				.andExpect(jsonPath("$.services[*].plans[*].description", containsInAnyOrder(plans.get(0).getDescription(), plans.get(1).getDescription())))
+				.andExpect(jsonPath("$.services[*].plans[*].metadata", containsInAnyOrder(Collections.EMPTY_MAP, plans.get(1).getMetadata())));
+	}
+
+	@Test
+	public void catalogIsRetrievedWithNoServiceDefinitions() throws Exception {
+		when(catalogService.getCatalog()).thenReturn(new Catalog());
+
 		this.mockMvc.perform(get("/v2/catalog")
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
 				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-				.andExpect(jsonPath("$.services.", hasSize(1)))
-				.andExpect(jsonPath("$.services[*].id", containsInAnyOrder(ServiceFixture.getService().getId())));
-
-		// TO DO - check rest of the json including plans
+				.andExpect(jsonPath("$.services", empty()));
 	}
 
 }

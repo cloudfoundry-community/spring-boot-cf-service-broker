@@ -1,10 +1,11 @@
 package org.cloudfoundry.community.servicebroker.model;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -14,10 +15,13 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  * A service offered by this broker.
- * 
- * @author sgreenberg@gopivotal.com
  *
+ * @author sgreenberg@gopivotal.com
+ * @author Scott Frederick
  */
+@Getter
+@ToString
+@EqualsAndHashCode
 @JsonAutoDetect(getterVisibility = JsonAutoDetect.Visibility.NONE)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ServiceDefinition {
@@ -26,17 +30,17 @@ public class ServiceDefinition {
 	@JsonSerialize
 	@JsonProperty("id")
 	private String id;
-	
+
 	@NotEmpty
 	@JsonSerialize
 	@JsonProperty("name")
 	private String name;
-	
+
 	@NotEmpty
 	@JsonSerialize
 	@JsonProperty("description")
 	private String description;
-	
+
 	@JsonSerialize
 	@JsonProperty("bindable")
 	private boolean bindable;
@@ -46,22 +50,22 @@ public class ServiceDefinition {
 	private boolean planUpdateable;
 
 	@NotEmpty
-	@JsonSerialize
+	@JsonSerialize(nullsUsing = EmptyListSerializer.class)
 	@JsonProperty("plans")
-	private List<Plan> plans = new ArrayList<Plan>();
-	
-	@JsonSerialize
+	private List<Plan> plans;
+
+	@JsonSerialize(nullsUsing = EmptyListSerializer.class)
 	@JsonProperty("tags")
-	private List<String> tags = new ArrayList<String>();
-	
-	@JsonSerialize
+	private List<String> tags;
+
+	@JsonSerialize(nullsUsing = EmptyMapSerializer.class)
 	@JsonProperty("metadata")
-	private Map<String,Object> metadata = new HashMap<String,Object>();
-	
-	@JsonSerialize
+	private Map<String, Object> metadata;
+
+	@JsonSerialize(nullsUsing = EmptyListSerializer.class)
 	@JsonProperty("requires")
-	private List<String> requires = new ArrayList<String>();
-	
+	private List<String> requires;
+
 	@JsonSerialize
 	@JsonProperty("dashboard_client")
 	private DashboardClient dashboardClient;
@@ -74,95 +78,17 @@ public class ServiceDefinition {
 		this.name = name;
 		this.description = description;
 		this.bindable = bindable;
-		this.setPlans(plans);
+		this.plans = plans;
 	}
 
-	public ServiceDefinition(String id, String name, String description, boolean bindable, boolean planUpdateable, 
-			List<Plan> plans, List<String> tags, Map<String,Object> metadata, List<String> requires, 
-			DashboardClient dashboardClient) {
+	public ServiceDefinition(String id, String name, String description, boolean bindable, boolean planUpdateable,
+							 List<Plan> plans, List<String> tags, Map<String, Object> metadata, List<String> requires,
+							 DashboardClient dashboardClient) {
 		this(id, name, description, bindable, plans);
-		setTags(tags);
-		setMetadata(metadata);
-		setRequires(requires);
-		setPlanUpdateable(planUpdateable);
+		this.tags = tags;
+		this.metadata = metadata;
+		this.requires = requires;
+		this.planUpdateable = planUpdateable;
 		this.dashboardClient = dashboardClient;
 	}
-	
-	public String getId() {
-		return id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public boolean isBindable() {
-		return bindable;
-	}
-
-	public boolean isPlanUpdateable() {
-		return planUpdateable;
-	}
-
-	public void setPlanUpdateable(boolean planUpdateable) {
-		this.planUpdateable = planUpdateable;
-	}
-
-	public List<Plan> getPlans() {
-		return plans;
-	}
-
-	private void setPlans(List<Plan> plans) {
-		if ( plans == null ) {
-			// ensure serialization as an empty array and not null
-			this.plans = new ArrayList<Plan>();
-		} else {
-			this.plans = plans;
-		}
-	}
-
-	public List<String> getTags() {
-		return tags;
-	}
-
-	public void setTags(List<String> tags) {
-		if (tags == null) {
-			this.tags = new ArrayList<String>();
-		} else {
-			this.tags = tags;
-		}
-	}
-
-	public List<String> getRequires() {
-		return requires;
-	}
-
-	public void setRequires(List<String> requires) {
-		if (requires == null) {
-			this.requires = new ArrayList<String>();
-		} else {
-			this.requires = requires;
-		}
-	}
-
-	public Map<String, Object> getMetadata() {
-		return metadata;
-	}
-
-	public void setMetadata(Map<String, Object> metadata) {
-		if (metadata == null) {
-			this.metadata = new HashMap<String,Object>();
-		} else {
-			this.metadata = metadata;
-		}
-	}
-	
-	public DashboardClient getDashboardClient() {
-		return dashboardClient;
-	}
-
 }

@@ -3,7 +3,7 @@ package org.cloudfoundry.community.servicebroker.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * Async Required error message to give back to CC.
+ * An error returned when a broker requires an asynchronous request.
  *
  */
 public class AsyncRequiredErrorMessage extends ErrorMessage {

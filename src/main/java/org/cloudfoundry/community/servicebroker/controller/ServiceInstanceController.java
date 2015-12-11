@@ -1,8 +1,6 @@
 package org.cloudfoundry.community.servicebroker.controller;
 
-import org.cloudfoundry.community.servicebroker.exception.ServiceBrokerAsyncRequiredException;
-import org.cloudfoundry.community.servicebroker.exception.ServiceBrokerException;
-import org.cloudfoundry.community.servicebroker.exception.ServiceDefinitionDoesNotExistException;
+import lombok.extern.slf4j.Slf4j;
 import org.cloudfoundry.community.servicebroker.exception.ServiceInstanceDoesNotExistException;
 import org.cloudfoundry.community.servicebroker.exception.ServiceInstanceExistsException;
 import org.cloudfoundry.community.servicebroker.exception.ServiceInstanceUpdateNotSupportedException;
@@ -18,8 +16,6 @@ import org.cloudfoundry.community.servicebroker.model.UpdateServiceInstanceReque
 import org.cloudfoundry.community.servicebroker.model.UpdateServiceInstanceResponse;
 import org.cloudfoundry.community.servicebroker.service.CatalogService;
 import org.cloudfoundry.community.servicebroker.service.ServiceInstanceService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,10 +36,9 @@ import javax.validation.Valid;
  */
 @RestController
 @RequestMapping("/v2/service_instances/{instanceId}")
+@Slf4j
 public class ServiceInstanceController extends BaseController {
 
-	private static final Logger logger = LoggerFactory.getLogger(ServiceInstanceController.class);
-	
 	private ServiceInstanceService service;
 
 	@Autowired
@@ -55,7 +50,7 @@ public class ServiceInstanceController extends BaseController {
 	@RequestMapping(method = RequestMethod.PUT)
 	public ResponseEntity<?> createServiceInstance(@PathVariable("instanceId") String serviceInstanceId,
 												   @Valid @RequestBody CreateServiceInstanceRequest request) {
-		logger.debug("createServiceInstance(): serviceInstanceId=" + serviceInstanceId);
+		log.debug("Creating a service instance: serviceInstanceId=" + serviceInstanceId);
 
 		ServiceDefinition serviceDefinition = getServiceDefinition(request.getServiceDefinitionId());
 
@@ -64,7 +59,7 @@ public class ServiceInstanceController extends BaseController {
 
 		CreateServiceInstanceResponse response = service.createServiceInstance(request);
 
-		logger.debug("createServiceInstance(): succeeded: serviceInstanceId=" + serviceInstanceId);
+		log.debug("Creating a service instance succeeded: serviceInstanceId=" + serviceInstanceId);
 
 		return new ResponseEntity<>(response, response.isAsync() ? HttpStatus.ACCEPTED : HttpStatus.CREATED);
 	}
@@ -72,13 +67,13 @@ public class ServiceInstanceController extends BaseController {
 	@RequestMapping(value = "/last_operation", method = RequestMethod.GET)
 	public ResponseEntity<?> getServiceInstanceLastOperation(@PathVariable("instanceId") String serviceInstanceId) {
 
-		logger.debug("getServiceInstanceLastOperation(): serviceInstanceId=" + serviceInstanceId);
+		log.debug("Getting service instance status: serviceInstanceId=" + serviceInstanceId);
 
 		GetLastServiceOperationRequest request = new GetLastServiceOperationRequest(serviceInstanceId);
 
 		GetLastServiceOperationResponse response = service.getLastOperation(request);
 
-		logger.debug("getServiceInstanceLastOperation(): succeeded: serviceInstanceId=" + serviceInstanceId
+		log.debug("Getting service instance status succeeded: serviceInstanceId=" + serviceInstanceId
 				+ ", state=" + response.getState()
 				+ ", description=" + response.getDescription());
 
@@ -90,7 +85,7 @@ public class ServiceInstanceController extends BaseController {
 												   @RequestParam("service_id") String serviceDefinitionId,
 												   @RequestParam("plan_id") String planId,
 												   @RequestParam(value = "accepts_incomplete", required = false) boolean acceptsIncomplete) {
-		logger.debug("deleteServiceInstance(): "
+		log.debug("Deleting a service instance: "
 				+ "serviceInstanceId=" + serviceInstanceId
 				+ ", serviceDefinitionId=" + serviceDefinitionId
 				+ ", planId=" + planId
@@ -103,15 +98,12 @@ public class ServiceInstanceController extends BaseController {
 
 			DeleteServiceInstanceResponse response = service.deleteServiceInstance(request);
 
-			logger.debug("deleteServiceInstance(): succeeded: "
+			log.debug("Deleting a service instance succeeded: "
 					+ "serviceInstanceId=" + serviceInstanceId);
 
 			return new ResponseEntity<>("{}", response.isAsync() ? HttpStatus.ACCEPTED : HttpStatus.OK);
 		} catch (ServiceInstanceDoesNotExistException e) {
-			logger.debug("deleteServiceInstance(): error: "
-					+ "serviceInstanceId=" + serviceInstanceId
-					+ ", exception=" + e.getMessage());
-
+			log.debug("Service instance does not exist: " + e);
 			return new ResponseEntity<>("{}", HttpStatus.GONE);
 		}
 	}
@@ -119,7 +111,7 @@ public class ServiceInstanceController extends BaseController {
 	@RequestMapping(method = RequestMethod.PATCH)
 	public ResponseEntity<String> updateServiceInstance(@PathVariable("instanceId") String serviceInstanceId,
 														@Valid @RequestBody UpdateServiceInstanceRequest request) {
-		logger.debug("updateServiceInstance(): "
+		log.debug("Updating a service instance: "
 				+ "serviceInstanceId = " + serviceInstanceId
 				+ ", planId = " + request.getPlanId());
 
@@ -129,7 +121,7 @@ public class ServiceInstanceController extends BaseController {
 
 		UpdateServiceInstanceResponse response = service.updateServiceInstance(request);
 
-		logger.debug("updateServiceInstance(): succeeded: "
+		log.debug("Updating a service instance succeeded: "
 				+ "serviceInstanceId=" + serviceInstanceId);
 
 		return new ResponseEntity<>("{}", response.isAsync() ? HttpStatus.ACCEPTED : HttpStatus.OK);
@@ -137,11 +129,13 @@ public class ServiceInstanceController extends BaseController {
 
 	@ExceptionHandler(ServiceInstanceExistsException.class)
 	public ResponseEntity<ErrorMessage> handleException(ServiceInstanceExistsException ex) {
+		log.debug("Service instance already exists: " + ex);
 		return getErrorResponse(ex.getMessage(), HttpStatus.CONFLICT);
 	}
 
 	@ExceptionHandler(ServiceInstanceUpdateNotSupportedException.class)
 	public ResponseEntity<ErrorMessage> handleException(ServiceInstanceUpdateNotSupportedException ex) {
+		log.debug("Service instance update not supported: " + ex);
 		return getErrorResponse(ex.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
 	}
 }

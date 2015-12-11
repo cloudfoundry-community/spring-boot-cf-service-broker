@@ -1,47 +1,40 @@
 package org.cloudfoundry.community.servicebroker.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import org.hibernate.validator.constraints.NotEmpty;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
+import org.hibernate.validator.constraints.NotEmpty;
+
+import java.util.List;
 
 /**
  * The catalog of services offered by this broker.
  * 
- * @author sgreenberg@gopivotal.com
+ * @author sgreenberg@pivotal.io
+ * @author Scott Frederick
  */
+@Getter
+@ToString
+@EqualsAndHashCode
 @JsonAutoDetect(getterVisibility = JsonAutoDetect.Visibility.NONE)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Catalog {
 
 	@NotEmpty
-	@JsonSerialize
+	@JsonSerialize(nullsUsing = EmptyListSerializer.class)
 	@JsonProperty("services")
-	private List<ServiceDefinition> serviceDefinitions = new ArrayList<ServiceDefinition>();
+	private final List<ServiceDefinition> serviceDefinitions;
 
 	public Catalog() {
+		this.serviceDefinitions = null;
 	}
 
 	public Catalog(List<ServiceDefinition> serviceDefinitions) {
-		this.setServiceDefinitions(serviceDefinitions); 
+		this.serviceDefinitions = serviceDefinitions;
 	}
-	
-	public List<ServiceDefinition> getServiceDefinitions() {
-		return serviceDefinitions;
-	}
-
-	private void setServiceDefinitions(List<ServiceDefinition> serviceDefinitions) {
-		if ( serviceDefinitions == null ) {
-			// ensure serialization as an empty array, not null
-			this.serviceDefinitions = new ArrayList<ServiceDefinition>();
-		} else {
-			this.serviceDefinitions = serviceDefinitions;
-		} 
-	}
-	
 }
+

@@ -2,21 +2,29 @@ package org.cloudfoundry.community.servicebroker.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
 import org.apache.commons.beanutils.BeanUtils;
 
 import java.util.Map;
 
+/**
+ * Details of a request that supports arbitrary parameters and asynchronous behavior.
+ *
+ * @author Scott Frederick
+ */
+@Getter
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
 public abstract class AsyncParameterizedServiceInstanceRequest extends AsyncServiceInstanceRequest {
 	@JsonSerialize
 	@JsonProperty("parameters")
-	protected Map<String, Object> parameters;
+	protected final Map<String, Object> parameters;
 
-	public AsyncParameterizedServiceInstanceRequest(boolean async) {
+	public AsyncParameterizedServiceInstanceRequest(Map<String, Object> parameters, boolean async) {
 		super(async);
-	}
-
-	public Map<String, Object> getParameters() {
-		return parameters;
+		this.parameters = parameters;
 	}
 
 	public <T> T getParameters(Class<T> cls) {

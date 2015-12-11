@@ -1,9 +1,11 @@
 package org.cloudfoundry.community.servicebroker.model;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -12,9 +14,13 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  * A service plan available for a ServiceDefinition
- * 
+ *
  * @author sgreenberg@gopivotal.com
+ * @author Scott Frederick
  */
+@Getter
+@ToString
+@EqualsAndHashCode
 @JsonAutoDetect(getterVisibility = JsonAutoDetect.Visibility.NONE)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Plan {
@@ -23,21 +29,21 @@ public class Plan {
 	@JsonSerialize
 	@JsonProperty("id")
 	private String id;
-	
+
 	@NotEmpty
 	@JsonSerialize
 	@JsonProperty("name")
 	private String name;
-	
+
 	@NotEmpty
 	@JsonSerialize
 	@JsonProperty("description")
 	private String description;
-	
-	@JsonSerialize
+
+	@JsonSerialize(nullsUsing = EmptyMapSerializer.class)
 	@JsonProperty("metadata")
-	private Map<String,Object> metadata = new HashMap<String,Object>();
-	
+	private Map<String, Object> metadata;
+
 	@JsonSerialize
 	@JsonProperty("free")
 	private boolean free;
@@ -51,42 +57,13 @@ public class Plan {
 		this.description = description;
 	}
 
-	public Plan(String id, String name, String description, Map<String,Object> metadata) {
+	public Plan(String id, String name, String description, Map<String, Object> metadata) {
 		this(id, name, description);
-		setMetadata(metadata);
+		this.metadata = metadata;
 	}
-	
-	public Plan(String id, String name, String description, Map<String,Object> metadata, boolean free) {
+
+	public Plan(String id, String name, String description, Map<String, Object> metadata, boolean free) {
 		this(id, name, description, metadata);
 		this.free = free;
 	}
-	
-	public String getId() {
-		return id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public Map<String, Object> getMetadata() {
-		return metadata;
-	}
-	
-	private void setMetadata(Map<String, Object> metadata) {
-		if (metadata == null) {
-			this.metadata = new HashMap<String,Object>();
-		} else {
-			this.metadata = metadata;
-		}
-	}
-	
-	public boolean isFree() {
-		return free;
-	}
-	
 }

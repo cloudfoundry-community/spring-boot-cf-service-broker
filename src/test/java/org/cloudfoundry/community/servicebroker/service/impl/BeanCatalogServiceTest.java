@@ -3,7 +3,7 @@ package org.cloudfoundry.community.servicebroker.service.impl;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.cloudfoundry.community.servicebroker.model.Catalog;
@@ -23,9 +23,8 @@ public class BeanCatalogServiceTest {
 	@Before
 	public void setup() {
 		serviceDefinition = new ServiceDefinition(SVC_DEF_ID, "Name", "Description", true, null);
-		List<ServiceDefinition> defs = new ArrayList<ServiceDefinition>();
-		defs.add(serviceDefinition);
-		catalog = new Catalog(defs);	
+		List<ServiceDefinition> defs = Collections.singletonList(serviceDefinition);
+		catalog = new Catalog(defs);
 		service = new BeanCatalogService(catalog);
 	}
 	
@@ -39,8 +38,7 @@ public class BeanCatalogServiceTest {
 		assertEquals(serviceDefinition, service.getServiceDefinition(SVC_DEF_ID));
 	}
 	
-	
-	@Test 
+	@Test
 	public void itDoesNotFindServiceDefinition() {
 		assertNull(service.getServiceDefinition("NOT_THERE"));
 	}

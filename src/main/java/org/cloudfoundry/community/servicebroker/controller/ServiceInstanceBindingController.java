@@ -1,13 +1,14 @@
 package org.cloudfoundry.community.servicebroker.controller;
 
-import javax.validation.Valid;
-
-import org.cloudfoundry.community.servicebroker.exception.*;
-import org.cloudfoundry.community.servicebroker.model.*;
+import lombok.extern.slf4j.Slf4j;
+import org.cloudfoundry.community.servicebroker.exception.ServiceInstanceBindingDoesNotExistException;
+import org.cloudfoundry.community.servicebroker.exception.ServiceInstanceBindingExistsException;
+import org.cloudfoundry.community.servicebroker.model.CreateServiceInstanceBindingRequest;
+import org.cloudfoundry.community.servicebroker.model.CreateServiceInstanceBindingResponse;
+import org.cloudfoundry.community.servicebroker.model.DeleteServiceInstanceBindingRequest;
+import org.cloudfoundry.community.servicebroker.model.ErrorMessage;
 import org.cloudfoundry.community.servicebroker.service.CatalogService;
 import org.cloudfoundry.community.servicebroker.service.ServiceInstanceBindingService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
 /**
  * See: Source: http://docs.cloudfoundry.com/docs/running/architecture/services/writing-service.html
  * 
@@ -26,10 +29,9 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/v2/service_instances/{instanceId}/service_bindings/{bindingId}")
+@Slf4j
 public class ServiceInstanceBindingController extends BaseController {
 
-	private static final Logger logger = LoggerFactory.getLogger(ServiceInstanceBindingController.class);
-	
 	private ServiceInstanceBindingService serviceInstanceBindingService;
 
 	@Autowired
@@ -43,7 +45,7 @@ public class ServiceInstanceBindingController extends BaseController {
 	public ResponseEntity<?> createServiceInstanceBinding(@PathVariable("instanceId") String serviceInstanceId,
 														  @PathVariable("bindingId") String bindingId,
 														  @Valid @RequestBody CreateServiceInstanceBindingRequest request) {
-		logger.debug("createServiceInstanceBinding(): "
+		log.debug("Creating a service instance binding: "
 				+ "serviceInstanceId=" + serviceInstanceId
 				+ ", bindingId=" + bindingId);
 
@@ -53,7 +55,7 @@ public class ServiceInstanceBindingController extends BaseController {
 
 		CreateServiceInstanceBindingResponse response = serviceInstanceBindingService.createServiceInstanceBinding(request);
 
-		logger.debug("createServiceInstanceBinding(): succeeded: "
+		log.debug("Creating a service instance binding succeeded: "
 				+ "serviceInstanceId=" + serviceInstanceId
 				+ "bindingId=" + bindingId);
 
@@ -65,7 +67,7 @@ public class ServiceInstanceBindingController extends BaseController {
 															   @PathVariable("bindingId") String bindingId,
 															   @RequestParam("service_id") String serviceDefinitionId,
 															   @RequestParam("plan_id") String planId) {
-		logger.debug("deleteServiceInstanceBinding(): "
+		log.debug("Deleting a service instance binding: "
 				+ "serviceInstanceId=" + serviceInstanceId
 				+ ", bindingId=" + bindingId
 				+ ", serviceDefinitionId=" + serviceDefinitionId
@@ -78,16 +80,18 @@ public class ServiceInstanceBindingController extends BaseController {
 
 			serviceInstanceBindingService.deleteServiceInstanceBinding(request);
 		} catch (ServiceInstanceBindingDoesNotExistException e) {
+			log.debug("Service instance binding does not exist: " + e);
 			return new ResponseEntity<>("{}", HttpStatus.GONE);
 		}
 
-		logger.debug("deleteServiceInstanceBinding(): succeeded: bindingId=" + bindingId);
+		log.debug("Deleting a service instance binding succeeded: bindingId=" + bindingId);
 
 		return new ResponseEntity<>("{}", HttpStatus.OK);
 	}
 
 	@ExceptionHandler(ServiceInstanceBindingExistsException.class)
 	public ResponseEntity<ErrorMessage> handleException(ServiceInstanceBindingExistsException ex) {
+		log.debug("Service instance binding already exists: " + ex);
 		return getErrorResponse(ex.getMessage(), HttpStatus.CONFLICT);
 	}
 }

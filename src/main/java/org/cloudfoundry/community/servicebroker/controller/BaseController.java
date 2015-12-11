@@ -1,23 +1,30 @@
 package org.cloudfoundry.community.servicebroker.controller;
 
-import org.cloudfoundry.community.servicebroker.exception.*;
-import org.cloudfoundry.community.servicebroker.model.*;
+import lombok.extern.slf4j.Slf4j;
+import org.cloudfoundry.community.servicebroker.exception.ServiceBrokerApiVersionException;
+import org.cloudfoundry.community.servicebroker.exception.ServiceBrokerAsyncRequiredException;
+import org.cloudfoundry.community.servicebroker.exception.ServiceDefinitionDoesNotExistException;
+import org.cloudfoundry.community.servicebroker.exception.ServiceInstanceDoesNotExistException;
+import org.cloudfoundry.community.servicebroker.model.AsyncRequiredErrorMessage;
+import org.cloudfoundry.community.servicebroker.model.ErrorMessage;
+import org.cloudfoundry.community.servicebroker.model.ServiceDefinition;
 import org.cloudfoundry.community.servicebroker.service.CatalogService;
-import org.slf4j.*;
-import org.springframework.http.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.validation.*;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 
 /**
  * Base controller.
  *
  * @author sgreenberg@gopivotal.com
+ * @author Scott Frederick
  */
+@Slf4j
 public class BaseController {
-
-	private static final Logger logger = LoggerFactory.getLogger(BaseController.class);
 
 	protected CatalogService catalogService;
 
@@ -34,30 +41,32 @@ public class BaseController {
 	}
 
 	@ExceptionHandler(ServiceBrokerApiVersionException.class)
-	@ResponseBody
 	public ResponseEntity<ErrorMessage> handleException(ServiceBrokerApiVersionException ex) {
+		log.debug("Unsupported service broker API version: ", ex);
 		return getErrorResponse(ex.getMessage(), HttpStatus.PRECONDITION_FAILED);
 	}
 
 	@ExceptionHandler(ServiceInstanceDoesNotExistException.class)
 	public ResponseEntity<ErrorMessage> handleException(ServiceInstanceDoesNotExistException ex) {
+		log.debug("Service instance does not exist: ", ex);
 		return getErrorResponse(ex.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
 	}
 
 	@ExceptionHandler(ServiceDefinitionDoesNotExistException.class)
 	public ResponseEntity<ErrorMessage> handleException(ServiceDefinitionDoesNotExistException ex) {
+		log.debug("Service definition does not exist: ", ex);
 		return getErrorResponse(ex.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
 	}
 
 	@ExceptionHandler(HttpMessageNotReadableException.class)
-	@ResponseBody
 	public ResponseEntity<ErrorMessage> handleException(HttpMessageNotReadableException ex) {
+		log.debug("Unprocessable request received: ", ex);
 		return getErrorResponse(ex.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
 	}
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
-	@ResponseBody
 	public ResponseEntity<ErrorMessage> handleException(MethodArgumentNotValidException ex) {
+		log.debug("Unprocessable request received: ", ex);
 		BindingResult result = ex.getBindingResult();
 		String message = "Missing required fields:";
 		for (FieldError error : result.getFieldErrors()) {
@@ -67,16 +76,15 @@ public class BaseController {
 	}
 
 	@ExceptionHandler(ServiceBrokerAsyncRequiredException.class)
-	@ResponseBody
 	public ResponseEntity<AsyncRequiredErrorMessage> handleException(ServiceBrokerAsyncRequiredException ex) {
+		log.debug("Broker requires async support: ", ex);
 		return new ResponseEntity<>(
 				new AsyncRequiredErrorMessage(ex.getMessage()), HttpStatus.UNPROCESSABLE_ENTITY);
 	}
 
 	@ExceptionHandler(Exception.class)
-	@ResponseBody
 	public ResponseEntity<ErrorMessage> handleException(Exception ex) {
-		logger.warn("Exception", ex);
+		log.debug("Unknown exception handled: ", ex);
 		return getErrorResponse(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 

@@ -1,10 +1,11 @@
 buildscript {
     repositories {
-        mavenLocal()
         mavenCentral()
+        maven { url 'http://repo.spring.io/plugins-release' }
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:1.2.2.RELEASE")
+        classpath("org.springframework.build.gradle:propdeps-plugin:0.0.7")
     }
 }
 
@@ -14,6 +15,10 @@ apply plugin: 'idea'
 apply plugin: 'spring-boot'
 apply plugin: 'maven-publish'
 apply plugin: 'maven'
+apply plugin: 'propdeps'
+apply plugin: 'propdeps-maven'
+apply plugin: 'propdeps-idea'
+apply plugin: 'propdeps-eclipse'
 
 version = "2.5.0"
 group = "org.cloudfoundry"
@@ -56,6 +61,7 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-security:${springBootVersion}")
     compile("org.hibernate:hibernate-validator:${hibernateValidatorVersion}")
     compile("commons-beanutils:commons-beanutils:1.9.2")
+    provided("org.projectlombok:lombok:1.16.6")
 
     testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
     testCompile("com.jayway.jsonpath:json-path:${jsonPathVersion}")

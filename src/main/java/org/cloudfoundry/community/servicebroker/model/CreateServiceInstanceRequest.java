@@ -1,87 +1,72 @@
 package org.cloudfoundry.community.servicebroker.model;
 
-import java.util.Map;
-import java.util.Objects;
-
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
 import org.hibernate.validator.constraints.NotEmpty;
 
-import com.fasterxml.jackson.annotation.*;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import java.util.Map;
 
 /**
- * A request sent by the cloud controller to create a new instance
- * of a service.
+ * Details of a request to create a new service instance.
  * 
  * @author sgreenberg@gopivotal.com
+ * @author Scott Frederick
  */
+@Getter
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
 @JsonAutoDetect(getterVisibility = JsonAutoDetect.Visibility.NONE)
 public class CreateServiceInstanceRequest extends AsyncParameterizedServiceInstanceRequest {
 
 	@NotEmpty
 	@JsonSerialize
 	@JsonProperty("service_id")
-	private String serviceDefinitionId;
+	private final String serviceDefinitionId;
 	
 	@NotEmpty
 	@JsonSerialize
 	@JsonProperty("plan_id")
-	private String planId;
+	private final String planId;
 	
 	@NotEmpty
 	@JsonSerialize
 	@JsonProperty("organization_guid")
-	private String organizationGuid;
+	private final String organizationGuid;
 	
 	@NotEmpty
 	@JsonSerialize
 	@JsonProperty("space_guid")
-	private String spaceGuid;
+	private final String spaceGuid;
 
 	// Cloud Controller doesn't send the definition, it's populated later
 	@JsonIgnore
-	private ServiceDefinition serviceDefinition;
+	private transient ServiceDefinition serviceDefinition;
 
 	// Cloud Controller doesn't send instanceId in the body
 	@JsonIgnore
-	private String serviceInstanceId;
+	private transient String serviceInstanceId;
 	
 	public CreateServiceInstanceRequest() {
-		super(false);
+		super(null, false);
+		this.serviceDefinitionId = null;
+		this.planId = null;
+		this.organizationGuid = null;
+		this.spaceGuid = null;
 	}
 	
 	public CreateServiceInstanceRequest(String serviceDefinitionId, String planId,
 										String organizationGuid, String spaceGuid,
 										Map<String, Object> parameters, boolean acceptsIncomplete) {
-		super(acceptsIncomplete);
+		super(parameters, acceptsIncomplete);
 		this.serviceDefinitionId = serviceDefinitionId;
 		this.planId = planId;
 		this.organizationGuid = organizationGuid;
 		this.spaceGuid = spaceGuid;
-		this.parameters = parameters;
-	}
-
-	public String getServiceDefinitionId() {
-		return serviceDefinitionId;
-	}
-
-	public ServiceDefinition getServiceDefinition() {
-		return serviceDefinition;
-	}
-
-	public String getPlanId() {
-		return planId;
-	}
-
-	public String getOrganizationGuid() {
-		return organizationGuid;
-	}
-
-	public String getSpaceGuid() {
-		return spaceGuid;
-	}
-
-	public String getServiceInstanceId() {
-		return serviceInstanceId;
 	}
 
 	public CreateServiceInstanceRequest withServiceDefinition(ServiceDefinition serviceDefinition) {
@@ -92,24 +77,5 @@ public class CreateServiceInstanceRequest extends AsyncParameterizedServiceInsta
 	public CreateServiceInstanceRequest withServiceInstanceId(final String serviceInstanceId) {
 		this.serviceInstanceId = serviceInstanceId;
 		return this;
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		CreateServiceInstanceRequest that = (CreateServiceInstanceRequest) o;
-		return Objects.equals(serviceInstanceId, that.serviceInstanceId) &&
-				Objects.equals(serviceDefinitionId, that.serviceDefinitionId) &&
-				Objects.equals(planId, that.planId) &&
-				Objects.equals(organizationGuid, that.organizationGuid) &&
-				Objects.equals(spaceGuid, that.spaceGuid) &&
-				Objects.equals(async, that.async) &&
-				Objects.equals(parameters, that.parameters);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(serviceInstanceId, serviceDefinitionId, planId, organizationGuid, spaceGuid, async, parameters);
 	}
 }
