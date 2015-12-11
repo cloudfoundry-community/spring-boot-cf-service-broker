@@ -44,12 +44,27 @@ public class CreateServiceInstanceBindingResponse {
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private final String syslogDrainUrl;
 
+	/**
+	 * A URL to which Cloud Foundry should proxy requests for the bound route. Can be <code>null</code>.
+	 */
+	@JsonSerialize
+	@JsonProperty("route_service_url")
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	private final String routeServiceUrl;
+
 	public CreateServiceInstanceBindingResponse(Map<String, Object> credentials, String syslogDrainUrl) {
 		this.credentials = credentials;
 		this.syslogDrainUrl = syslogDrainUrl;
+		this.routeServiceUrl = null;
 	}
 
 	public CreateServiceInstanceBindingResponse(Map<String, Object> credentials) {
 		this(credentials, null);
+	}
+
+	public CreateServiceInstanceBindingResponse(String routeServiceUrl) {
+		this.routeServiceUrl = routeServiceUrl;
+		this.credentials = null;
+		this.syslogDrainUrl = null;
 	}
 }

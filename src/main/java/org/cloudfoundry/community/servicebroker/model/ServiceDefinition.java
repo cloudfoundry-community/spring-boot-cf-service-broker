@@ -25,7 +25,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 @JsonAutoDetect(getterVisibility = JsonAutoDetect.Visibility.NONE)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ServiceDefinition {
-
 	/**
 	 * An identifier used to correlate this service in future requests to the catalog. This must be unique within
 	 * a Cloud Foundry deployment. Using a GUID is recommended.
@@ -90,7 +89,8 @@ public class ServiceDefinition {
 	private Map<String, Object> metadata;
 
 	/**
-	 * A list of permissions that the user would have to give the service, if they provision it.
+	 * A list of permissions that the user would have to give the service, if they provision it. See
+	 * {@link ServiceDefinitionRequires} for supported permissions.
 	 */
 	@JsonSerialize(nullsUsing = EmptyListSerializer.class)
 	@JsonProperty("requires")

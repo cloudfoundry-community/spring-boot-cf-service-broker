@@ -13,6 +13,6 @@ public abstract class ControllerIntegrationTest {
 
 	protected void setupCatalogService(String serviceDefinitionId) {
 		when(catalogService.getServiceDefinition(eq(serviceDefinitionId)))
-				.thenReturn(ServiceFixture.getService());
+				.thenReturn(ServiceFixture.getSimpleService());
 	}
 }

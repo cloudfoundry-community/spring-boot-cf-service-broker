@@ -12,7 +12,7 @@ import org.cloudfoundry.community.servicebroker.model.UpdateServiceInstanceRespo
 public class ServiceInstanceFixture {
 
 	public static CreateServiceInstanceRequest buildCreateServiceInstanceRequest(boolean acceptsIncomplete) {
-		ServiceDefinition service = ServiceFixture.getService();
+		ServiceDefinition service = ServiceFixture.getSimpleService();
 		return new CreateServiceInstanceRequest(
 				service.getId(),
 				service.getPlans().get(0).getId(),
@@ -28,7 +28,7 @@ public class ServiceInstanceFixture {
 	}
 
 	public static DeleteServiceInstanceRequest buildDeleteServiceInstanceRequest(boolean acceptsIncomplete) {
-		ServiceDefinition service = ServiceFixture.getService();
+		ServiceDefinition service = ServiceFixture.getSimpleService();
 		return new DeleteServiceInstanceRequest("service-instance-id",
 				service.getId(),
 				service.getPlans().get(0).getId(),
@@ -41,7 +41,7 @@ public class ServiceInstanceFixture {
 	}
 
 	public static UpdateServiceInstanceRequest buildUpdateServiceInstanceRequest(boolean acceptsIncomplete) {
-		ServiceDefinition service = ServiceFixture.getService();
+		ServiceDefinition service = ServiceFixture.getSimpleService();
 		return new UpdateServiceInstanceRequest(
 				service.getId(),
 				service.getPlans().get(0).getId(),

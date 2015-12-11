@@ -20,9 +20,11 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import static org.cloudfoundry.community.servicebroker.model.fixture.DataFixture.toJson;
-import static org.cloudfoundry.community.servicebroker.model.fixture.ServiceInstanceBindingFixture.buildCreateServiceInstanceBindingRequest;
-import static org.cloudfoundry.community.servicebroker.model.fixture.ServiceInstanceBindingFixture.buildCreateServiceInstanceBindingResponse;
-import static org.cloudfoundry.community.servicebroker.model.fixture.ServiceInstanceBindingFixture.buildCreateServiceInstanceBindingResponseWithoutSyslog;
+import static org.cloudfoundry.community.servicebroker.model.fixture.ServiceInstanceBindingFixture.buildCreateBindingRequestForApp;
+import static org.cloudfoundry.community.servicebroker.model.fixture.ServiceInstanceBindingFixture.buildCreateBindingRequestForRoute;
+import static org.cloudfoundry.community.servicebroker.model.fixture.ServiceInstanceBindingFixture.buildCreateBindingResponseForApp;
+import static org.cloudfoundry.community.servicebroker.model.fixture.ServiceInstanceBindingFixture.buildCreateBindingResponseForRoute;
+import static org.cloudfoundry.community.servicebroker.model.fixture.ServiceInstanceBindingFixture.buildCreateBindingResponseWithSyslog;
 import static org.cloudfoundry.community.servicebroker.model.fixture.ServiceInstanceBindingFixture.buildDeleteServiceInstanceBindingRequest;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
@@ -62,14 +64,14 @@ public class ServiceInstanceBindingControllerIntegrationTest extends ControllerI
 		uriBuilder = UriComponentsBuilder.fromPath("/v2/service_instances/")
 				.pathSegment("service-instance-one-id", "service_bindings");
 
-		createRequest = buildCreateServiceInstanceBindingRequest();
-		createResponse = buildCreateServiceInstanceBindingResponse();
+		createRequest = buildCreateBindingRequestForApp();
+		createResponse = buildCreateBindingResponseForApp();
 
 		deleteRequest = buildDeleteServiceInstanceBindingRequest();
 	}
 
 	@Test
-	public void createBindingSucceeds() throws Exception {
+	public void createBindingToAppSucceeds() throws Exception {
 		when(serviceInstanceBindingService.createServiceInstanceBinding(eq(createRequest)))
 				.thenReturn(createResponse);
 
@@ -83,12 +85,32 @@ public class ServiceInstanceBindingControllerIntegrationTest extends ControllerI
 				.andExpect(jsonPath("$.credentials.uri", is(createResponse.getCredentials().get("uri"))))
 				.andExpect(jsonPath("$.credentials.username", is(createResponse.getCredentials().get("username"))))
 				.andExpect(jsonPath("$.credentials.password", is(createResponse.getCredentials().get("password"))))
-				.andExpect(jsonPath("$.syslog_drain_url", is(createResponse.getSyslogDrainUrl())));
+				.andExpect(jsonPath("$.syslog_drain_url", nullValue()))
+				.andExpect(jsonPath("$.route_service_url", nullValue()));
 	}
 
 	@Test
-	public void createBindingWithoutSyslogDrainUrlSucceeds() throws Exception {
-		CreateServiceInstanceBindingResponse response = buildCreateServiceInstanceBindingResponseWithoutSyslog();
+	public void createBindingToRouteSucceeds() throws Exception {
+		CreateServiceInstanceBindingRequest request = buildCreateBindingRequestForRoute();
+		CreateServiceInstanceBindingResponse response = buildCreateBindingResponseForRoute();
+		when(serviceInstanceBindingService.createServiceInstanceBinding(eq(request)))
+				.thenReturn(response);
+
+		setupCatalogService(request.getServiceDefinitionId());
+
+		mockMvc.perform(put(buildUrl(request))
+				.content(toJson(request))
+				.accept(MediaType.APPLICATION_JSON)
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isCreated())
+				.andExpect(jsonPath("$.credentials", nullValue()))
+				.andExpect(jsonPath("$.syslog_drain_url", nullValue()))
+				.andExpect(jsonPath("$.route_service_url", is(response.getRouteServiceUrl())));
+	}
+
+	@Test
+	public void createBindingWithSyslogDrainUrlSucceeds() throws Exception {
+		CreateServiceInstanceBindingResponse response = buildCreateBindingResponseWithSyslog();
 		when(serviceInstanceBindingService.createServiceInstanceBinding(eq(createRequest)))
 			.thenReturn(response);
 
@@ -99,10 +121,11 @@ public class ServiceInstanceBindingControllerIntegrationTest extends ControllerI
 				.accept(MediaType.APPLICATION_JSON)
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isCreated())
-				.andExpect(jsonPath("$.credentials.uri", is(createResponse.getCredentials().get("uri"))))
-				.andExpect(jsonPath("$.credentials.username", is(createResponse.getCredentials().get("username"))))
-				.andExpect(jsonPath("$.credentials.password", is(createResponse.getCredentials().get("password"))))
-				.andExpect(jsonPath("$.syslog_drain_url", nullValue()));
+				.andExpect(jsonPath("$.credentials.uri", is(response.getCredentials().get("uri"))))
+				.andExpect(jsonPath("$.credentials.username", is(response.getCredentials().get("username"))))
+				.andExpect(jsonPath("$.credentials.password", is(response.getCredentials().get("password"))))
+				.andExpect(jsonPath("$.syslog_drain_url", is(response.getSyslogDrainUrl())))
+				.andExpect(jsonPath("$.route_service_url", nullValue()));
 	}
 
 	@Test

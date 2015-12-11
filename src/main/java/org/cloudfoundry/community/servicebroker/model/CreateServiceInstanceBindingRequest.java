@@ -23,8 +23,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 @ToString
 @EqualsAndHashCode
 @JsonAutoDetect(getterVisibility = JsonAutoDetect.Visibility.NONE)
+@SuppressWarnings("deprecation")
 public class CreateServiceInstanceBindingRequest {
-
 	/**
 	 * The ID of the service being bound, from the broker catalog.
 	 */
@@ -44,10 +44,20 @@ public class CreateServiceInstanceBindingRequest {
 	/**
 	 * The Cloud Controller GUID of the application the service instance will be bound to. Will be provided when
 	 * users bind applications to service instances, or <code>null</code> if an application is not being bound.
+	 *
+	 * @deprecated The <code>bindResource</code> field will contain references to the resource being bound, and should
+	 * be used instead of this field.
 	 */
 	@JsonSerialize
 	@JsonProperty("app_guid")
 	private final String appGuid;
+
+	/**
+	 * The resource being bound to the service instance.
+	 */
+	@JsonSerialize
+	@JsonProperty("bind_resource")
+	private final Map<String, Object> bindResource;
 
 	/**
 	 * Parameters passed by the user in the form of a JSON structure. The service broker is responsible
@@ -81,14 +91,17 @@ public class CreateServiceInstanceBindingRequest {
 		serviceDefinitionId = null;
 		planId = null;
 		appGuid = null;
+		bindResource = null;
 		parameters = null;
 	}
 	
 	public CreateServiceInstanceBindingRequest(String serviceDefinitionId, String planId,
-											   String appGuid, Map<String, Object> parameters) {
+											   String appGuid, Map<String, Object> bindResource,
+											   Map<String, Object> parameters) {
 		this.serviceDefinitionId = serviceDefinitionId;
 		this.planId = planId;
 		this.appGuid = appGuid;
+		this.bindResource = bindResource;
 		this.parameters = parameters;
 	}
 
