@@ -3,7 +3,7 @@ spring-boot-cf-service-broker
 
 Spring Boot project for creating Cloud Foundry service brokers.
 
-NOTE: This project has been deprecated and replaced by [Spring Cloud - Cloud Foundry Service Broker](https://github.com/spring-cloud/spring-cloud-cloudfoundry-service-broker). All enhancements and updates to the latest service broker API versions will be done on the newer project. 
+**NOTE**: This project has been deprecated and replaced by [Spring Cloud - Cloud Foundry Service Broker](https://github.com/spring-cloud/spring-cloud-cloudfoundry-service-broker). All enhancements and updates to the latest service broker API versions will be done on the newer project. 
 
 # Overview
 
